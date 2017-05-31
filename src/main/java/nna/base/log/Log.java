@@ -112,14 +112,10 @@ public class Log {
                     e.printStackTrace();
                 }
             }else{
-                if(canSynWrite()){
-                    synWrite(logStr);
-                }else{
-                    if(canFlush()){
-                        Long start=System.currentTimeMillis();
-                        LogEntry.submitWriteEvent(this,logStr);
+                if(canFlush()){
+                    Long start=System.currentTimeMillis();
+                    LogEntry.submitWriteEvent(this,logStr);
 //                    System.out.println("日志路径:"+logDir+" 线程 id:"+threadId+" 名称:"+threadName+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
-                    }
                 }
             }
             logStrBuilder=new StringBuilder("");

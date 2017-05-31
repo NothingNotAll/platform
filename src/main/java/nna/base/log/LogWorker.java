@@ -18,10 +18,10 @@ public class LogWorker implements Runnable{
     private ConcurrentHashMap<Long,LogTaskList> logTaskMap=new ConcurrentHashMap<Long, LogTaskList>();
 
     //for performance;
-    Iterator<LogTask> iterator;
-    LogTask logTask;
-    LogTaskList logTaskList;
-    long threadId;
+    private Iterator<LogTask> iterator;
+    private LogTask logTask;
+    private LogTaskList logTaskList;
+    private long threadId;
 
     public void run() {
         try{

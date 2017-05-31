@@ -11,9 +11,11 @@ import nna.base.util.LogUtil;
 import nna.transaction.AbstractTransaction;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -122,5 +124,8 @@ public class NNAServiceInit3 {
         cm.setTemp(new HashMap<String, Object>(cs.
                 getService().
                 getServiceTempsize()));
+        cm.setTranStack(new ArrayList<CombTransaction>(cm.getCombTransactionMap().size()));
+        cm.setPstStack(new ArrayList<PreparedStatement[]>(cm.getCombTransactionMap().size()));
+        cm.setConStack(new ArrayList<Connection>(cm.getCombTransactionMap().size()));
     }
 }

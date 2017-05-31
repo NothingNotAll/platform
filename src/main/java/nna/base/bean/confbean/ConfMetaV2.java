@@ -33,12 +33,17 @@ public class ConfMetaV2 extends Clone{
     private ConfSession confSession;//代表当前会话信息
 
     private PlatformApp platformApp;
+    private Method appServiceMethod;
+    private Object appServiceObject;
     private PlatformLog tradeLog;
     private PlatformController platformController;
+    private Method renderMethod;
+    private Object renderObject;
     private PlatformService platformService;
     private Method seviceMethod;
     private Object serviceObject;
     private HashMap<String,CombTransaction> combTransactionMap;
+    private PlatformDB platformDB;
 
     private HashSet<Integer> userIdSet;
     private HashMap<Integer,PlatformResource[]> userResoruce;
@@ -72,9 +77,9 @@ public class ConfMetaV2 extends Clone{
         confMeta.setReqColumn(new HashMap<String, String[]>(response==null?0:response.length));
         confMeta.setTemp(new HashMap<String, Object>(platformService.getServiceTempsize()));
 
-        confMeta.setTranStack(new ArrayList<CombTransaction>(tranStack.size()));
-        confMeta.setPstStack(new ArrayList<PreparedStatement[]>(pstStack.size()));
-        confMeta.setConStack(new ArrayList<Connection>(conStack.size()));
+        confMeta.setTranStack(new ArrayList<CombTransaction>(combTransactionMap.size()));
+        confMeta.setPstStack(new ArrayList<PreparedStatement[]>(combTransactionMap.size()));
+        confMeta.setConStack(new ArrayList<Connection>(combTransactionMap.size()));
         confMeta.setCurrentPsts(null);
         confMeta.setCurrentPsts(null);
         confMeta.setCurrentConnection(null);
@@ -329,5 +334,45 @@ public class ConfMetaV2 extends Clone{
 
     public void setLogEncrypt(boolean logEncrypt) {
         isLogEncrypt = logEncrypt;
+    }
+
+    public Method getAppServiceMethod() {
+        return appServiceMethod;
+    }
+
+    public void setAppServiceMethod(Method appServiceMethod) {
+        this.appServiceMethod = appServiceMethod;
+    }
+
+    public Object getAppServiceObject() {
+        return appServiceObject;
+    }
+
+    public void setAppServiceObject(Object appServiceObject) {
+        this.appServiceObject = appServiceObject;
+    }
+
+    public PlatformDB getPlatformDB() {
+        return platformDB;
+    }
+
+    public void setPlatformDB(PlatformDB platformDB) {
+        this.platformDB = platformDB;
+    }
+
+    public Method getRenderMethod() {
+        return renderMethod;
+    }
+
+    public void setRenderMethod(Method renderMethod) {
+        this.renderMethod = renderMethod;
+    }
+
+    public Object getRenderObject() {
+        return renderObject;
+    }
+
+    public void setRenderObject(Object renderObject) {
+        this.renderObject = renderObject;
     }
 }

@@ -152,13 +152,13 @@ public abstract class AbstractDispatch<R,S> {
 
     private static boolean checkSession(String sessionId){
         ConfSession confSession=CacheFactory.getUserSessionCache().get(sessionId);
-        System.out.println(confSession==null);
         if(confSession==null
                 ||System.currentTimeMillis()-confSession.getLastAccessd() > confSession.getCombSession().getTimedOut()
                 ||!checkPriv(confSession,sessionId)){
             CacheFactory.getUserSessionCache().remove(sessionId);
             return false;
         }else{
+            ConfMetaSetFactory.getConfMeta().setConfSession(confSession);
             return true;
         }
     }
@@ -172,7 +172,8 @@ public abstract class AbstractDispatch<R,S> {
 
     private static void initUserLog(ConfMeta confMeta){
         String serviceName=confMeta.getCombService().getService().getServiceName();
-        Integer userId=confMeta.getConfSession().getCombUser().getPlatformUser().getUserId();
+        ConfSession confSession=confMeta.getConfSession();
+        Integer userId=confSession==null?-1:confSession.getCombUser().getPlatformUser().getUserId();
         CombLog combLog=confMeta.getCombLog();
         String logDir=
                 combLog.getLogDir()+yyyyMMdd.format(System.currentTimeMillis())

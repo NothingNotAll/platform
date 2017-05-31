@@ -65,9 +65,10 @@ public class List<T extends AbstractTask> {
             default:
                 hash=lowBits+1;
         }
-        ReentrantLock lock=locks[hash];
+        ReentrantLock lock=null;
         while(true){
             try{
+                lock=locks[hash];
                 lock.lock();
                 if(tStatus[hash]==1){
                     hash=hash++>=capacity?0:hash;
