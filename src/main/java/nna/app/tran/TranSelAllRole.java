@@ -1,0 +1,39 @@
+package nna.app.tran;
+
+import nna.Marco;
+import nna.base.bean.dbbean.PlatformRole;
+import nna.base.protocol.dispatch.AppUtil;
+import nna.base.protocol.dispatch.ConfMetaSetFactory;
+import nna.base.log.Log;
+import nna.base.util.LogUtil;
+import nna.transaction.AbstractTransaction;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+/**
+ * @author NNA-SHUAI
+ * @create 2017-05-24 13:30
+ **/
+
+public class TranSelAllRole extends AbstractTransaction<PlatformRole[]> {
+    public PlatformRole[] inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Log log=AppUtil.getLog();
+        ResultSet countRs=sts[0].executeQuery();
+        countRs.next();
+        PlatformRole[] roles=new PlatformRole[countRs.getInt(1)];
+        int index=0;
+        ResultSet roleRs=sts[1].executeQuery();
+        while(roleRs.next()){
+            roles[index]=(PlatformRole) getBean(roleRs,Marco.PLATFORM_ROLE);
+            index++;
+            int logLevel= ConfMetaSetFactory.getConfMeta().getLogLevel();
+            LogUtil.log(roles[index],log,logLevel);
+        }
+        try{roleRs.close();}catch (Exception e){}
+        return  roles;
+    }
+}
