@@ -17,9 +17,7 @@ public class DBPutConWorker implements Runnable {
     }
     public void run() {
       try{
-          while(true){
-              work();
-          }
+           work();
       }catch (Exception e){
           e.printStackTrace();
       }finally {
