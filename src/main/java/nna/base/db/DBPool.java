@@ -128,15 +128,20 @@ import java.util.concurrent.locks.ReentrantLock;
             return null;
         }
         ReentrantLock lock=poolLocks.get(index);
+        boolean lockStatus=false;
         try{
-            lock.tryLock();
-            con=pool.get(index);
-            if(con==null){
-                return null;
+            if(lock.tryLock()){
+                lockStatus=true;
+                con=pool.get(index);
+                if(con==null){
+                    return null;
+                }
+                pool.set(index,null);
             }
-            pool.set(index,null);
         }finally {
-            lock.unlock();
+            if(lockStatus){
+                lock.unlock();
+            }
         }
         return con;
     }
@@ -264,17 +269,23 @@ import java.util.concurrent.locks.ReentrantLock;
     private boolean tryPutCon(int minIndex, Connection connection) {
         ReentrantLock lock;
         lock=poolLocks.get(minIndex);
+        boolean lockStatus=false;
         try{
-            lock.tryLock();
-            if(pool.get(minIndex)!=null){
-                return false;
-            }
-            blockStatus=BLOCK_STATUS_NO;
-            pool.set(minIndex,connection);
-            return true;
+            if(lock.tryLock()){
+                lockStatus=true;
+                if(pool.get(minIndex)!=null){
+                    return false;
+                }
+                blockStatus=BLOCK_STATUS_NO;
+                pool.set(minIndex,connection);
+                return true;
+            };
         }finally {
-            lock.unlock();
+            if(lockStatus){
+                lock.unlock();
+            }
         }
+        return false;
     }
 
     int isAllNullCon(){
