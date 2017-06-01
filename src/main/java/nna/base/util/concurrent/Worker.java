@@ -33,13 +33,13 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
                 workerCount=workerQueue.size();
                 if(workerCount>0){
                     workerQueue.drainTo(tempWorker,workerCount);
-                    reSet();
                 }else{
                     AbstractTask task=workerQueue.take();
                     tempWorker.addLast((T)task);
                 }
                 Iterator<T> iterator=tempWorker.iterator();
                 consumer(iterator);
+                reSet();
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -89,6 +89,9 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
         count=0;
         tempWorker=new LinkedList<T>();
         ts=new LinkedList<T>();
+        task=null;
+        queue=null;
+        workerCount=0;
     }
 
     public int getLoadNo() {
