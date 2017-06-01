@@ -10,7 +10,7 @@ public interface Marco {
     String URL="jdbc:mysql://localhost:3306/platformv2";
     String ACCOUNT="root";
     String PASSWORD="123";
-    String IS_DISTRIBUTED="0";
+    boolean IS_DISTRIBUTED=false;
 
     String INIT_TABLENAME_PLATFORMCLAZZ="PLATFORM_CLAZZ",
             INIT_TABLENAME_PLATFORMLOG="PLATFORM_LOG",
