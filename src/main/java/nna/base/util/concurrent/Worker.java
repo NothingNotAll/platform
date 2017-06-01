@@ -18,8 +18,8 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
     private LinkedBlockingQueue<T> workerQueue;
     private ConcurrentHashMap<Long,LinkedBlockingQueue<T>> threadsWorkerMap;
 
+    //for performance and monitor
     private LinkedList<T> tempWorker=new LinkedList<T>();
-
     private AbstractTask task;
     private LinkedBlockingQueue<T> queue=null;
     private int count;
