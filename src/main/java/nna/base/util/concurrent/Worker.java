@@ -58,9 +58,7 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
         }
     }
 
-    void submitTask(AbstractTask t){
-
-    }
+    public  abstract void submitTask(AbstractTask t);
 
     private void work(LinkedList<T> ts){
         AbstractTask t;
@@ -69,13 +67,19 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
             t=iterator.next();
             switch (t.getTaskStatus()){
                 case AbstractTask.TASK_STATUS_CREATE:
+
+                    t.setTaskStatus(AbstractTask.TASK_STATUS_INIT);
                     break;
                 case AbstractTask.TASK_STATUS_INIT:
+                    t.init();
+                    t.setTaskStatus(AbstractTask.TASK_STATUS_WORK);
                     break;
                 case AbstractTask.TASK_STATUS_WORK:
                     t.work();
+                    t.setTaskStatus(AbstractTask.TASK_STATUS_DESTROY);
                     break;
                 case AbstractTask.TASK_STATUS_DESTROY:
+                    t.destroy();
                     break;
                 default:
                     otherWork();

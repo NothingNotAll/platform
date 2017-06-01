@@ -11,7 +11,6 @@ public abstract class AbstractTask implements Runnable,Callable{
     public static final int TASK_STATUS_CREATE=0;
     public static final int TASK_STATUS_INIT=1;
     public static final int TASK_STATUS_WORK=2;
-    public static final int TASK_STATUS_END=3;
     public static final int TASK_STATUS_DESTROY=4;
 
     private int index;
