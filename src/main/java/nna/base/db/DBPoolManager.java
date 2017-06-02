@@ -25,7 +25,6 @@ public class DBPoolManager {
     private int conPoolSize;
     private int closePoolSize;
     private static final DBConHeartTest conHeartTest=DBConHeartTest.getInstance();
-    private Long heartTestMS;
     private volatile boolean isExchanging;//when to change
     private DBPool JDBC;
     private DBMeta dbMeta;
@@ -59,14 +58,6 @@ public class DBPoolManager {
 
     public DBConHeartTest getConHeartTest() {
         return conHeartTest;
-    }
-
-    public Long getHeartTestMS() {
-        return heartTestMS;
-    }
-
-    public void setHeartTestMS(Long heartTestMS) {
-        this.heartTestMS = heartTestMS;
     }
 
     private Connection tryGetCon(){
