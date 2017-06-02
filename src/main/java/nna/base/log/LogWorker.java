@@ -21,21 +21,39 @@ public class LogWorker implements Runnable{
     private Iterator<LogTask> iterator;
     private LogTask logTask;
     private LogTaskList logTaskList;
-    private long threadId;
+    private Long threadId;
+    private int logTaskCount;
+    private LinkedList list;
+    private LogTask nextTask;
 
     public void run() {
         try{
-            LinkedList list;
-            int logTaskCount;
             while(true){
-                list=new LinkedList();
                 logTaskCount=logIdQueue.size();
-                logIdQueue.drainTo(list,logTaskCount);
+                list=new LinkedList();
+                if(logTaskCount > 0){
+                    logTaskCount=logIdQueue.size();
+                    logIdQueue.drainTo(list,logTaskCount);
+                }else{
+                    nextTask=logIdQueue.take();
+                    list.add(nextTask);
+                }
                 write(list);
+                destroy();
             }
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void destroy() {
+        iterator=null;
+        logTask=null;
+        logTaskList=null;
+        threadId=null;
+        logTaskCount=0;
+        list=null;
+        nextTask=null;
     }
 
     private void write(LinkedList<LogTask> linkedList){
