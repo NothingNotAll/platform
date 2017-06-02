@@ -163,6 +163,8 @@ public class LogWorker implements Runnable{
 
         private LinkedList<LogTask> deQueue(){
             LinkedList<LogTask> list = new LinkedList<LogTask>();
+            //实际的效果是 有可能导致饥饿，也就是只有在服务结束掉之后 才能进行
+            // 日志的 完全打印
             if(canDequeue){
                 canEnqueue=false;
                 queue.drainTo(list);
