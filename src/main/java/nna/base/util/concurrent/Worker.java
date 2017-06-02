@@ -39,7 +39,7 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
                 }
                 Iterator<T> iterator=tempWorker.iterator();
                 consumer(iterator);
-                reSet();
+                destroy();
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -89,7 +89,7 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
 
     protected abstract void otherWork();
 
-    private void reSet() {
+    private void destroy() {
         count=0;
         tempWorker=new LinkedList<T>();
         ts=new LinkedList<T>();
