@@ -127,7 +127,7 @@ public class CharUtil {
 		char errorChar;
 		String rightStr;
 		String compareStr;
-		char end = 0;
+		char end;
 		for(int index=1;index < length;index++){
 			errorChar=searchStr.charAt(index);
 			rightStr=searchStr.substring(0,index);
@@ -155,50 +155,7 @@ public class CharUtil {
 		}
 		return nexts;
 	}
-	public static Byte[] readLine(InputStream read) throws IOException {
-		byte[] byteOne=new byte[1];
-		byte[] byteTwo=new byte[1];
-		ArrayList<Byte> byteBuffer=new ArrayList<Byte>();
-		int size;
-		while(true){
-			size=read.read(byteOne);
-			if(size < 0){
-				break;
-			}
-			size=read.read(byteTwo);
-			if(size < 0||new String(new byte[]{byteOne[0],byteTwo[1]}).equals("\r\n")){
-				break;
-			}
-			byteBuffer.add(byteOne[0]);
-			byteBuffer.add(byteTwo[0]);
-		}
-		return byteBuffer.toArray(new Byte[]{});
-	}
-	public static String readLine(InputStream read,String encode) throws IOException {
-		byte[] byteOne=new byte[1];
-		byte[] byteTwo=new byte[1];
-		ArrayList<Byte> byteBuffer=new ArrayList<Byte>();
-		int size;
-		while(true){
-			size=read.read(byteOne);
-			if(size < 0||new String(new byte[]{byteOne[0]}).equals("\n")){
-				break;
-			}
-			size=read.read(byteTwo);
-			if(size < 0||new String(new byte[]{byteOne[0],byteTwo[0]}).equals("\r\n")){
-				break;
-			}
-			byteBuffer.add(byteOne[0]);
-			byteBuffer.add(byteTwo[0]);
-		}
-		Byte[] bys=byteBuffer.toArray(new Byte[]{});
-		int length=bys.length;
-		byte[] byts=new byte[length];
-		for(int index=0;index < length;index++){
-			byts[index]=bys[index].byteValue();
-		}
-		return new String(byts,encode);
-	}
+
 	private CharUtil(){}
 	public static void main(String[] args) {
 		int[] nexts=nexts("abcaabcdabcd");
