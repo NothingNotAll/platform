@@ -32,6 +32,7 @@ public class DBPoolManager {
 
     public DBPoolManager(DBMeta dbMeta, Log log) throws SQLException, ClassNotFoundException {
         this.dbMeta=dbMeta;
+        this.managerLog=log;
         dbMeta.setInit(false);
         JDBC=new DBPool(dbMeta);
         conPools=new ArrayList<DBPool>(dbMeta.getConPoolSize());

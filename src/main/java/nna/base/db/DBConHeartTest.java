@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
     private ArrayList<DBPoolManager> managers=new ArrayList<DBPoolManager>();
     private ReentrantLock lock=new ReentrantLock();
     private Long sleepTime=0L;
+    private Object lockObject=new Object();
     private DBConHeartTest(){}
 
     static{
@@ -45,6 +46,9 @@ import java.util.concurrent.locks.ReentrantLock;
         }finally {
             lock.unlock();
         }
+        synchronized (lockObject){
+            lockObject.notify();
+        }
     }
 
     public void run() {
@@ -59,6 +63,13 @@ import java.util.concurrent.locks.ReentrantLock;
                 }
                 Long conTime=System.currentTimeMillis()-start;
                 System.out.println("Check DB pool waste"+conTime);
+                if(managers.size()==0){
+                    synchronized (lockObject){
+                        if(managers.size()==0){
+                            lockObject.wait();
+                        }
+                    }
+                }
                 Thread.sleep(sleepTime);
             }
         }catch (Exception e){
