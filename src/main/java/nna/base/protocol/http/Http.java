@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -51,7 +52,7 @@ public class Http extends AbstractDispatch<HttpServletRequest, HttpServletRespon
         return response.getOutputStream();
     }
     public Map<String,String[]> getReqColMap(HttpServletRequest request) {
-        return request.getParameterMap();
+	    return request.getParameterMap();
     }
     public String[] getPlatformEntryId(HttpServletRequest request) {
 		return new String[]{request.getRequestURI(),request.getSession().getId()};

@@ -70,13 +70,13 @@ public class Dispatch {
         }
     }
     private static void checkRspNonArray(HashMap<String, String[]> map, PlatformColumn temp, Log log) throws Exception {
-	    String innserName=temp.getColumnInnerName();
+	    String innerName=temp.getColumnInnerName();
 	    String outsideName=temp.getColumnOutsideName();
-	    String[] values=map.get(innserName);
+	    String[] values=map.get(innerName);
 	    boolean isMust=temp.isColumnIsmust();
 	    String defaultValue=temp.getColumnDefaultvalue();
 	    if(isMust&&(values==null||values.length==0)&&defaultValue==null){
-            log.log(innserName+"response column not null",Log.ERROR);
+            log.log(innerName+"response column not null",Log.ERROR);
 	        throw new Exception("response column not null");
         }
         String value;
@@ -87,12 +87,12 @@ public class Dispatch {
                 throw new Exception("response column not null");
             }
             if(value.length()> temp.getColumnLength()){
-                log.log(innserName+"response column too long",Log.ERROR);
+                log.log(innerName+"response column too long",Log.ERROR);
                 throw new Exception("response column too long");
             }
         }else{
             if(defaultValue!=null){
-                map.put(innserName,new String[]{defaultValue});
+                values=new String[]{defaultValue};
             }
         }
         map.put(outsideName,values);
@@ -138,7 +138,7 @@ public class Dispatch {
                 throw new Exception("response column:the different column but in the same array has no same length !");
             }
         }
-        map.put(innerName,values);
+        map.put(outsideName,values);
     }
 
 
@@ -181,7 +181,7 @@ public class Dispatch {
                 innerMap.put(innserName,new String[]{defaultValue});
             }
         }
-        map.put(innserName,values);
+        innerMap.put(innserName,values);
     }
     private static void checkReqArray(HashMap<String,Integer> arraySizeMap,Map<String, String[]> outsideMap, Map<String, String[]> innerReqMap,PlatformColumn temp, Log log) throws Exception {
         String outsideName=temp.getColumnOutsideName();
@@ -215,7 +215,6 @@ public class Dispatch {
                 log.log(outsideName+"request column too long",Log.ERROR);
                 throw new Exception("request column too long !");
             }
-            tempValue=null;
         }
         if(!arraySizeMap.containsKey(arrayPathNm)){
             arraySizeMap.put(arrayPathNm,values.length);

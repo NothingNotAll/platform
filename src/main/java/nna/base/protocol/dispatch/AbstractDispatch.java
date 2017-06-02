@@ -130,7 +130,7 @@ public abstract class AbstractDispatch<R,S> {
         String outStr=null;
         if(renderPage!=null&&!renderPage.trim().equals("")){
             try{
-                renderMethod.invoke(renderObject,rspMap);
+                outStr=(String) renderMethod.invoke(renderObject,rspMap);
             }catch (Throwable throwable){
                 throwable.printStackTrace();
             }
