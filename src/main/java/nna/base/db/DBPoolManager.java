@@ -24,12 +24,12 @@ public class DBPoolManager {
     private ArrayList<DBPool> closePools;
     private int conPoolSize;
     private int closePoolSize;
-    private DBConHeartTest conHeartTest;
+    private static final DBConHeartTest conHeartTest=DBConHeartTest.getInstance();
     private Long heartTestMS;
-    private Thread heartTestThread;
     private volatile boolean isExchanging;//when to change
     private DBPool JDBC;
     private DBMeta dbMeta;
+    private Log managerLog;
 
     public DBPoolManager(DBMeta dbMeta, Log log) throws SQLException, ClassNotFoundException {
         this.dbMeta=dbMeta;
@@ -54,17 +54,11 @@ public class DBPoolManager {
         test.addAll(closePools);
         balanceConList.addAll(conPools);
         balanceCloseList.addAll(closePools);
-        conHeartTest=new DBConHeartTest(test,dbMeta,log);
-        heartTestThread=new Thread(conHeartTest);
-        heartTestThread.start();
+        conHeartTest.addManager(this);
     }
 
     public DBConHeartTest getConHeartTest() {
         return conHeartTest;
-    }
-
-    public void setConHeartTest(DBConHeartTest conHeartTest) {
-        this.conHeartTest = conHeartTest;
     }
 
     public Long getHeartTestMS() {
@@ -216,5 +210,13 @@ public class DBPoolManager {
 
     public void setBalanceCloseList(LinkedList<DBPool> balanceCloseList) {
         this.balanceCloseList = balanceCloseList;
+    }
+
+    public Log getManagerLog() {
+        return managerLog;
+    }
+
+    public void setManagerLog(Log managerLog) {
+        this.managerLog = managerLog;
     }
 }

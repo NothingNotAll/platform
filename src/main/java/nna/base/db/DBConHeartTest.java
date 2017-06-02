@@ -7,6 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * keep alive
@@ -16,70 +19,75 @@ import java.util.ArrayList;
  **/
 
  class DBConHeartTest implements Runnable{
-    private Log log;
-    private ArrayList<DBPool> dbPools=new ArrayList<DBPool>(2);
-    private int poolsSize=2;
-    private int poolSize;
-    private DBMeta dbMeta;
-     DBConHeartTest(ArrayList<DBPool> pools, DBMeta dbMeta,Log log){
-         this.log=log;
-         int size=pools.size();
-         dbPools=new ArrayList<DBPool>(size);
-         for(int index=0;index < size;index++){
-             dbPools.add(pools.get(index));
-             poolSize=pools.get(index).getConSize();
-         }
-         this.dbMeta=dbMeta;
-     }
-     DBConHeartTest(DBPool[] pools, DBMeta dbMeta){
-        poolsSize=pools.length;
-        for(int index=0;index < poolsSize;index++){
-            dbPools.add(pools[index]);
-            poolSize=pools[index].getConSize();
+    private static final DBConHeartTest DB_CON_HEART_TEST=new DBConHeartTest();
+    private ArrayList<DBPoolManager> managers=new ArrayList<DBPoolManager>();
+    private ReentrantLock lock=new ReentrantLock();
+    private Long sleepTime=0L;
+    private DBConHeartTest(){}
+
+    static{
+        Thread heartTestThread=new Thread(DB_CON_HEART_TEST);
+        heartTestThread.start();
+    }
+
+    public static DBConHeartTest getInstance(){
+        return DB_CON_HEART_TEST;
+    }
+
+    public void addManager(DBPoolManager manager){
+        try{
+            lock.lock();
+            managers.add(manager);
+            Long sleep=manager.getDbMeta().getHeartTestMS();
+            if( sleep > sleepTime){
+                sleepTime=sleep;
+            }
+        }finally {
+            lock.unlock();
         }
-        this.dbMeta=dbMeta;
     }
 
     public void run() {
         try{
             while(true){
-                DBPool dbPool;
-                for(int index=0;index < poolsSize;index++){
-                    dbPool=dbPools.get(index);
-                    for(int conIndex=0;conIndex < poolSize;conIndex++){
-                        try{
-                            Connection connection=dbPool.getImedCon(conIndex);
-                            if(connection!=null){
-                                keepConAlive(connection);
-                            }
-                        }finally {
-
-                        }
-                    }
+                Iterator<DBPoolManager> iterator=managers.iterator();
+                DBPoolManager manager;
+                while(iterator.hasNext()){
+                    manager=iterator.next();
+                    keepConAlive(manager.getBalanceConList(),manager.getManagerLog());
                 }
-                try{
-                    Thread.sleep(dbMeta.getHeartTestMS());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Thread.sleep(sleepTime);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    private void keepConAlive(Connection con){
-        PreparedStatement pst = null;
-        ResultSet rs=null;
-        try{
-            pst=con.prepareStatement("select 111 from dual;");
-            rs=pst.executeQuery();
-            rs.next();
-            log.log(rs.getString(1),10);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            close(pst,rs);
+    private void keepConAlive(LinkedList<DBPool> list,Log log){
+        Iterator<DBPool> iterator=list.iterator();
+        DBPool dbPool;
+        ArrayList<Connection> cons;
+        Iterator<Connection> iteratorCon;
+        Connection con;
+        while(iterator.hasNext()){
+            dbPool=iterator.next();
+            cons=dbPool.getPool();
+            iteratorCon=cons.iterator();
+            while(iteratorCon.hasNext()){
+                con=iteratorCon.next();
+                PreparedStatement pst = null;
+                ResultSet rs=null;
+                try{
+                    pst=con.prepareStatement("select 111 from dual;");
+                    rs=pst.executeQuery();
+                    rs.next();
+                    log.log(rs.getString(1),10);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    close(pst,rs);
+                }
+            }
         }
     }
 
@@ -100,11 +108,4 @@ import java.util.ArrayList;
         }
     }
 
-    public Log getLog() {
-        return log;
-    }
-
-    public void setLog(Log log) {
-        this.log = log;
-    }
 }
