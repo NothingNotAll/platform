@@ -50,12 +50,15 @@ import java.util.concurrent.locks.ReentrantLock;
     public void run() {
         try{
             while(true){
+                Long start=System.currentTimeMillis();
                 Iterator<DBPoolManager> iterator=managers.iterator();
                 DBPoolManager manager;
                 while(iterator.hasNext()){
                     manager=iterator.next();
                     keepConAlive(manager.getBalanceConList(),manager.getManagerLog());
                 }
+                Long conTime=System.currentTimeMillis()-start;
+                System.out.println("Check DB pool waste"+conTime);
                 Thread.sleep(sleepTime);
             }
         }catch (Exception e){
