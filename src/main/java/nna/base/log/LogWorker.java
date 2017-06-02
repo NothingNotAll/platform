@@ -167,7 +167,7 @@ public class LogWorker implements Runnable{
     private class LogTaskList{
         private volatile LinkedBlockingQueue<LogTask> queue=new LinkedBlockingQueue<LogTask>();
         private volatile boolean canDequeue=true;
-        private volatile boolean canEnqueue;
+        private volatile boolean canEnqueue=true;
 
         private void enQueue(Log log,String logBuffer){
             LogTask logTask=new LogTask(log,logBuffer,LogTask.LOG_WRITE);
