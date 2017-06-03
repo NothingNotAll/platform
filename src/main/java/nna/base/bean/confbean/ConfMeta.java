@@ -63,7 +63,11 @@ public class ConfMeta extends Clone{
     private int logLevel;
     private boolean isLogEncrypt;//encrypt
 
-    public ConfMeta(){}
+    public ConfMeta(){
+        tranStack=new ArrayList<CombTransaction>();
+        pstStack=new ArrayList<PreparedStatement[]>();
+        conStack=new ArrayList<Connection>();
+    }
 
     public static HashSet<String> getFreeResources() {
         return freeResources;
