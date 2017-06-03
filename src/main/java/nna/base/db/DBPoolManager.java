@@ -20,8 +20,6 @@ public class DBPoolManager {
     private ExecutorService executor= Executors.newCachedThreadPool();
     private LinkedList<DBPool> balanceConList=new LinkedList<DBPool>();
     private LinkedList<DBPool> balanceCloseList=new LinkedList<DBPool>();
-    private ArrayList<DBPool> conPools;
-    private ArrayList<DBPool> closePools;
     private int conPoolSize;
     private int closePoolSize;
     private static final DBConHeartTest conHeartTest=DBConHeartTest.getInstance();
@@ -35,25 +33,20 @@ public class DBPoolManager {
         this.managerLog=log;
         dbMeta.setInit(false);
         JDBC=new DBPool(dbMeta);
-        conPools=new ArrayList<DBPool>(dbMeta.getConPoolSize());
-        closePools=new ArrayList<DBPool>(dbMeta.getClosePoolSize());
         conPoolSize=dbMeta.getConPoolSize();
         closePoolSize=dbMeta.getClosePoolSize();
         int index=0;
         dbMeta.setInit(true);
         for(;index < conPoolSize;index++){
-            conPools.add(new DBPool(dbMeta));
+            balanceConList.add(new DBPool(dbMeta));
         }
         index=0;
         dbMeta.setInit(false);
         for(;index < closePoolSize;index++){
-            closePools.add(new DBPool(dbMeta));
+            balanceCloseList.add(new DBPool(dbMeta));
         }
         ArrayList<DBPool> test=new ArrayList<DBPool>(dbMeta.getClosePoolSize()+dbMeta.getClosePoolSize());
-        test.addAll(conPools);
-        test.addAll(closePools);
-        balanceConList.addAll(conPools);
-        balanceCloseList.addAll(closePools);
+        test.addAll(balanceConList);
         conHeartTest.addManager(this);
     }
 
@@ -64,9 +57,9 @@ public class DBPoolManager {
     private Connection tryGetCon(){
         Connection con=null;
         DBPool pool;
-        int poolCount=conPools.size();
+        int poolCount=balanceConList.size();
         for(int index=0;index < poolCount;index++){
-            pool=conPools.get(index);
+            pool=balanceConList.get(index);
             con=pool.getConnection();
         }
         return con;
@@ -84,22 +77,22 @@ public class DBPoolManager {
             return con;
         }
         DBPool pool;
-        int poolCount=conPools.size();
+        int poolCount=balanceConList.size();
         for(int index=0;index < poolCount;index++){
-            pool=conPools.get(index);
+            pool=balanceConList.get(index);
             con=pool.getConnection(tryTime);
             if(con!=null){
                 return con;
             }
         }
-        DBPool dbPool=getMinBlockDBPool(conPools,poolCount);
+        DBPool dbPool=getMinBlockDBPool(balanceConList,poolCount);
         return dbPool.getJDBCConnection();
     }
 
     private void checkIsNeedChange() {
         int nullCount=0;
-        for(int index=0;index < conPools.size();index++){
-            if(conPools.get(index).isAllNullCon()>0){
+        for(int index=0;index < balanceConList.size();index++){
+            if(balanceConList.get(index).isAllNullCon()>0){
                 nullCount=1;
                 break;
             }
@@ -117,15 +110,15 @@ public class DBPoolManager {
     public void putCon(Connection con){
         int tryTimeLimit=dbMeta.getFailTryTime();
         DBPool pool;
-        int poolCount=closePools.size();
+        int poolCount=balanceCloseList.size();
         for(int index=0;index < poolCount;index++){
-            pool=closePools.get(index);
+            pool=balanceCloseList.get(index);
             System.out.println("-"+pool.getConSize());
             if(pool.putConnection(con)){
                 return;
             }
         }
-        pool=getMinBlockDBPool(closePools,closePoolSize);
+        pool=getMinBlockDBPool(balanceCloseList,closePoolSize);
         if(pool.putConnection(con)){
             return;
         }
@@ -135,7 +128,7 @@ public class DBPoolManager {
         pool.putBlockCon(con,tryTimeLimit);
     }
 
-    public static DBPool getMinBlockDBPool(ArrayList<DBPool> pools,int poolCount){
+    public static DBPool getMinBlockDBPool(LinkedList<DBPool> pools,int poolCount){
         DBPool tempPool=pools.get(0);
         int tempBlockCount=tempPool.getBlockStatus();
         if(tempBlockCount==0){
@@ -158,13 +151,9 @@ public class DBPoolManager {
 
     public void exchange(){
         isExchanging=true;
-        ArrayList<DBPool> temp=conPools;
-        conPools=closePools;
-        closePools=temp;
-        balanceConList=new LinkedList<DBPool>();
-        balanceCloseList=new LinkedList<DBPool>();
-        balanceCloseList.addAll(closePools);
-        balanceConList.addAll(conPools);
+        LinkedList<DBPool> temp=balanceConList;
+        balanceConList=balanceCloseList;
+        balanceCloseList=temp;
         isExchanging=false;
     }
 
