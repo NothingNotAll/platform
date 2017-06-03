@@ -97,7 +97,7 @@ public interface Marco {
     int JAVA_FLOAT = 20;
 
     //total confMeta
-    int LOGIN=0;
+    int LOGIN=1;
     int FREE=2;
     int LOGIN_PASSWORD_ERROR = 3;
 
