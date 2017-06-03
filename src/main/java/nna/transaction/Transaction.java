@@ -16,6 +16,14 @@ import java.sql.SQLException;
  * and
  * U must been warned that all of the IO limit operations;
  *
+ * in the future,
+ * we want to cancel the interface , and
+ * solve the complex transaction by config only,
+ * and the platform complete all the select update insert and
+ * keep the response data to the map.
+ * as that, we don't write code any more,
+ * just do config work.
+ *
  * */
  public interface Transaction<V>{
 	/*

@@ -48,6 +48,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
 
         CombTransaction currentTransaction=getCurrentTransaction(confMeta,transactionName,log);
         tranStack.add(currentTransaction);
+        tranStackSize++;
         confMeta.setCurrentCombTransaction(currentTransaction);
         PlatformServiceTransaction transaction=currentTransaction.getTransaction();
 
@@ -63,9 +64,11 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
             //要根据事务的配置判断是否使用嵌套事务的数据库连接或者新建连接
             sts=initSts(currentTransaction,connection,platformSqls,SQLS,log);
             pstStack.add(sts);
+            pstStackSize++;
             confMeta.setCurrentPsts(sts);
             connection=setPropgAndTranLvl(dbCon,previousTransaction,currentTransaction);
             conStack.add(connection);
+            conStackSize++;
             v=inTransaction(connection,sts);
         }catch(Exception e){
 	        e.printStackTrace();
@@ -251,9 +254,9 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
         return sts;
     }
 
-    private static CombTransaction getCurrentTransaction(ConfMeta confMeta, String transactionname, Log log) {
+    private static CombTransaction getCurrentTransaction(ConfMeta confMeta, String transactionName, Log log) {
         HashMap<String,CombTransaction> map= confMeta.getCombTransactionMap();
-        CombTransaction combTransaction=map.get(transactionname);
+        CombTransaction combTransaction=map.get(transactionName);
         PlatformServiceTransaction platformServiceTransaction=combTransaction.getTransaction();
         log.log("No."+platformServiceTransaction.getServiceTransactionSequence()+"开始执行",Log.INFO);
         LogUtil.log(log,platformServiceTransaction,Log.INFO);
