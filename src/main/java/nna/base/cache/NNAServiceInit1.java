@@ -23,7 +23,7 @@ public class NNAServiceInit1 {
     public static PreparedStatement[] psts;
     public static HashMap<String, ProxyService> proxyServiceHashMap=new HashMap<String, ProxyService>();
     public static HashMap<Integer,PlatformResource> resources=new HashMap<Integer, PlatformResource>();
-    public static HashMap<String,String[]> servNmToTranNm=new HashMap<String, String[]>();
+    public static HashMap<String,PlatformServiceTransaction[]> servNmToTranNm=new HashMap<String, PlatformServiceTransaction[]>();
     public static HashMap<Integer,PlatformUser> userMap=new HashMap<Integer, PlatformUser>();
     public static HashMap<Integer,PlatformResource[]> roleResourceMap=new HashMap<Integer, PlatformResource[]>();
     public static HashMap<Integer,PlatformRole> roleMap=new HashMap<Integer, PlatformRole>();
@@ -162,14 +162,14 @@ public class NNAServiceInit1 {
         Iterator<Map.Entry<String,PlatformServiceTransaction>> iterator=stMap.entrySet().iterator();
         while(iterator.hasNext()){
             Map.Entry<String,PlatformServiceTransaction> entry=iterator.next();
-            String[] tNms=servNmToTranNm.get(entry.getKey());
+            PlatformServiceTransaction[] tNms=servNmToTranNm.get(entry.getKey());
             if(tNms!=null){
-                String[] temp=new String[tNms.length+1];
-                temp[tNms.length]=entry.getValue().getTransactionName();
+                PlatformServiceTransaction[] temp=new PlatformServiceTransaction[tNms.length+1];
+                temp[tNms.length]=entry.getValue();
                 System.arraycopy(tNms,0,temp,0,tNms.length);
                 servNmToTranNm.put(entry.getKey(),temp);
             }else{
-                servNmToTranNm.put(entry.getKey(),new String[]{entry.getValue().getTransactionName()});
+                servNmToTranNm.put(entry.getKey(),new PlatformServiceTransaction[]{entry.getValue()});
             }
         }
     }
@@ -219,13 +219,13 @@ public class NNAServiceInit1 {
     }
 
     private void buildTran(PreparedStatement tranPst) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Iterator<Map.Entry<String,String[]>> iterator=servNmToTranNm.entrySet().iterator();
+        Iterator<Map.Entry<String,PlatformServiceTransaction[]>> iterator=servNmToTranNm.entrySet().iterator();
         while(iterator.hasNext()){
-            String[] tranNames=iterator.next().getValue();
-            for(int index=0;index < tranNames.length;index++){
-                String tranName=tranNames[index];
-                if(tranMap.get(tranName)==null){
-                    tranPst.setString(1,tranName);
+            PlatformServiceTransaction[] trans=iterator.next().getValue();
+            for(int index=0;index < trans.length;index++){
+                PlatformServiceTransaction tran=trans[index];
+                if(tranMap.get(tran)==null){
+                    tranPst.setString(1,tran.getTransactionName());
                     ResultSet rs=tranPst.executeQuery();
                     CombTransaction combTransaction=new CombTransaction();
                     ArrayList<String> SQLS=new ArrayList<String>();
@@ -248,7 +248,7 @@ public class NNAServiceInit1 {
                     combTransaction.setColumns(columns);
                     combTransaction.setConditionValueTypes(dbs);
                     combTransaction.setConditions(conditions);
-                    tranMap.put(tranName,combTransaction);
+                    tranMap.put(tran.getTransactionName(),combTransaction);
                 }
             }
         }

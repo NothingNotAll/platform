@@ -94,15 +94,16 @@ public class NNAServiceInit2 {
     }
 
     private void buildSerTran(){
-        Iterator<Map.Entry<String,String[]>> iterator=NNAServiceInit1.servNmToTranNm.entrySet().iterator();
-        HashMap<String,CombTransaction> map;
+        Iterator<Map.Entry<String,PlatformServiceTransaction[]>> iterator=NNAServiceInit1.servNmToTranNm.entrySet().iterator();
         while(iterator.hasNext()){
-            Map.Entry<String,String[]> entry=iterator.next();
+            Map.Entry<String,PlatformServiceTransaction[]> entry=iterator.next();
             String serviceName=entry.getKey();
-            String[] tranNames=entry.getValue();
-            HashMap<String,CombTransaction> cMap=new HashMap<String, CombTransaction>(tranNames.length);
-            for(int index=0;index < tranNames.length;index++){
-                cMap.put(tranNames[index],NNAServiceInit1.tranMap.get(tranNames[index]));
+            PlatformServiceTransaction[] trans=entry.getValue();
+            HashMap<String,CombTransaction> cMap=new HashMap<String, CombTransaction>(trans.length);
+            for(int index=0;index < trans.length;index++){
+                CombTransaction combTransaction=NNAServiceInit1.tranMap.get(trans[index].getTransactionName());
+                combTransaction.setTransaction(trans[index]);
+                cMap.put(trans[index].getTransactionName(),combTransaction);
             }
             combTransactionHashMap.put(serviceName,cMap);
         }
