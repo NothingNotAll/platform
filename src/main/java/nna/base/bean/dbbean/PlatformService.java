@@ -22,9 +22,6 @@ public class PlatformService extends Clone {
     private int serviceTempsize;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
-    private boolean serviceIsTran;
-    private int serviceTranNo;
-    private String serviceTranSqlNoes;
     private String serviceDesc;
 
 
@@ -112,27 +109,4 @@ public class PlatformService extends Clone {
         this.serviceTempsize = serviceTempsize;
     }
 
-    public int getServiceTranNo() {
-        return serviceTranNo;
-    }
-
-    public void setServiceTranNo(int serviceTranNo) {
-        this.serviceTranNo = serviceTranNo;
-    }
-
-    public boolean isServiceIsTran() {
-        return serviceIsTran;
-    }
-
-    public void setServiceIsTran(boolean serviceIsTran) {
-        this.serviceIsTran = serviceIsTran;
-    }
-
-    public String getServiceTranSqlNoes() {
-        return serviceTranSqlNoes;
-    }
-
-    public void setServiceTranSqlNoes(String serviceTranSqlNoes) {
-        this.serviceTranSqlNoes = serviceTranSqlNoes;
-    }
 }
