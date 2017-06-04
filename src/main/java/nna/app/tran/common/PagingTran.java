@@ -63,7 +63,7 @@ public class PagingTran extends AbstractTransaction<Object>{
         reqMap.put(Marco.PAGE_BEGIN,new String[]{String.valueOf(pageParams[0])});
         reqMap.put(Marco.PAGE_END,new String[]{String.valueOf(pageParams[1])});
         rs=setParameterAndExe(pagePst,conNms,valTypes,reqMap);
-        setRsReverse(pageParams[0], pageParams[0], pageParams[0],rs);
+        setRsReverse(pageParams[0], pageParams[1], pageParams[2],rs);
         setRspMap(totalCount,rs,columns,rspMap,Marco.TOTALCOUNT);
         rs.close();
         countPst.close();
