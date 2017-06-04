@@ -18,6 +18,8 @@ public class PlatformTransaction extends Clone {
     private int sqlSequence;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
+    private Integer successSequence;
+    private Integer failSequence;
     private String sqlDesc;
 
     public PlatformTransaction(){
@@ -70,5 +72,21 @@ public class PlatformTransaction extends Clone {
 
     public void setSqlSequence(int sqlSequence) {
         this.sqlSequence = sqlSequence;
+    }
+
+    public Integer getSuccessSequence() {
+        return successSequence;
+    }
+
+    public void setSuccessSequence(int successSequence) {
+        this.successSequence = successSequence;
+    }
+
+    public Integer getFailSequence() {
+        return failSequence;
+    }
+
+    public void setFailSequence(int failSequence) {
+        this.failSequence = failSequence;
     }
 }

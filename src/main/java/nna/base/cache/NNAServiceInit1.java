@@ -233,8 +233,10 @@ public class NNAServiceInit1 {
                     ArrayList<String[]> columns=new ArrayList<String[]>();
                     ArrayList<String[]> conditions=new ArrayList<String[]>();
                     ArrayList<DBSQLConValType[]> dbs=new ArrayList<DBSQLConValType[]>();
+                    ArrayList<PlatformTransaction> platformTransactions=new ArrayList<PlatformTransaction>();
                     while(rs.next()){
                         PlatformTransaction platformTransaction=(PlatformTransaction) AbstractTransaction.getBean(rs,Marco.PLATFORM_TRANSACTION);
+                        platformTransactions.add(platformTransaction);
                         CombSQL combSQL=combSQLHashMap.get(platformTransaction.getSqlId());
                         SQLS.add(combSQL.getSql());
                         platformSqls.add(combSQL.getPlatformSql());
@@ -243,6 +245,7 @@ public class NNAServiceInit1 {
                         dbs.add(combSQL.getDBSQLConValTypes());
                     }
                     rs.close();
+                    combTransaction.setPlatformTransactions(platformTransactions.toArray(new PlatformTransaction[0]));
                     combTransaction.setSqls(SQLS.toArray(new String[0]));
                     combTransaction.setPlatformSqls(platformSqls.toArray(new PlatformSql[0]));
                     combTransaction.setColumns(columns);
