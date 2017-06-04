@@ -32,7 +32,7 @@ public class UpdateTran extends AbstractTransaction<Object> {
     }
 
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        PreparedStatement deletePst=sts[0];
+        PreparedStatement updatePst=sts[0];
         ConfMeta confMeta=ConfMetaSetFactory.getConfMeta();
         CombTransaction deleteCombTran=confMeta.getCombTransactions()[0];
         ArrayList<String[]> cons=deleteCombTran.getConditions();
@@ -40,15 +40,15 @@ public class UpdateTran extends AbstractTransaction<Object> {
         String[] columns=cons.get(0);
         DBSQLConValType[] dbsqlConValTypes=dbConTypes.get(0);
         HashMap<String,String[]> conMap=confMeta.getReqColumn();
-        exeMultiUpdate(deletePst,conMap,columns,dbsqlConValTypes);
+        exeMultiUpdate(updatePst,conMap,columns,dbsqlConValTypes);
         return null;
     }
 
-    private void exeMultiUpdate(PreparedStatement pst, HashMap<String,String[]> conMap, String[] columns, DBSQLConValType[] dbsqlConValTypes) throws SQLException {
+    private void exeMultiUpdate(PreparedStatement updatePst, HashMap<String,String[]> conMap, String[] columns, DBSQLConValType[] dbsqlConValTypes) throws SQLException {
         int deleteCount=conMap.get(columns[0]).length;
         for(int index=0;index < deleteCount;index++){
-            setParameter(pst,columns,dbsqlConValTypes,conMap,index);
-            pst.execute();
+            setParameter(updatePst,columns,dbsqlConValTypes,conMap,index);
+            updatePst.execute();
         }
     }
 }
