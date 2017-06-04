@@ -47,7 +47,7 @@ public class UpdateTran extends AbstractTransaction<Object> {
     private void exeMultiUpdate(PreparedStatement pst, HashMap<String,String[]> conMap, String[] columns, DBSQLConValType[] dbsqlConValTypes) throws SQLException {
         int deleteCount=conMap.get(columns[0]).length;
         for(int index=0;index < deleteCount;index++){
-            setPar(pst,columns,dbsqlConValTypes,conMap,index);
+            setParameter(pst,columns,dbsqlConValTypes,conMap,index);
             pst.execute();
         }
     }

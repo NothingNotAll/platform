@@ -52,11 +52,11 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
     }
 
     protected ResultSet setParameterAndExe(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap) throws SQLException {
-        setPar(pst,conNms,dbsqlConValTypes,conMap,0);
+        setParameter(pst,conNms,dbsqlConValTypes,conMap,0);
         return pst.executeQuery();
     }
 
-    protected void setPar(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap,int valIndex) throws SQLException {
+    protected void setParameter(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap,int valIndex) throws SQLException {
         int parameterCount=conNms.length;
         String tempNm;
         DBSQLConValType tempValType;
