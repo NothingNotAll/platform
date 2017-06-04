@@ -16,7 +16,13 @@ import java.sql.SQLException;
 
 public class MultiTran extends AbstractTransaction<Object>{
 
+    @Override
+    public Object execTransaction(String transactionName) throws SQLException{
+        return null;
+    }
+
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+
         return null;
     }
 }
