@@ -1,7 +1,7 @@
 package nna.app.web;
 
 import nna.Marco;
-import nna.app.tran.TranSelAllRole;
+import nna.app.tran.ext.TranSelAllRole;
 import nna.base.bean.dbbean.PlatformRole;
 import nna.base.protocol.dispatch.AppUtil;
 import nna.transaction.Transaction;

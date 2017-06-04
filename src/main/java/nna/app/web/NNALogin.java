@@ -1,7 +1,7 @@
 package nna.app.web;
 
 import nna.Marco;
-import nna.app.tran.TranSelPriUser;
+import nna.app.tran.ext.TranSelPriUser;
 import nna.base.bean.combbean.CombUser;
 import nna.base.bean.confbean.ConfMeta;
 import nna.base.cache.CacheFactory;

@@ -1,4 +1,4 @@
-package nna.app.tran;
+package nna.app.tran.ext;
 
 import nna.Marco;
 import nna.base.bean.combbean.CombUser;
