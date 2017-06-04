@@ -49,7 +49,7 @@ public class PagingTran extends AbstractTransaction<Object>{
         ResultSet rs=setParameterAndExe(countPst,conNms,valTypes,reqMap);
         rs.next();
         int totalCount=rs.getInt(1);
-        setPar(pagePst,columns,valTypes,reqMap,0);
+        setParameter(pagePst,columns,valTypes,reqMap,0);
         HashMap<String,String[]> rspMap=confMeta.getRspColumn();
         rs.close();
         /*
