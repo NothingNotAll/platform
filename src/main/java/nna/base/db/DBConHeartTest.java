@@ -62,7 +62,7 @@ import java.util.concurrent.locks.ReentrantLock;
                     keepConAlive(manager.getBalanceConList(),manager.getManagerLog());
                 }
                 Long conTime=System.currentTimeMillis()-start;
-                System.out.println("Check DB pool waste"+conTime);
+                System.out.println("Check DB pool waste"+conTime+"L");
                 if(managers.size()==0){
                     synchronized (lockObject){
                         if(managers.size()==0){
