@@ -24,6 +24,8 @@ public class PlatformServiceTransaction extends Clone {
     private DBTranLvlType transactionLevel;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
+    private Integer successIndex;
+    private Integer failIndex;
     private String transactionDesc;
 
     public PlatformServiceTransaction(){
@@ -108,5 +110,21 @@ public class PlatformServiceTransaction extends Clone {
 
     public void setTransactionSqlSize(int transactionSqlSize) {
         this.transactionSqlSize = transactionSqlSize;
+    }
+
+    public Integer getSuccessIndex() {
+        return successIndex;
+    }
+
+    public void setSuccessIndex(Integer successIndex) {
+        this.successIndex = successIndex;
+    }
+
+    public Integer getFailIndex() {
+        return failIndex;
+    }
+
+    public void setFailIndex(Integer failIndex) {
+        this.failIndex = failIndex;
     }
 }

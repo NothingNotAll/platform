@@ -1,7 +1,11 @@
 package nna.app.tran.common;
 
 import nna.Marco;
+import nna.base.bean.combbean.CombTransaction;
 import nna.base.bean.confbean.ConfMeta;
+import nna.base.bean.dbbean.PlatformServiceTransaction;
+import nna.base.bean.dbbean.PlatformTransaction;
+import nna.base.db.DBCon;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.transaction.AbstractTransaction;
 
@@ -23,8 +27,16 @@ public class SingleTran extends AbstractTransaction<Object> {
     public Object execTransaction(String transactionName) throws SQLException{
         ConfMeta confMeta= ConfMetaSetFactory.getConfMeta();
         String tranNm=confMeta.getReqColumn().get(Marco.TRAN_NAME)[0];
-        super.execTransaction(tranNm);
+
         return null;
+    }
+
+    public void execTran(ConfMeta confMeta, CombTransaction combTransaction) throws SQLException {
+        DBCon dbCon=confMeta.getCombDB().getDbCon();
+        Connection con=dbCon.getCon();
+        PlatformServiceTransaction platformServiceTransaction=combTransaction.getTransaction();
+        PlatformTransaction[] platformTransactions=combTransaction.getPlatformTransactions();
+
     }
 
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
