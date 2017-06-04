@@ -46,13 +46,13 @@ public interface Marco {
     int SUCCESSCODE=000000;
     int EXCEPTIONFAILCODE=111111;
 
-	String TOTALPAGE="totalPage";
-	String TOTALCOUNT="count";
-	String CURRENT_PAGE="currentPage";
-	String PAGE_SIZE="pageSize";
-	String PAGE_FLAG="pageFlag";
-	String PAGE_BEGIN="begin";
-    String PAGE_END="end";
+	String TOTALPAGE="1totalPage";
+	String TOTALCOUNT="1count";
+	String CURRENT_PAGE="1currentPage";
+	String PAGE_SIZE="1pageSize";
+	String PAGE_FLAG="1pageFlag";
+	String PAGE_BEGIN="1begin";
+    String PAGE_END="1end";
 
     // for performance of orm db to bean , as general we use the serializable id as the bean id;
     int PLATFORM_APP=0;
