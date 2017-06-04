@@ -32,7 +32,6 @@ public class MultiTran extends AbstractTransaction<Object>{
     }
 
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
-
         return null;
     }
 }
