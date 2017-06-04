@@ -40,11 +40,11 @@ public class UpdateTran extends AbstractTransaction<Object> {
         String[] columns=cons.get(0);
         DBSQLConValType[] dbsqlConValTypes=dbConTypes.get(0);
         HashMap<String,String[]> conMap=confMeta.getReqColumn();
-        exeMultiDelete(deletePst,conMap,columns,dbsqlConValTypes);
+        exeMultiUpdate(deletePst,conMap,columns,dbsqlConValTypes);
         return null;
     }
 
-    private void exeMultiDelete(PreparedStatement pst, HashMap<String,String[]> conMap, String[] columns, DBSQLConValType[] dbsqlConValTypes) throws SQLException {
+    private void exeMultiUpdate(PreparedStatement pst, HashMap<String,String[]> conMap, String[] columns, DBSQLConValType[] dbsqlConValTypes) throws SQLException {
         int deleteCount=conMap.get(columns[0]).length;
         for(int index=0;index < deleteCount;index++){
             setPar(pst,columns,dbsqlConValTypes,conMap,index);
