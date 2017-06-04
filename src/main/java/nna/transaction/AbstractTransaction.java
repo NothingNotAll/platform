@@ -29,7 +29,7 @@ import java.util.Iterator;
 
 public abstract class AbstractTransaction<V> implements Transaction<V> {
 
-    protected void setRspMap(int count,ResultSet rs,String[] column,HashMap<String,String[]> rspMap) throws SQLException {
+    protected void setRspMap(int count,ResultSet rs,String[] column,HashMap<String,String[]> rspMap,String countNm) throws SQLException {
         int index=0;
         int colCount=column.length;
         String rspColNm;
@@ -47,7 +47,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
             }
             index++;
         }
-        rspMap.put(Marco.ARRAY_COUNT,new String[]{String.valueOf(index)});
+        rspMap.put(countNm,new String[]{String.valueOf(index)});
         rs.close();
     }
 

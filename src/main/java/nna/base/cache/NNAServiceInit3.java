@@ -17,6 +17,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author NNA-SHUAI
@@ -73,6 +75,7 @@ public class NNAServiceInit3 {
             cm.setCombService(combService);
             HashMap<String,CombTransaction> combTransactionMap=NNAServiceInit2.combTransactionHashMap.get(combService.getService().getServiceName());
             cm.setCombTransactionMap(combTransactionMap);
+            setServiceTranList(cm);
             HashMap<Integer,CombUser> combUserMap=NNAServiceInit2.combUserHashMap.get(platformEntry.getEntryControllerId());
             cm.setCombUserMap(combUserMap);
             PlatformColumn[] request=NNAServiceInit2.colMap.get(combService.getService().getServiceName()+"/req");
@@ -114,6 +117,19 @@ public class NNAServiceInit3 {
         System.out.println("email:lpshuai@hotmail.com/6lshuai@gmail.com");
         System.out.println("THANKS FOR THE GOLD! THANKS FOR SUPPORT !");
         System.out.println("NNA INIT SUCCESS");
+    }
+
+    private void setServiceTranList(ConfMeta cm) {
+        HashMap<String,CombTransaction> mapTran=cm.getCombTransactionMap();
+        Iterator<Map.Entry<String,CombTransaction>> iterator=mapTran.entrySet().iterator();
+        int count=mapTran.size();
+        CombTransaction[] combTransactions=new CombTransaction[count];
+        for(int index=0;index < count;index++){
+            Map.Entry<String,CombTransaction> entry=iterator.next();
+            CombTransaction combTransaction=entry.getValue();
+            combTransactions[combTransaction.getTransaction().getServiceTransactionSequence()]=combTransaction;
+        }
+        cm.setCombTransactions(combTransactions);
     }
 
     private void setColMap(ConfMeta cm) {

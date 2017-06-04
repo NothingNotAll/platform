@@ -51,7 +51,7 @@ public class SelectTran extends AbstractTransaction<Object> {
         ArrayList<String[]> columns=combTransaction.getColumns();
         String[] column=columns.get(0);
         HashMap<String,String[]> rspMap=confMeta.getRspColumn();
-        setRspMap(count,rs,column,rspMap);
+        setRspMap(count,rs,column,rspMap,Marco.ARRAY_COUNT);
         countPst.close();
         selectPst.close();
         return null;
