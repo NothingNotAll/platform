@@ -25,12 +25,13 @@ public class TranSelAllRole extends AbstractTransaction<PlatformRole[]> {
         ResultSet countRs=sts[0].executeQuery();
         countRs.next();
         PlatformRole[] roles=new PlatformRole[countRs.getInt(1)];
+        try{countRs.close();}catch (Exception e){e.printStackTrace();}
         int index=0;
         ResultSet roleRs=sts[1].executeQuery();
+        int logLevel= ConfMetaSetFactory.getConfMeta().getLogLevel();
         while(roleRs.next()){
             roles[index]=(PlatformRole) getBean(roleRs,Marco.PLATFORM_ROLE);
             index++;
-            int logLevel= ConfMetaSetFactory.getConfMeta().getLogLevel();
             LogUtil.log(roles[index],log,logLevel);
         }
         try{roleRs.close();}catch (Exception e){}

@@ -39,6 +39,7 @@ public class ConfMeta extends Clone{
     private CombLog combLog;
     private CombService combService;
     private HashMap<String,CombTransaction> combTransactionMap;
+    private CombTransaction[] combTransactions;
     private ConfSession confSession;//代表当前会话信息
 
     private HashMap<Integer,CombUser> combUserMap;
@@ -330,5 +331,13 @@ public class ConfMeta extends Clone{
 
     public void setReturnMessage(ReturnMessage returnMessage) {
         this.returnMessage = returnMessage;
+    }
+
+    public CombTransaction[] getCombTransactions() {
+        return combTransactions;
+    }
+
+    public void setCombTransactions(CombTransaction[] combTransactions) {
+        this.combTransactions = combTransactions;
     }
 }

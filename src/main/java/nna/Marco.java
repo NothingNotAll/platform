@@ -104,4 +104,6 @@ public interface Marco {
     //global transaction name;
     String TRAN_SEL_ALL_ROLE="selAllRole";
     String TRAN_SEL_USER_INFO="selUserInfo";
+    String TRAN_NAME="TRANSACTION_NAME";
+    String ARRAY_COUNT="count";
 }

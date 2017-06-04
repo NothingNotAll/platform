@@ -29,6 +29,58 @@ import java.util.Iterator;
 
 public abstract class AbstractTransaction<V> implements Transaction<V> {
 
+    protected void setRspMap(int count,ResultSet rs,String[] column,HashMap<String,String[]> rspMap) throws SQLException {
+        int index=0;
+        int colCount=column.length;
+        String rspColNm;
+        for(;index<colCount;index++){
+            rspColNm=column[index];
+            rspMap.put(rspColNm,new String[count]);
+        }
+        index=0;
+        while(rs.next()){
+            int temp=0;
+            String colNm;
+            for(int colIndex=1;colIndex<= colCount;colIndex++,temp++){
+                colNm=column[temp];
+                rspMap.get(colNm)[index]=rs.getString(colIndex);
+            }
+            index++;
+        }
+        rspMap.put(Marco.ARRAY_COUNT,new String[]{String.valueOf(index)});
+        rs.close();
+    }
+
+    protected ResultSet setParameter(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap) throws SQLException {
+        setPar(pst,conNms,dbsqlConValTypes,conMap,0);
+        return pst.executeQuery();
+    }
+
+    protected void setPar(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap,int valIndex) throws SQLException {
+        int parameterCount=conNms.length;
+        String tempNm;
+        DBSQLConValType tempValType;
+        String[] conVal;
+        String conValue;
+        for(int index=0;index < parameterCount;index++){
+            tempNm=conNms[index];
+            conVal=conMap.get(tempNm);
+            conValue=conVal[valIndex];
+            tempValType=dbsqlConValTypes[index];
+            switch (tempValType){
+                case INTEGER:
+                    pst.setInt(index,Integer.valueOf(conValue));
+                    break;
+                case BOOLEAN:
+                    pst.setBoolean(index,Boolean.valueOf(conValue));;
+                    break;
+                case STRING:
+                    pst.setString(index,conValue);;
+                    break;
+            }
+        }
+    }
+
     public abstract V inTransaction(Connection connection,PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException;
 
 	public V execTransaction(String transactionName) throws SQLException{
@@ -70,6 +122,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
             conStack.add(connection);
             conStackSize++;
             v=inTransaction(connection,sts);
+            return v;
         }catch(Exception e){
 	        e.printStackTrace();
         }finally {

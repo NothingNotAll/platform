@@ -1,0 +1,54 @@
+package nna.app.tran.common;
+
+import nna.Marco;
+import nna.base.bean.combbean.CombTransaction;
+import nna.base.bean.confbean.ConfMeta;
+import nna.base.protocol.dispatch.ConfMetaSetFactory;
+import nna.enums.DBSQLConValType;
+import nna.transaction.AbstractTransaction;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * For Common Delete Transaction
+ *
+ * @author NNA-SHUAI
+ * @create 2017-06-04 20:36
+ **/
+
+public class UpdateTran extends AbstractTransaction<Object> {
+
+    @Override
+    public Object execTransaction(String transactionName) throws SQLException{
+        ConfMeta confMeta= ConfMetaSetFactory.getConfMeta();
+        String tranNm=confMeta.getReqColumn().get(Marco.TRAN_NAME)[0];
+        super.execTransaction(tranNm);
+        return null;
+    }
+
+    public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        PreparedStatement deletePst=sts[0];
+        ConfMeta confMeta=ConfMetaSetFactory.getConfMeta();
+        CombTransaction deleteCombTran=confMeta.getCombTransactions()[0];
+        ArrayList<String[]> cons=deleteCombTran.getConditions();
+        ArrayList<DBSQLConValType[]> dbConTypes=deleteCombTran.getConditionValueTypes();
+        String[] columns=cons.get(0);
+        DBSQLConValType[] dbsqlConValTypes=dbConTypes.get(0);
+        HashMap<String,String[]> conMap=confMeta.getReqColumn();
+        exeMultiDelete(deletePst,conMap,columns,dbsqlConValTypes);
+        return null;
+    }
+
+    private void exeMultiDelete(PreparedStatement pst, HashMap<String,String[]> conMap, String[] columns, DBSQLConValType[] dbsqlConValTypes) throws SQLException {
+        int deleteCount=conMap.get(columns[0]).length;
+        for(int index=0;index < deleteCount;index++){
+            setPar(pst,columns,dbsqlConValTypes,conMap,index);
+            pst.execute();
+        }
+    }
+}
