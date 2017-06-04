@@ -47,6 +47,7 @@ public interface Marco {
     int EXCEPTIONFAILCODE=111111;
 
 	String TOTALPAGE="totalPage";
+	String TOTALCOUNT="count";
 
     // for performance of orm db to bean , as general we use the serializable id as the bean id;
     int PLATFORM_APP=0;
