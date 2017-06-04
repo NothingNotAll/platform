@@ -48,6 +48,11 @@ public interface Marco {
 
 	String TOTALPAGE="totalPage";
 	String TOTALCOUNT="count";
+	String CURRENT_PAGE="currentPage";
+	String PAGE_SIZE="pageSize";
+	String PAGE_FLAG="pageFlag";
+	String PAGE_BEGIN="begin";
+    String PAGE_END="end";
 
     // for performance of orm db to bean , as general we use the serializable id as the bean id;
     int PLATFORM_APP=0;

@@ -41,13 +41,13 @@ public class SelectTran extends AbstractTransaction<Object> {
         ArrayList<DBSQLConValType[]> dbsqlConValTypes=combTransaction.getConditionValueTypes();
         String[] countCons=cons.get(0);
         DBSQLConValType[] countDBCONTypes=dbsqlConValTypes.get(0);
-        ResultSet rs=setParameter(countPst,countCons,countDBCONTypes,reqMap);
+        ResultSet rs=setParameterAndExe(countPst,countCons,countDBCONTypes,reqMap);
         rs.next();
         int count=rs.getInt(1);
         rs.close();
         String[] selectCons=cons.get(1);
         DBSQLConValType[] selectDBCONTypes=dbsqlConValTypes.get(1);
-        rs=setParameter(selectPst,selectCons,selectDBCONTypes,reqMap);
+        rs=setParameterAndExe(selectPst,selectCons,selectDBCONTypes,reqMap);
         ArrayList<String[]> columns=combTransaction.getColumns();
         String[] column=columns.get(0);
         HashMap<String,String[]> rspMap=confMeta.getRspColumn();

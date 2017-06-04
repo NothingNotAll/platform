@@ -51,7 +51,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
         rs.close();
     }
 
-    protected ResultSet setParameter(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap) throws SQLException {
+    protected ResultSet setParameterAndExe(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap) throws SQLException {
         setPar(pst,conNms,dbsqlConValTypes,conMap,0);
         return pst.executeQuery();
     }
@@ -332,7 +332,10 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
 		}
 	}
 
-	protected static ResultSet setPage(Integer totalLines,Integer currentPage,Integer pageSize,Integer pageFlag,PreparedStatement preparedStatement) throws SQLException{
+	protected static Integer[] getPageParam(Integer totalLines,
+                                            Integer currentPage,
+                                            Integer pageSize,
+                                            Integer pageFlag) throws SQLException{
 		Integer totalPage=totalLines/pageSize;
 		if(totalPage==0){
 			if(totalLines > 0){
@@ -346,36 +349,34 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
 		AppUtil.putTemp(Marco.TOTALPAGE, new String[]{totalPage.toString()});
 		Integer begin=(currentPage-1)*pageSize;
 		Integer end=(currentPage)*pageSize;
-		preparedStatement.setInt(1, begin);
-		preparedStatement.setInt(2, end);
-		ResultSet rs=preparedStatement.executeQuery();
-		if (isNeedReverse(totalPage, currentPage, pageFlag)) {
-			rs.setFetchDirection(ResultSet.FETCH_REVERSE);
-		}
-		return rs;
+		return new Integer[]{begin,end,pageFlag};
 	}
 
-	private static boolean isNeedReverse(Integer totalPage, Integer currentPage, Integer pageFlag){
-		switch (pageFlag) {
+	protected static void setRsReverse(Integer totalPage,
+                                         Integer currentPage,
+                                         Integer pageFlag,
+                                         ResultSet rs) throws SQLException {
+		boolean isNeed=false;
+	    switch (pageFlag) {
 		case 0://首页
-			return false;
 		case 1://末页
-			return true;
 		case 2://上一页
 			Integer goalPage=currentPage-1;
 			Integer middle=totalPage/2;
-			return goalPage>middle;
+            isNeed= goalPage>middle;
 		case 3://下一页
 			Integer nextPage=currentPage+1;
 			Integer middle1=totalPage/2;
-			return nextPage>middle1;
+            isNeed= nextPage>middle1;
 		case 4://当前页
 			Integer middle11=totalPage/2;
-		    return currentPage>middle11;
+            isNeed= currentPage>middle11;
 		default:
 			break;
 		}
-		return false;
+		if(isNeed){
+            rs.setFetchDirection(ResultSet.FETCH_REVERSE);
+        }
 	}
 
     private static String arrayToString(String[] strs,String spit){
@@ -472,6 +473,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
 
         if(platformSql.isPage()){
             sqlStr=BuildSQL.buildPageSQL(sqlStr);
+            platformSql.setAppCondition(platformSql.getAppCondition()+","+Marco.PAGE_BEGIN+","+Marco.PAGE_END);
         }
 
         log.log("initial "+platformSql.getSqlId()+" SQL:"+sqlStr,Log.INFO);

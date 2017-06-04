@@ -46,20 +46,28 @@ public class PagingTran extends AbstractTransaction<Object>{
         String[] conNms=conNmsList.get(1);
         String[] columns=columnsList.get(1);
         HashMap<String,String[]> reqMap=confMeta.getReqColumn();
-        ResultSet countRs=setParameter(countPst,conNms,valTypes,reqMap);
-        countRs.next();
-        int totalCount=countRs.getInt(1);
+        ResultSet rs=setParameterAndExe(countPst,conNms,valTypes,reqMap);
+        rs.next();
+        int totalCount=rs.getInt(1);
         setPar(pagePst,columns,valTypes,reqMap,0);
         HashMap<String,String[]> rspMap=confMeta.getRspColumn();
-        countRs.close();
-
+        rs.close();
         /*
         * 计算 分页 参数
         *
         * */
-
-        countRs=setParameter(pagePst,conNms,valTypes,reqMap);
-        setRspMap(totalCount,countRs,columns,rspMap,Marco.TOTALCOUNT);
+        Integer[] pageParams=getPageParam(totalCount,
+                Integer.valueOf(reqMap.get(Marco.CURRENT_PAGE)[0]),
+                Integer.valueOf(reqMap.get(Marco.PAGE_SIZE)[0]),
+                Integer.valueOf(reqMap.get(Marco.PAGE_FLAG)[0]));
+        reqMap.put(Marco.PAGE_BEGIN,new String[]{String.valueOf(pageParams[0])});
+        reqMap.put(Marco.PAGE_END,new String[]{String.valueOf(pageParams[1])});
+        rs=setParameterAndExe(pagePst,conNms,valTypes,reqMap);
+        setRsReverse(pageParams[0], pageParams[0], pageParams[0],rs);
+        setRspMap(totalCount,rs,columns,rspMap,Marco.TOTALCOUNT);
+        rs.close();
+        countPst.close();
+        pagePst.close();
         return null;
     }
 }
