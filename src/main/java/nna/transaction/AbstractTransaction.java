@@ -234,7 +234,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
         for(int index=0;index < size; index++){
             try{
                 preparedStatement=sts[index];
-                if(preparedStatement!=null&&!preparedStatement.isClosed()){
+                if(preparedStatement!=null){
                     preparedStatement.close();
                 }
             }catch (Exception e){
@@ -248,7 +248,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
         }
     }
     protected void close(ResultSet rs) throws SQLException {
-	    if(rs!=null&!rs.isClosed()){
+	    if(rs!=null){
 	        rs.close();
         }
     }
@@ -256,7 +256,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
         int length=rss.length;
 	    for(int index=0;index < length;index++){
 	        try{
-                if(rss[index]!=null&!rss[index].isClosed()){
+                if(rss[index]!=null){
                     rss[index].close();
                 }
             }catch (Exception e){
