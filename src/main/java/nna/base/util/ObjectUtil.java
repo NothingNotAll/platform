@@ -158,7 +158,8 @@ public class ObjectUtil {
                 return Marco.JAVA_FLOAT;
             case INTEGER:
                 return Marco.JAVA_INTEGER;
-
+            case SERVICEMETHODTYPE:
+                return Marco.PLATFORM_ENUM_SERVICEMETHODTYPE;
         }
         return -1;
     }

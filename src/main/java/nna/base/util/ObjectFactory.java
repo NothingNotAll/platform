@@ -154,6 +154,9 @@ import java.util.Map;
             case Marco.JAVA_INTEGER:
                 method.invoke(clone,(Integer)rs.getInt(index));
                 break;
+            case Marco.PLATFORM_ENUM_SERVICEMETHODTYPE:
+                method.invoke(clone,ServiceMethodType.valueOf(rs.getString(index)));
+                break;
         }
     }
 

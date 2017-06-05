@@ -29,5 +29,6 @@ public enum  JavaValueType {
     CLUSTERTYPE,
     DEVICETYPE,
     PRIVETYPE,
-    SESSIONTYPE
+    SESSIONTYPE,
+    SERVICEMETHODTYPE
 }

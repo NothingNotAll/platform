@@ -1,6 +1,7 @@
 package nna.base.bean.dbbean;
 
 import nna.base.bean.Clone;
+import nna.enums.ServiceMethodType;
 
 import java.sql.Timestamp;
 
@@ -18,7 +19,7 @@ public class PlatformService extends Clone {
     private boolean serviceLogEncrpt;
     private int serviceLogLevel;
     private String serviceClass;
-    private String serviceMethod;
+    private ServiceMethodType serviceMethodType;
     private int serviceTempsize;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
@@ -51,14 +52,6 @@ public class PlatformService extends Clone {
 
     public void setServiceClass(String serviceClass) {
         this.serviceClass = serviceClass;
-    }
-
-    public String getServiceMethod() {
-        return serviceMethod;
-    }
-
-    public void setServiceMethod(String serviceMethod) {
-        this.serviceMethod = serviceMethod;
     }
 
     public Timestamp getCreateTimestamp() {
@@ -109,4 +102,11 @@ public class PlatformService extends Clone {
         this.serviceTempsize = serviceTempsize;
     }
 
+    public ServiceMethodType getServiceMethodType() {
+        return serviceMethodType;
+    }
+
+    public void setServiceMethodType(ServiceMethodType serviceMethodType) {
+        this.serviceMethodType = serviceMethodType;
+    }
 }

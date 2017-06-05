@@ -145,7 +145,7 @@ public class NNAServiceInit2 {
             Object[] objects=ProxyFactory.getProxy(
                     NNAServiceInit1.proxyServiceHashMap,
                     combService.getService().getServiceClass(),
-                    combService.getService().getServiceMethod());
+                    combService.getService().getServiceMethod().toString());
             combService.setService(platformService);
             combService.setServiceMethod((Method) objects[1]);
             combService.setServiceObject(objects[0]);

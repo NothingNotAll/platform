@@ -27,8 +27,16 @@ public class Dispatch {
         log.log("开始校验入参字段",Log.INFO);
         checkReq(confMeta.getOutsideReq(),confMeta.getReqColumn(),reqColumns,log);
         log.log("开始校验服务状态",Log.INFO);
-        check(combService,log);
-        combService.getServiceMethod().invoke(combService.getServiceObject());
+        PlatformService platformService=combService.getService();
+        check(platformService,log);
+        switch (platformService.getServiceMethod()){
+            case execNonDB:
+                combService.getServiceMethod().invoke(combService.getServiceObject(),null);
+                break;
+            case execTransaction:
+                combService.getServiceMethod().invoke(combService.getServiceObject());
+                break;
+        }
         PlatformColumn[] rspColumns=confMeta.getResponse();
         log.log("开始校验出参字段",Log.INFO);
         HashMap<String,String[]> rspMap=confMeta.getRspColumn();
@@ -45,8 +53,7 @@ public class Dispatch {
         }
     }
 
-    private static void check(CombService combService,Log log)throws Exception{
-	    PlatformService service=combService.getService();
+    private static void check(PlatformService service,Log log)throws Exception{
         LogUtil.log(service,log,Log.INFO);
         if(!service.isStatus()){
             log.log("服务已经禁用",Log.ERROR);
