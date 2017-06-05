@@ -10,6 +10,7 @@ package nna.enums;
 public enum  JavaValueType {
     STRING,
     INT,
+    INTEGER,
     BOOLEAN,
     LONG,
     FLOAT,

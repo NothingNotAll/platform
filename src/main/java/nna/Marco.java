@@ -101,6 +101,7 @@ public interface Marco {
     int PLATFORM_ENUM_SESSIONTYPE=18;
     int PLATFORM_ENUM_PRIVETYPE=19;
     int JAVA_FLOAT = 20;
+    int JAVA_INTEGER =21 ;
 
     //total confMeta
     int LOGIN=1;

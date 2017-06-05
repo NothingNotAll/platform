@@ -156,6 +156,8 @@ public class ObjectUtil {
                 return Marco.PLATFORM_ENUM_SESSIONTYPE;
             case FLOAT:
                 return Marco.JAVA_FLOAT;
+            case INTEGER:
+                return Marco.JAVA_INTEGER;
 
         }
         return -1;

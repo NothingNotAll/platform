@@ -150,6 +150,10 @@ import java.util.Map;
                 break;
             case Marco.JAVA_FLOAT:
                 method.invoke(clone,rs.getFloat(index));
+                break;
+            case Marco.JAVA_INTEGER:
+                method.invoke(clone,(Integer)rs.getInt(index));
+                break;
         }
     }
 
@@ -193,6 +197,8 @@ import java.util.Map;
                 break;
             case Marco.JAVA_FLOAT:
                 pst.setFloat(index,(Float) value);
+            case Marco.JAVA_INTEGER:
+                pst.setInt(index,(Integer)value);
             default:
                 pst.setString(index,value.toString());
         }
