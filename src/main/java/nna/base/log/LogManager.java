@@ -14,7 +14,8 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public class LogManager {
-    //next step is add the load balance and the log monitor ;one principal is that the log is only been logged by the same thread;
+    //next step is add the load balance and the log monitor ;
+    // one principal is that the log is only been logged by the same thread;
     private List<LogWorker> workerList=new List<LogWorker>(50);
     private ExecutorService cachedService=Executors.newCachedThreadPool();
     private ExecutorService fixedLogWorkerService;
