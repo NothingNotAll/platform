@@ -38,16 +38,9 @@ public class LogManager {
     }
 
      void addLogWorker(LogWorker logWorker,int tryTime){
-        workerList.insert(logWorker,tryTime);
-        balancedWorkerList.addLast(logWorker);
-//        fixedLogWorkerService=Executors.newFixedThreadPool()
     }
 
      void deleteWorker(int deleteLogWorkerId){
-        LogWorker logWorker=workerList.delete(deleteLogWorkerId);
-        if(logWorker!=null){
-            balancedWorkerList.remove(logWorker);
-        }
     }
 
      Log getLog(
