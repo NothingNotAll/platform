@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static nna.transaction.AbstractTransaction.getBean;
@@ -79,6 +80,30 @@ import static nna.transaction.AbstractTransaction.getBean;
         rs.close();
         pst.close();
         return map;
+    }
+
+    static void getList(
+            List<Clone> list,
+            PreparedStatement pst,
+            int serializableId
+    ) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        ResultSet rs=pst.executeQuery();
+        Clone clone;
+        while(rs.next()){
+            clone= getBean(rs,serializableId);
+            list.add(clone);
+        }
+        rs.close();
+        pst.close();
+    }
+
+    public void getList(List<Clone> list,List<T> tList){
+         Iterator<Clone> iterator=list.iterator();
+         T t;
+         while(iterator.hasNext()){
+             t=(T)iterator.next();
+             tList.add(t);
+         }
     }
 
 }

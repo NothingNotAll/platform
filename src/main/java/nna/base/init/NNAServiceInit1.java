@@ -69,4 +69,15 @@ public class NNAServiceInit1 {
         HashMap<String,Clone> map=MapTransfer.getSMap(psts[0],methodName,serializableId);
         return mapTransfer.getSMap(map);
     }
+
+    public void getList(
+            List tList,
+            PreparedStatement pst,
+            int serializableId
+    ) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        MapTransfer mapTransfer=new MapTransfer();
+        ArrayList<Clone> arrayList=new ArrayList<Clone>();
+        MapTransfer.getList(arrayList,pst,serializableId);
+        mapTransfer.getList(arrayList,tList);
+    }
 }
