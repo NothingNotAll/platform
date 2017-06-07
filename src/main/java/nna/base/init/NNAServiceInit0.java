@@ -71,7 +71,6 @@ public class NNAServiceInit0 {
              PlatformLog platformLog=(PlatformLog) getBean(rs,Marco.PLATFORM_LOG);
              Log log=getPlatformLog(platformLog);
              MetaBean confMeta=new MetaBean();
-             ConfMeta.setPlatformLog(log);
              confMeta.setLog(log);
              ConfMetaSetFactory.setConfMeta(confMeta);
              inits=initPstsCache(psts,log);

@@ -1,7 +1,6 @@
 package nna.app.tran.common;
 
 import nna.Marco;
-import nna.base.bean.combbean.CombTransaction;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.enums.DBSQLConValType;
 import nna.transaction.AbstractTransaction;
@@ -24,35 +23,9 @@ import java.util.HashMap;
 public class SelectTran extends AbstractTransaction<Object> {
     @Override
     public Object execTransaction(String transactionName) throws SQLException{
-        MetaBean confMeta= ConfMetaSetFactory.getConfMeta();
-        String tranNm=confMeta.getReq().get(Marco.TRAN_NAME)[0];
-        super.execTransaction(tranNm);
         return null;
     }
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        PreparedStatement countPst=sts[0];
-        PreparedStatement selectPst=sts[1];
-        MetaBean confMeta=ConfMetaSetFactory.getConfMeta();
-        HashMap<String,String[]> reqMap=confMeta.getReq();
-        CombTransaction[] trans=null;
-        CombTransaction combTransaction=trans[0];
-        ArrayList<String[]> cons=combTransaction.getConditions();
-        ArrayList<DBSQLConValType[]> dbsqlConValTypes=combTransaction.getConditionValueTypes();
-        String[] countCons=cons.get(0);
-        DBSQLConValType[] countDBCONTypes=dbsqlConValTypes.get(0);
-        ResultSet rs=setParameterAndExe(countPst,countCons,countDBCONTypes,reqMap);
-        rs.next();
-        int count=rs.getInt(1);
-        rs.close();
-        String[] selectCons=cons.get(1);
-        DBSQLConValType[] selectDBCONTypes=dbsqlConValTypes.get(1);
-        rs=setParameterAndExe(selectPst,selectCons,selectDBCONTypes,reqMap);
-        ArrayList<String[]> columns=combTransaction.getColumns();
-        String[] column=columns.get(0);
-        HashMap<String,String[]> rspMap=confMeta.getRsp();
-        setRspMap(count,rs,column,rspMap,Marco.ARRAY_COUNT);
-        countPst.close();
-        selectPst.close();
         return null;
     }
 }

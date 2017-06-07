@@ -1,7 +1,6 @@
 package nna.base.init;
 
 import nna.Marco;
-import nna.base.bean.combbean.*;
 import nna.base.bean.confbean.MetaBean;
 import nna.base.bean.dbbean.PlatformEntry;
 import nna.base.bean.dbbean.PlatformServiceTransaction;
@@ -42,7 +41,7 @@ public class NNAServiceInit3 {
     }
 
     private void buildFreeResource() {
-        ConfMeta.setFreeResources(NNAServiceInit2.freeResourceSet);
+        MetaBean.setFreeResource(NNAServiceInit2.freeResourceSet);
     }
 
     private void buildCMSCache(PreparedStatement pst) throws SQLException {
@@ -61,7 +60,7 @@ public class NNAServiceInit3 {
         Log log = null;
         while(rs.next()){
             cm=new MetaBean();
-            ConfMeta.setFreeResources(NNAServiceInit2.freeResourceSet);
+            MetaBean.setFreeResource(NNAServiceInit2.freeResourceSet);
             platformEntry= (PlatformEntry) AbstractTransaction.getBean(rs, Marco.PLATFORM_ENTRY);
             MetaBean.getConfMetaCache().insert(cm,1000);
             cm.setPlatformController(NNAServiceInit2.combControllerMap.get(platformEntry.getEntryId()));
@@ -121,17 +120,7 @@ public class NNAServiceInit3 {
         System.out.println("NNA INIT SUCCESS");
     }
 
-    private void setServiceTranList(ConfMeta cm) {
-        HashMap<String,CombTransaction> mapTran=cm.getCombTransactionMap();
-        Iterator<Map.Entry<String,CombTransaction>> iterator=mapTran.entrySet().iterator();
-        int count=mapTran.size();
-        CombTransaction[] combTransactions=new CombTransaction[count];
-        for(int index=0;index < count;index++){
-            Map.Entry<String,CombTransaction> entry=iterator.next();
-            CombTransaction combTransaction=entry.getValue();
-            combTransactions[combTransaction.getTransaction().getServiceTransactionSequence()]=combTransaction;
-        }
-        cm.setCombTransactions(combTransactions);
+    private void setServiceTranList(MetaBean cm) {
     }
 
     private void setColMap(MetaBean cm) {

@@ -2,8 +2,8 @@ package nna.app.web;
 
 import nna.Marco;
 import nna.app.tran.ext.TranSelPriUser;
-import nna.base.bean.combbean.CombUser;
 import nna.base.bean.confbean.MetaBean;
+import nna.base.bean.dbbean.PlatformUser;
 import nna.base.protocol.dispatch.AppUtil;
 import nna.base.proxy.Logic;
 import nna.transaction.Transaction;
@@ -18,7 +18,7 @@ import java.sql.SQLException;
  **/
 
 public class NNALogin {
-    Transaction<CombUser> tranSelPriUser=new TranSelPriUser();//next step is to cancel the new action;
+    Transaction<PlatformUser> tranSelPriUser=new TranSelPriUser();//next step is to cancel the new action;
 
     //next optimize is that we can take place of the TRAN*
     // with the unify Logic class:
@@ -39,23 +39,5 @@ public class NNALogin {
     private static Logic logic;//singleton
 
     public void login(){
-        try {
-            CombUser combUser=tranSelPriUser.execTransaction(Marco.TRAN_SEL_USER_INFO);
-            if(combUser.getPlatformUser().getUserPassword().equals(AppUtil.getRequest("userPassword")[0])){
-                return ;
-            }else{
-                MetaBean confMeta=MetaBean.
-                        getConfMetaCache().
-                        get(Marco.LOGIN_PASSWORD_ERROR);
-                AppUtil.setConfMeta(confMeta);
-            }
-            if(combUser==null){
-                AppUtil.putTemp("",new Object());
-            }else{
-                AppUtil.putTemp("",new Object());
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

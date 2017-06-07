@@ -1,7 +1,6 @@
 package nna.app.tran.ext;
 
 import nna.Marco;
-import nna.base.bean.combbean.CombUser;
 import nna.base.bean.dbbean.PlatformResource;
 import nna.base.bean.dbbean.PlatformRole;
 import nna.base.bean.dbbean.PlatformUser;
@@ -20,10 +19,10 @@ import java.util.HashMap;
  * @create 2017-05-26 13:23
  **/
 
-public class TranSelPriUser extends AbstractTransaction<CombUser> {
+public class TranSelPriUser extends AbstractTransaction<PlatformUser> {
 
-    public CombUser inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        setCurrentPstParameter(0);
+    public PlatformUser inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+//        setCurrentPstParameter(0);
         ResultSet rs=sts[0].executeQuery();
         rs.next();
         PlatformUser platformUser=(PlatformUser)getBean(rs, Marco.PLATFORM_USER);
@@ -33,9 +32,9 @@ public class TranSelPriUser extends AbstractTransaction<CombUser> {
         while(roleRs.next()){
             roles.add((PlatformRole) getBean(roleRs,Marco.PLATFORM_ROLE));
         }
-        CombUser combUser=new CombUser();
-        combUser.setPlatformRoles(roles.toArray(new PlatformRole[0]));
-        combUser.setPlatformUser(platformUser);
+        PlatformUser combUser=new PlatformUser();
+//        combUser.setPlatformRoles(roles.toArray(new PlatformRole[0]));
+//        combUser.setPlatformUser(platformUser);
         int roleCount=roles.size();
         PlatformRole role;
         HashMap<String,PlatformResource> resouceMap=new HashMap<String, PlatformResource>();

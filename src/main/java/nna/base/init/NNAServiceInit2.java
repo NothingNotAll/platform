@@ -2,7 +2,6 @@ package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.Clone;
-import nna.base.bean.combbean.*;
 import nna.base.bean.dbbean.*;
 import nna.base.db.DBCon;
 import nna.base.db.DBMeta;
@@ -14,7 +13,6 @@ import nna.base.util.view.TemplateFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -74,44 +72,9 @@ public class NNAServiceInit2 {
     }
 
     private void buildCombUserMap(){
-        Iterator<Map.Entry<Integer,CombUser>> iterator=NNAServiceInit1.comUserMap.entrySet().iterator();
-        while(iterator.hasNext()){
-            Map.Entry<Integer,CombUser> entry=iterator.next();
-            CombUser combUser=entry.getValue();
-            Integer userId=entry.getKey();
-            Iterator<Map.Entry<String,PlatformResource>> iterator1=combUser.getResoruces().entrySet().iterator();
-            while(iterator1.hasNext()){
-                Map.Entry<String,PlatformResource> entry1=iterator1.next();
-                PlatformResource platformResource=entry1.getValue();
-                if(platformResource.getResourceType().toString().equals("CONTROLLER")){
-                    HashMap<Integer,PlatformUser> map=combUserHashMap.get(userId);
-                    if(map==null){
-                        HashMap<Integer,CombUser> map2=new HashMap<Integer, CombUser>();
-                        map2.put(userId,combUser);
-//                        combUserHashMap.put(platformResource.getResourcePk(),map2);
-                    }else{
-//                        map.put(platformResource.getResourcePk(),combUser);
-                    }
-                }
-            }
-        }
     }
 
-    private void buildSerTran(){
-        Iterator<Map.Entry<String,PlatformServiceTransaction[]>> iterator=NNAServiceInit1.servNmToTranNm.entrySet().iterator();
-        while(iterator.hasNext()){
-            Map.Entry<String,PlatformServiceTransaction[]> entry=iterator.next();
-            String serviceName=entry.getKey();
-            PlatformServiceTransaction[] trans=entry.getValue();
-            HashMap<String,CombTransaction> cMap=new HashMap<String, CombTransaction>(trans.length);
-            for(int index=0;index < trans.length;index++){
-                CombTransaction combTransaction=NNAServiceInit1.tranMap.get(trans[index].getTransactionName());
-                combTransaction.setTransaction(trans[index]);
-                cMap.put(trans[index].getTransactionName(),combTransaction);
-            }
-            combTransactionHashMap.put(serviceName,cMap);
-        }
-    }
+    private void buildSerTran(){}
 
     private void buildColumn(PreparedStatement camPst) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         HashMap<String,Clone> map=MapTransfer.getSMap(camPst,"getColumnId", Marco.PLATFORM_COLUMN);
@@ -144,15 +107,7 @@ public class NNAServiceInit2 {
         while(iterator.hasNext()){
             Map.Entry<String,PlatformService> entry=iterator.next();
             PlatformService platformService=entry.getValue();
-            CombService combService=new CombService();
-            combService.setService(platformService);
-            Object[] objects=ProxyFactory.getProxy(
-                    NNAServiceInit1.proxyServiceHashMap,
-                    combService.getService().getServiceClass(),
-                    combService.getService().getServiceMethodType().toString());
-            combService.setService(platformService);
-            combService.setServiceMethod((Method) objects[1]);
-            combService.setServiceObject(objects[0]);
+            Object[] objects=ProxyFactory.getProxy(NNAServiceInit1.proxyServiceHashMap,platformService.getServiceClass(),platformService.getServiceMethodType().toString());
             combServiceMap.put(entry.getKey(),platformService);
             serviceObjectMap.put(entry.getKey(),objects);
         }
@@ -167,11 +122,7 @@ public class NNAServiceInit2 {
         while(iterator.hasNext()){
             Map.Entry<Integer,PlatformApp> entry=iterator.next();
             PlatformApp platformApp=entry.getValue();
-            CombApp combApp=new CombApp();
             Object[] objects=ProxyFactory.getProxy(NNAServiceInit1.proxyServiceHashMap,platformApp.getAppDispatchClass(),platformApp.getAppDispatchMethod());
-            combApp.setApp(platformApp);
-            combApp.setAppDispatchMethod((Method) objects[1]);
-            combApp.setAppDispatchObject(objects[0]);
             combAppMap.put(entry.getKey(),platformApp);
             appServiceMap.put(entry.getKey(),objects);
         }
@@ -187,9 +138,6 @@ public class NNAServiceInit2 {
         while(iterator.hasNext()){
             Map.Entry<Integer,PlatformLog> entry=iterator.next();
             PlatformLog platformLog=entry.getValue();
-            CombLog combLog=new CombLog();
-            combLog.setNextLogSeq(new AtomicLong());
-            combLog.setPlatformLog(platformLog);
             combLogMap.put(entry.getKey(),platformLog);
         }
     }
@@ -213,8 +161,6 @@ public class NNAServiceInit2 {
             combLog.getLogCloseTimedout(),
             combLog.getLogEncode()
             );
-            CombDB combDB=new CombDB();
-            combDB.setPlatformDB(platformDB);
             DBCon dbCon=new DBCon(new DBMeta(true,
                     platformDB.getDbUrl(),
                     platformDB.getDbDriver(),
@@ -226,7 +172,6 @@ public class NNAServiceInit2 {
             Long.valueOf(platformDB.getDbHeartbeatTest()),
             platformDB.getDbFailTrytime()
             ),log);
-            combDB.setDbCon(dbCon);
             combDBMap.put(entry.getKey(),platformDB);
             dbConMap.put(entry.getKey(),dbCon);
         }
@@ -241,14 +186,10 @@ public class NNAServiceInit2 {
         while(iterator.hasNext()){
             Map.Entry<Integer,PlatformController> entry=iterator.next();
             PlatformController platformController=entry.getValue();
-            CombController combController=new CombController();
             Template template= TemplateFactory.getTemplate(platformController.getRenderPage(),"UTF-8");
             Object[] objects=ProxyFactory.getProxy(NNAServiceInit1.proxyServiceHashMap,platformController.getRenderClass(),platformController.getRenderMethod());
             ((Template)objects[0]).setStrs(template.getStrs());
             ((Template)objects[0]).setViews(template.getViews());
-            combController.setController(platformController);
-            combController.setRenderMethod((Method) objects[1]);
-            combController.setRenderObject(objects[0]);
             combControllerMap.put(entry.getKey(),platformController);
             renderMap.put(entry.getKey(),objects);
         }

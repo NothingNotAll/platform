@@ -2,11 +2,9 @@ package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.Clone;
-import nna.base.bean.combbean.*;
 import nna.base.bean.dbbean.*;
 import nna.base.proxy.ProxyFactory;
 import nna.base.proxy.ProxyService;
-import nna.enums.DBSQLConValType;
 import nna.transaction.AbstractTransaction;
 
 import java.lang.reflect.InvocationTargetException;
@@ -50,6 +48,10 @@ public class NNAServiceInit1 {
         this.buildCombUser();
     }
 
+    private void buildTran(PreparedStatement pst) {
+
+    }
+
     private void buildUserMap(PreparedStatement userPst) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         HashMap<Integer,Clone> map=MapTransfer.getIMap(userPst,"getUserId", Marco.PLATFORM_USER);
         final MapTransfer<PlatformUser> mapTransfer =new MapTransfer<PlatformUser>();
@@ -61,11 +63,9 @@ public class NNAServiceInit1 {
         Iterator<Map.Entry<Integer,PlatformRole[]>> iterator=userRoleMap.entrySet().iterator();
         while(iterator.hasNext()){
             Map.Entry<Integer,PlatformRole[]> entry=iterator.next();
-            CombUser combUser=new CombUser();
+            PlatformUser combUser=new PlatformUser();
             Integer userId=entry.getKey();
             PlatformRole[] roles=entry.getValue();
-            combUser.setPlatformRoles(roles);
-            combUser.setPlatformUser(userMap.get(userId));
             HashMap<String,PlatformResource> userResource=new HashMap<String, PlatformResource>();
             for(int index=0;index < roles.length;index++){
                 PlatformRole role=roles[index];
@@ -74,8 +74,6 @@ public class NNAServiceInit1 {
                     userResource.put(String.valueOf(resources[i].getResourceId()),resources[i]);
                 }
             }
-            combUser.setResoruces(userResource);
-            comUserMap.put(userId,combUser);
         }
     }
 
@@ -179,80 +177,7 @@ public class NNAServiceInit1 {
         HashMap<String,PlatformSql> stMap=mapTransfer.getSMap();
         Iterator<Map.Entry<String,PlatformSql>> iterator=stMap.entrySet().iterator();
         while(iterator.hasNext()){
-            Map.Entry<String,PlatformSql> entry=iterator.next();
-            PlatformSql platformSql=entry.getValue();
-            String sql=AbstractTransaction.buildSQL(platformSql);
-            CombSQL combSQL=new CombSQL();
-            combSQL.setSql(sql);
-            combSQL.setPlatformSql(platformSql);
-            if(platformSql.getAppCondition().contains(",")){
-                combSQL.setConditions(platformSql.getAppCondition().trim().split("[,]"));
-            }else{
-                if(!platformSql.getAppCondition().trim().equals("")){
-                    combSQL.setConditions(new String[]{platformSql.getAppCondition().trim()});
-                }else{
-                    combSQL.setConditions(new String[0]);
-                }
-            }
-
-            combSQL.setColumns(platformSql.getAppColumn().split("[,]"));
-
-            String[] conTypes;
-            if(platformSql.getAppConditionType().contains(",")){
-                conTypes=platformSql.getAppConditionType().split("[,]");
-            }else{
-                if(!platformSql.getAppConditionType().trim().equals("")){
-                    conTypes=new String[]{platformSql.getAppConditionType()};
-                }else{
-                    conTypes=new String[0];
-                }
-            }
-            DBSQLConValType[] dbs=new DBSQLConValType[conTypes.length];
-            for(int index=0;index < dbs.length;index++){
-                dbs[index]=DBSQLConValType.valueOf(conTypes[index]);
-            }
-            combSQL.setDBSQLConValTypes(dbs);
-            combSQLHashMap.put(entry.getKey(),combSQL);
         }
     }
 
-    private void buildTran(PreparedStatement tranPst) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Iterator<Map.Entry<String,PlatformServiceTransaction[]>> iterator=servNmToTranNm.entrySet().iterator();
-        while(iterator.hasNext()){
-            PlatformServiceTransaction[] trans=iterator.next().getValue();
-            for(int index=0;index < trans.length;index++){
-                PlatformServiceTransaction tran=trans[index];
-                if(tranMap.get(tran)==null){
-                    tranPst.setString(1,tran.getTransactionName());
-                    ResultSet rs=tranPst.executeQuery();
-                    CombTransaction combTransaction=new CombTransaction();
-                    ArrayList<String> SQLS=new ArrayList<String>();
-                    ArrayList<PlatformSql> platformSqls=new ArrayList<PlatformSql>();
-                    ArrayList<String[]> columns=new ArrayList<String[]>();
-                    ArrayList<String[]> conditions=new ArrayList<String[]>();
-                    ArrayList<DBSQLConValType[]> dbs=new ArrayList<DBSQLConValType[]>();
-                    ArrayList<PlatformTransaction> platformTransactions=new ArrayList<PlatformTransaction>();
-                    while(rs.next()){
-                        PlatformTransaction platformTransaction=(PlatformTransaction) AbstractTransaction.getBean(rs,Marco.PLATFORM_TRANSACTION);
-                        platformTransactions.add(platformTransaction);
-                        CombSQL combSQL=combSQLHashMap.get(platformTransaction.getSqlId());
-                        SQLS.add(combSQL.getSql());
-                        platformSqls.add(combSQL.getPlatformSql());
-                        columns.add(combSQL.getColumns());
-                        conditions.add(combSQL.getConditions());
-                        dbs.add(combSQL.getDBSQLConValTypes());
-                    }
-                    rs.close();
-                    combTransaction.setPlatformTransactions(platformTransactions.toArray(new PlatformTransaction[0]));
-                    combTransaction.setSqls(SQLS.toArray(new String[0]));
-                    combTransaction.setPlatformSqls(platformSqls.toArray(new PlatformSql[0]));
-                    combTransaction.setColumns(columns);
-                    combTransaction.setConditionValueTypes(dbs);
-                    combTransaction.setConditions(conditions);
-                    tranMap.put(tran.getTransactionName(),combTransaction);
-                }
-            }
-        }
-        tranPst.close();
-    }
 }

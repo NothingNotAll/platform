@@ -2,7 +2,7 @@ package nna.transaction;
 
 import nna.Marco;
 import nna.base.bean.Clone;
-import nna.base.bean.combbean.CombDB;
+import nna.base.bean.confbean.MetaBean;
 import nna.base.bean.dbbean.PlatformServiceTransaction;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.init.NNAServiceInit0;
@@ -10,10 +10,7 @@ import nna.base.protocol.dispatch.AppUtil;
 import nna.base.log.Log;
 import nna.base.util.List;
 import nna.base.db.DBCon;
-import nna.base.protocol.dispatch.ConfMetaSetFactory;
-import nna.base.bean.combbean.CombTransaction;
 import nna.base.util.BuildSQL;
-import nna.base.util.LogUtil;
 import nna.base.util.ObjectFactory;
 import nna.enums.DBSQLConValType;
 
@@ -82,148 +79,18 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
     public abstract V inTransaction(Connection connection,PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException;
 
 	public V execTransaction(String transactionName) throws SQLException{
-        V v = null;
-	    ConfMeta confMeta = ConfMetaSetFactory.getConfMeta();
-        CombDB combDB= confMeta.getCombDB();
-        DBCon dbCon=combDB.getDbCon();
-	    Log log= confMeta.getLog();
-
-	    ArrayList<CombTransaction> tranStack=confMeta.getTranStack();
-        ArrayList<Connection> conStack=confMeta.getConStack();
-        ArrayList<PreparedStatement[]> pstStack=confMeta.getPstStack();
-
-        int tranStackSize=tranStack!=null?tranStack.size():0;
-        int conStackSize=conStack!=null?conStack.size():0;
-        int pstStackSize=pstStack!=null?pstStack.size():0;
-
-        CombTransaction currentTransaction=getCurrentTransaction(confMeta,transactionName,log);
-        tranStack.add(currentTransaction);
-        tranStackSize++;
-        confMeta.setCurrentCombTransaction(currentTransaction);
-        PlatformServiceTransaction transaction=currentTransaction.getTransaction();
-
-        int previousIndex =transaction.getPreviousTransactionIndex();
-        CombTransaction previousTransaction=tranStackSize==0?null:tranStack.get(previousIndex);
-        Connection connection=conStackSize==0?dbCon.getCon():confMeta.getConStack().get(previousIndex);
-
-        String[] SQLS=currentTransaction.getSqls();
-        PlatformSql[] platformSqls=currentTransaction.getPlatformSqls();
-        PreparedStatement[] sts=null;
-
-        try{
-            //要根据事务的配置判断是否使用嵌套事务的数据库连接或者新建连接
-            sts=initSts(currentTransaction,connection,platformSqls,SQLS,log);
-            pstStack.add(sts);
-            pstStackSize++;
-            confMeta.setCurrentPsts(sts);
-            connection=setPropgAndTranLvl(dbCon,previousTransaction,currentTransaction);
-            conStack.add(connection);
-            conStackSize++;
-            v=inTransaction(connection,sts);
-            return v;
-        }catch(Exception e){
-	        e.printStackTrace();
-        }finally {
-            //commit;
-            commit(connection);
-            dbCon.putCon(connection);
-            tranStack.remove(tranStackSize-1);
-            conStack.remove(conStackSize-1);
-            pstStack.remove(pstStackSize-1);
-            close(connection,sts);
-        }
-        return v;
+        return null;
 	}
 
     private void commit(Connection connection) {
 
     }
 
-    private static Connection setPropgAndTranLvl(DBCon dbCon,CombTransaction previousTransacton, CombTransaction currentTransaction) throws SQLException {
-        Connection connection=null;
-        PlatformServiceTransaction transaction=currentTransaction.getTransaction();
-        switch (transaction.getTransactionPropagation()){
-            case DEFAULT:
-                setTranLvl(previousTransacton,currentTransaction,false);
-                break;
-            case PROPAGATION_NOT_SUPPORTED:
-                connection.setAutoCommit(true);
-                break;
-            case PROPAGATION_REQUIRES_NEW:
-                connection=dbCon.getCon();
-                setTranLvl(previousTransacton,currentTransaction,false);
-                break;
-            case PROPAGATION_MANDATORY:
-                break;
-            case PROPAGATION_SUPPORTS:
-                break;
-            case PROPAGATION_REQUIRED:
-                break;
-            case PROPAGATION_NESTED:
-                setTranLvl(previousTransacton,currentTransaction,true);
-                break;
-            case PROPAGATION_NEVER:
-                connection=dbCon.getCon();
-                break;
-            case NONE:
-                break;
-        }
-        return connection;
-    }
+    private static Connection setPropgAndTranLvl(DBCon dbCon,PlatformServiceTransaction previous, PlatformServiceTransaction current) throws SQLException {
+        return null;
+	}
 
-    private static void setTranLvl(CombTransaction previousTransacton, CombTransaction currentTransaction,boolean isCarePrevious) throws SQLException {
-        PlatformServiceTransaction transaction=currentTransaction.getTransaction();
-        PlatformServiceTransaction previous=previousTransacton.getTransaction();
-        Connection connection = null;
-	    switch (transaction.getTransactionLevel()){
-            case NONE:
-                break;
-            case SERIALIZABLE:
-                connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                break;
-            case READ_COMMITTED:
-                if(isCarePrevious){
-                    switch (previous.getTransactionLevel()){
-                        case SERIALIZABLE:
-                            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                    }
-                }else{
-                    connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-                }
-                break;
-            case REPEATABLE_READ:
-                if(isCarePrevious){
-                    switch (previous.getTransactionLevel()){
-                        case SERIALIZABLE:
-                            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                            break;
-                        default:
-                            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-                    }
-                }else{
-                    connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-                }
-                break;
-            case READ_UNCOMMITTED:
-                if(isCarePrevious){
-                    switch (previous.getTransactionLevel()){
-                        case SERIALIZABLE:
-                            connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-                            break;
-                        case READ_UNCOMMITTED:
-                            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-                            break;
-                        case REPEATABLE_READ:
-                            connection.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-                            break;
-                        case READ_COMMITTED:
-                            connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-                            break;
-                    };
-                }else {
-                    connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-                }
-        }
+    private static void setTranLvl(PlatformServiceTransaction previousTransacton, PlatformServiceTransaction currentTransaction,boolean isCarePrevious) throws SQLException {
 	}
 
     private void close(Connection connection, PreparedStatement[] sts) throws SQLException {
@@ -262,57 +129,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
             }
         }
     }
-    protected static void setCurrentPstParameter(int sqlIndex) throws SQLException {
-        MetaBean intimeConfMeta = ConfMetaSetFactory.getConfMeta();
-        CombTransaction current=intimeConfMeta.getCurrentCombTransaction();
-        String[] conditionList=current.getConditions().get(sqlIndex);
-        int size=conditionList.length;
-        PreparedStatement currentPst=intimeConfMeta.getCurrentPsts()[sqlIndex];
-        HashMap<String,String[]> map=intimeConfMeta.getReqColumn();
-        DBSQLConValType[] arrayList=current.getConditionValueTypes().get(sqlIndex);
-        for(int index=1;index <= size; index++){
-            switch (arrayList[index]){
-                case STRING:
-                    currentPst.setString(index,map.get(conditionList[index])[0]);
-                    break;
-                case BOOLEAN:
-                    currentPst.setBoolean(index,Boolean.valueOf(map.get(conditionList[index])[0]));
-                    break;
-                case INTEGER:
-                    currentPst.setInt(index,Integer.valueOf(map.get(conditionList[index])[0]));
-            }
-        }
-    }
 
-    private static PreparedStatement[] initSts(CombTransaction combTransaction,Connection connection,PlatformSql[] platformSqls, String[] sqls,Log log) throws SQLException {
-        int size=sqls.length;
-	    PlatformSql platformSql;
-	    String sql;
-	    PreparedStatement[] sts=new PreparedStatement[size];
-	    for(int index=0;index < size;index++){
-	        platformSql=platformSqls[index];
-	        sql=sqls[index];
-	        log.log("No."+index+"-"+sql,Log.INFO);
-	        switch (platformSql.getOpertype()){
-                case PROCEDURE:
-                    sts[index]=connection.prepareCall(sql);
-                    break;
-                default:
-                    sts[index]=connection.prepareStatement(sql);
-            }
-
-        }
-        return sts;
-    }
-
-    private static CombTransaction getCurrentTransaction(ConfMeta confMeta, String transactionName, Log log) {
-        HashMap<String,CombTransaction> map= confMeta.getCombTransactionMap();
-        CombTransaction combTransaction=map.get(transactionName);
-        PlatformServiceTransaction platformServiceTransaction=combTransaction.getTransaction();
-        log.log("No."+platformServiceTransaction.getServiceTransactionSequence()+"开始执行",Log.INFO);
-        LogUtil.log(log,platformServiceTransaction,Log.INFO);
-        return combTransaction;
-    }
 
     protected static ResultSet[] initialResutSet(PreparedStatement[] psts) throws SQLException{
 		int count=psts.length;

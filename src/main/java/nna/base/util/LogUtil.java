@@ -1,5 +1,6 @@
 package nna.base.util;
 
+import nna.base.bean.confbean.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
 
@@ -85,7 +86,7 @@ public class LogUtil {
         log.log("日志创建时间戳："+platformApp.getAppCreateTimestamp().toString(),logLevel);
     }
 
-    public static void log(ConfMeta confMeta,Log log){
+    public static void log(MetaBean confMeta, Log log){
         log.log(confMeta.toString(),10000);
     }
 
@@ -105,7 +106,7 @@ public class LogUtil {
         log.log("服务描述："+service.getServiceDesc(),logLevel);
         log.log("服务名称："+service.getServiceName(),logLevel);
         log.log("服务类名称："+service.getServiceClass(),logLevel);
-        log.log("服务方法名称："+service.getServiceMethod(),logLevel);
+        log.log("服务方法名称："+service.getServiceMethodType().toString(),logLevel);
         log.log("服务临时字段容量大小："+service.getServiceTempsize(),logLevel);
         log.log("服务创建时间戳："+service.getCreateTimestamp(),logLevel);
         log.log("服务版本更新时间戳："+service.getUpdateTimestamp(),logLevel);

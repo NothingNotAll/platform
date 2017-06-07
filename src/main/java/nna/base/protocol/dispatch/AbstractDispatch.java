@@ -69,7 +69,7 @@ public abstract class AbstractDispatch<R,S> {
     private void destroy(MetaBean confMeta) {
         Thread thread=Thread.currentThread();
         Long id=thread.getId();
-        ConfMeta.getConfMetaMonitor().remove(id);
+        MetaBean.getMetaMonitor().remove(id);
         LogEntry.submitCloseEvent(confMeta.getLog());
         ConfMetaSetFactory.setConfMeta(null);//for prevent memory leak
     }
