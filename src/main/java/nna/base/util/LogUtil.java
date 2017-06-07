@@ -39,7 +39,6 @@ public class LogUtil {
             return;
         log.log(platformEntry.getEntryCode(),logLevel);
         log.log(platformEntry.getEntryDesc(),logLevel);
-        log.log(platformEntry.getEntryUri(),logLevel);
         log.log(String.valueOf(platformEntry.getEntryAppId()),logLevel);
         log.log(String.valueOf(platformEntry.getEntryId()),logLevel);
     }
@@ -80,9 +79,9 @@ public class LogUtil {
         log.log("应用英文名称："+platformApp.getAppEn(),logLevel);
         log.log("应用编码："+platformApp.getAppEncode(),logLevel);
         log.log("应用唯一标识："+String.valueOf(platformApp.getAppId()),logLevel);
-        log.log("应用工作空间："+String.valueOf(platformApp.getAppWorkspace()),logLevel);
-        log.log("应用日志打印参数配置："+String.valueOf(platformApp.getAppLogId()),logLevel);
-        log.log("应用数据库连接配置参数："+String.valueOf(platformApp.getAppDbId()),logLevel);
+//        log.log("应用工作空间："+String.valueOf(platformApp.getAppWorkspace()),logLevel);
+//        log.log("应用日志打印参数配置："+String.valueOf(platformApp.getAppLogId()),logLevel);
+//        log.log("应用数据库连接配置参数："+String.valueOf(platformApp.getAppDbId()),logLevel);
         log.log("日志创建时间戳："+platformApp.getAppCreateTimestamp().toString(),logLevel);
     }
 
@@ -111,7 +110,7 @@ public class LogUtil {
         log.log("服务名称："+service.getServiceName(),logLevel);
         log.log("服务类名称："+service.getServiceClass(),logLevel);
         log.log("服务方法名称："+service.getServiceMethodType().toString(),logLevel);
-        log.log("服务临时字段容量大小："+service.getServiceTempsize(),logLevel);
+//        log.log("服务临时字段容量大小："+service.getServiceTempsize(),logLevel);
         log.log("服务创建时间戳："+service.getCreateTimestamp(),logLevel);
         log.log("服务版本更新时间戳："+service.getUpdateTimestamp(),logLevel);
     }
@@ -131,7 +130,7 @@ public class LogUtil {
         log.log("事务描述-"+platformServiceTransaction.getTransactionDesc(),logLevel);
         log.log("事务传播类型-"+platformServiceTransaction.getTransactionPropagation(),logLevel);
         log.log("事务隔离级别-"+platformServiceTransaction.getTransactionLevel(),logLevel);
-        log.log("调用事务服务码-"+platformServiceTransaction.getServiceName(),logLevel);
+//        log.log("调用事务服务码-"+platformServiceTransaction.getServiceName(),logLevel);
         log.log("事务名称-"+platformServiceTransaction.getTransactionName(),logLevel);
         log.log("事务版本创建时间戳-"+platformServiceTransaction.getCreateTimestamp(),logLevel);
         log.log("事务版本更新时间戳-"+platformServiceTransaction.getUpdateTimestamp(),logLevel);
