@@ -7,7 +7,7 @@ package nna.base.init;
  */
 
 import nna.Marco;
-import nna.base.bean.confbean.MetaBean;
+import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.log.Log;

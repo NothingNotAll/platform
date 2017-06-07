@@ -1,6 +1,6 @@
 package nna.base.protocol.dispatch;
 
-import nna.base.bean.confbean.MetaBean;
+import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformLog;
 import nna.base.bean.dbbean.PlatformSession;
 import nna.base.init.NNAServiceStart;

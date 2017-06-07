@@ -1,7 +1,7 @@
 package nna.base.init;
 
 import nna.Marco;
-import nna.base.bean.confbean.MetaBean;
+import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformEntry;
 import nna.base.bean.dbbean.PlatformServiceTransaction;
 import nna.base.protocol.dispatch.AppUtil;
@@ -18,8 +18,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**

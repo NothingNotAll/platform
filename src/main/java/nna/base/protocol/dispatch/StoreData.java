@@ -1,7 +1,7 @@
 package nna.base.protocol.dispatch;
 
 
-import nna.base.bean.confbean.MetaBean;
+import nna.MetaBean;
 
 /*
  * app 数据存储中心 线程安全

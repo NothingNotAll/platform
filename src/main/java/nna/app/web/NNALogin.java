@@ -1,15 +1,11 @@
 package nna.app.web;
 
-import nna.Marco;
 import nna.app.tran.ext.TranSelPriUser;
-import nna.base.bean.confbean.MetaBean;
 import nna.base.bean.dbbean.PlatformUser;
-import nna.base.protocol.dispatch.AppUtil;
 import nna.base.proxy.Logic;
 import nna.transaction.Transaction;
 
 import java.lang.reflect.Method;
-import java.sql.SQLException;
 
 /**
  * the goal is that the code can been config by person instead of write by hand.

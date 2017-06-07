@@ -1,6 +1,6 @@
 package nna.base.protocol.dispatch;
 
-import nna.base.bean.confbean.MetaBean;
+import nna.MetaBean;
 import nna.base.log.Log;
 
 

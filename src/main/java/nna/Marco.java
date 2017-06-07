@@ -1,7 +1,6 @@
 package nna;
 
 
-import nna.base.bean.ReturnMessage;
 import nna.enums.DBType;
 
 public interface Marco {

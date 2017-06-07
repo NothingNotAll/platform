@@ -1,4 +1,6 @@
-package nna.base.bean;
+package nna;
+
+import nna.base.bean.Clone;
 
 /**
  * @author NNA-SHUAI
@@ -6,7 +8,7 @@ package nna.base.bean;
  **/
 
 
-public class ReturnMessage extends Clone{
+public class ReturnMessage extends Clone {
     private static final Long serialVersionUID=0L;
 
     public boolean isSucess=true;

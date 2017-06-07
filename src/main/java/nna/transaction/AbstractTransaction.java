@@ -2,7 +2,7 @@ package nna.transaction;
 
 import nna.Marco;
 import nna.base.bean.Clone;
-import nna.base.bean.confbean.MetaBean;
+import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformServiceTransaction;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.init.NNAServiceInit0;

@@ -1,4 +1,4 @@
-package nna.base.bean.confbean;
+package nna;
 
 import nna.base.bean.Clone;
 import nna.base.bean.dbbean.*;
