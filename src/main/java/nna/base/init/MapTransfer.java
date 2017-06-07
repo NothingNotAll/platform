@@ -23,19 +23,10 @@ import static nna.transaction.AbstractTransaction.getBean;
 
 
  class MapTransfer<T>{
-     HashMap<Integer,Clone> iMap;
-     HashMap<String,Clone> sMap;
 
      MapTransfer(){}
 
-     MapTransfer(HashMap map, boolean isIMap){
-        if(isIMap){
-            iMap=map;
-        }else {
-            sMap=map;
-        }
-    }
-     HashMap<Integer,T> getIMap(){
+     HashMap<Integer,T> getIMap(HashMap<Integer,Clone> iMap){
         HashMap<Integer,T> map=new HashMap<Integer, T>(iMap.size());
         Iterator<Map.Entry<Integer,Clone>> iterator=iMap.entrySet().iterator();
         while(iterator.hasNext()){
@@ -45,7 +36,7 @@ import static nna.transaction.AbstractTransaction.getBean;
         }
         return map;
     }
-     HashMap<String,T> getSMap(){
+     HashMap<String,T> getSMap(HashMap<String,Clone> sMap){
         HashMap<String,T> map=new HashMap<String, T>(sMap.size());
         Iterator<Map.Entry<String,Clone>> iterator=sMap.entrySet().iterator();
         while(iterator.hasNext()){
@@ -58,7 +49,7 @@ import static nna.transaction.AbstractTransaction.getBean;
 
 
 
-    static HashMap<Integer,Clone> getIMap(PreparedStatement pst, String getMethodName, int serializableId) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+     static HashMap<Integer,Clone> getIMap(PreparedStatement pst, String getMethodName, int serializableId) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         assert pst!=null;
         assert serializableId > 0;
         ResultSet rs=pst.executeQuery();
@@ -74,7 +65,7 @@ import static nna.transaction.AbstractTransaction.getBean;
         return map;
     }
 
-    static HashMap<String,Clone> getSMap(PreparedStatement pst,String getMethodName,int serializableId) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+     static HashMap<String,Clone> getSMap(PreparedStatement pst,String getMethodName,int serializableId) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         assert pst!=null;
         assert serializableId > 0;
         ResultSet rs=pst.executeQuery();

@@ -1,9 +1,12 @@
 package nna.base.init;
 
+import nna.base.db.DBCon;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 /**
  * @author NNA-SHUAI
@@ -11,8 +14,7 @@ import java.sql.SQLException;
  **/
 
 public class NNAServiceInit2 {
-    private PreparedStatement[] psts;
-
+    public static HashMap<Integer,DBCon> dbConMap=new HashMap<Integer, DBCon>();
 
     public void build() throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException, NoSuchMethodException, ClassNotFoundException, IOException {
 
