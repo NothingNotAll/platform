@@ -1,6 +1,7 @@
 package nna.base.protocol.dispatch;
 
 import nna.base.bean.confbean.ConfMeta;
+import nna.base.bean.confbean.MetaBean;
 
 /**
  * s
@@ -11,10 +12,10 @@ import nna.base.bean.confbean.ConfMeta;
 
 public class ConfMetaSetFactory {
     private ConfMetaSetFactory(){}
-    public static ConfMeta getConfMeta(){
+    public static MetaBean getConfMeta(){
         return StoreData.getConfig();
     }
-    public static void setConfMeta(ConfMeta confMeta){
-        StoreData.setConfig(confMeta);
+    public static void setConfMeta(MetaBean meta){
+        StoreData.setConfig(meta);
     }
 }

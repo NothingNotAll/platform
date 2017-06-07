@@ -1,9 +1,8 @@
 package nna.base.protocol.dispatch;
 
 
-import nna.base.bean.combbean.CombController;
-import nna.base.bean.combbean.CombService;
-import nna.base.bean.confbean.ConfMeta;
+import nna.base.bean.confbean.MetaBean;
+import nna.base.bean.dbbean.PlatformApp;
 import nna.base.bean.dbbean.PlatformColumn;
 import nna.base.bean.dbbean.PlatformController;
 import nna.base.bean.dbbean.PlatformService;
@@ -16,25 +15,24 @@ import java.util.Map;
 
 public class Dispatch {
 
-	public void dispatch(ConfMeta confMeta) throws Exception{
-        Log log= confMeta.getLog();
-        CombController combController= confMeta.getCombController();
-        PlatformController controller=combController.getController();
+	public void dispatch(MetaBean metaBean) throws Exception{
+        Log log= metaBean.getLog();
+        PlatformApp platformApp=metaBean.getPlatformApp();
+        PlatformController controller=metaBean.getPlatformController();
         log.log("开始校验控制器状态",Log.INFO);
         check(controller,log);
-        CombService combService= confMeta.getCombService();
-        PlatformColumn[] reqColumns=confMeta.getRequest();
+        PlatformService platformService=metaBean.getPlatformService();
+        PlatformColumn[] reqColumns=metaBean.getReqColConfig();
         log.log("开始校验入参字段",Log.INFO);
-        checkReq(confMeta.getOutsideReq(),confMeta.getReqColumn(),reqColumns,log);
+        checkReq(metaBean.getOutReq(),metaBean.getReq(),reqColumns,log);
         log.log("开始校验服务状态",Log.INFO);
-        PlatformService platformService=combService.getService();
         check(platformService,log);
-        combService.getServiceMethod().invoke(combService.getServiceObject());
-        PlatformColumn[] rspColumns=confMeta.getResponse();
+        metaBean.getServiceMethod().invoke(metaBean.getServiceObject());
+        PlatformColumn[] rspColumns=metaBean.getRspColConfig();
         log.log("开始校验出参字段",Log.INFO);
-        HashMap<String,String[]> rspMap=confMeta.getRspColumn();
+        HashMap<String,String[]> rspMap=metaBean.getRsp();
         checkRsp(rspMap,rspColumns,log);
-        String appEncode=confMeta.getCombApp().getApp().getAppEncode();
+        String appEncode=platformApp.getAppEncode();
         log.log("应用编码："+appEncode,Log.INFO);
 	}
 

@@ -1,13 +1,9 @@
 package nna.base.protocol.dispatch;
 
-import nna.Marco;
-import nna.base.bean.combbean.CombApp;
-import nna.base.bean.combbean.CombController;
-import nna.base.bean.combbean.CombLog;
 import nna.base.bean.confbean.ConfMeta;
-import nna.base.bean.confbean.ConfSession;
+import nna.base.bean.confbean.MetaBean;
 import nna.base.bean.dbbean.PlatformLog;
-import nna.base.cache.CacheFactory;
+import nna.base.bean.dbbean.PlatformSession;
 import nna.base.cache.NNAServiceStart;
 import nna.base.log.Log;
 import nna.base.log.LogEntry;
@@ -17,8 +13,8 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
@@ -51,18 +47,17 @@ public abstract class AbstractDispatch<R,S> {
 
 
     protected void dispatch(R request,S response) throws InvocationTargetException, IllegalAccessException, IOException {
-        ConfMeta confMeta=null;
+        MetaBean confMeta=null;
         try{
             Integer oid=getConfMetaOID(request);
-            confMeta=CacheFactory.getConfMetaCache().get(oid).clone();
-            confMeta.setOutsideReq(getReqColMap(request));
+            confMeta= MetaBean.getConfMetaCache().get(oid).clone();
+            confMeta.setOutReq(getReqColMap(request));
             ConfMetaSetFactory.setConfMeta(confMeta);
             initUserLog(confMeta);
-            CombApp combApp=confMeta.getCombApp();
-            Method dispatchMethod=combApp.getAppDispatchMethod();
-            Object dispatchObject=combApp.getAppDispatchObject();
+            Method dispatchMethod=confMeta.getAppServiceMethod();
+            Object dispatchObject=confMeta.getAppServiceObject();
             dispatchMethod.invoke(dispatchObject,confMeta);
-            write(confMeta,response);
+            String renderPage=confMeta.getRenderPage();
         }catch (Exception e){
             e.printStackTrace();
         }catch (Throwable throwable){
@@ -72,7 +67,7 @@ public abstract class AbstractDispatch<R,S> {
         }
     }
 
-    private void destroy(ConfMeta confMeta) {
+    private void destroy(MetaBean confMeta) {
         Thread thread=Thread.currentThread();
         Long id=thread.getId();
         ConfMeta.getConfMetaMonitor().remove(id);
@@ -85,23 +80,7 @@ public abstract class AbstractDispatch<R,S> {
         String entryOID=rs[0];
         System.out.println(entryOID);
         String sessionId=rs[1];
-        if(ConfMeta.getFreeResources().contains(entryOID)){
-            return Marco.FREE;
-        }else{
-            if(!checkSession(sessionId)){
-                return Marco.LOGIN;
-            }else {
-                if(isUploadSource(entryOID)){
-                    return CacheFactory.getEnToIdCache().get(entryOID);
-                }else{
-                    if(isDownLoadSource(entryOID)){
-                        return CacheFactory.getEnToIdCache().get(entryOID);
-                    }else{
-                        return CacheFactory.getEnToIdCache().get(entryOID);
-                    }
-                }
-            }
-        }
+        return null;
     }
 
     private boolean isDownLoadSource(String entryOID) {
@@ -112,95 +91,36 @@ public abstract class AbstractDispatch<R,S> {
         return false;
     }
 
-    private void write(ConfMeta confMeta,S response) throws IOException {
-            OutputStream outputStream=getOutPutStream(response);
-            Log log=confMeta.getLog();
-            HashMap<String,String[]> rspMap=confMeta.getRspColumn();
-            CombController combController=confMeta.getCombController();
-            Method renderMethod=combController.getRenderMethod();
-            Object renderObject=combController.getRenderObject();
-            String renderPage=combController.getController().getRenderPage();
-            String appEncode=confMeta.getCombApp().getApp().getAppEncode();
-            write(log,outputStream,
-                    renderPage,
-                    renderMethod,
-                    renderObject,
-                    rspMap,
-                    appEncode);
-    }
 
-    private void write(Log log,
-                       OutputStream outputStream,
-                       String renderPage,
-                       Method renderMethod,
-                       Object renderObject,
-                       HashMap<String, String[]> rspMap,
-                       String appEncode) throws IOException {
-        String outStr=null;
-        if(renderPage!=null&&!renderPage.trim().equals("")){
-            try{
-                outStr=(String) renderMethod.invoke(renderObject,rspMap);
-            }catch (Throwable throwable){
-                throwable.printStackTrace();
-            }
-        }else{
-            String[] jsons=rspMap.get("JSON");
-            if(jsons!=null&&jsons.length ==1){
-                String json=jsons[0];
-                if(json!=null&&!json.trim().equals("")){
-                    outStr=json;
-                }
-            }
-        }
-        if(outStr!=null&&!outStr.trim().equals("")){
-            log.log("响应报文",Log.INFO);
-            log.log(outStr, Log.INFO);
-            outputStream.write(outStr.getBytes(appEncode));
-        }
-    }
-
-    private static boolean checkSession(String sessionId){
-        ConfSession confSession=CacheFactory.getUserSessionCache().get(sessionId);
-        if(confSession==null
-                ||System.currentTimeMillis()-confSession.getLastAccessd() > confSession.getCombSession().getTimedOut()
-                ||!checkPriv(confSession,sessionId)){
-            CacheFactory.getUserSessionCache().remove(sessionId);
-            return false;
-        }else{
-            ConfMetaSetFactory.getConfMeta().setConfSession(confSession);
-            return true;
-        }
-    }
-
-    private static boolean checkPriv(ConfSession confSession,String resourceId){
-        if(confSession.getCombUser().getResoruces().entrySet().contains(resourceId)){
-            return true;
-        }
-        return false;
-    }
-
-    private static void initUserLog(ConfMeta confMeta){
-        String serviceName=confMeta.getCombService().getService().getServiceName();
-        ConfSession confSession=confMeta.getConfSession();
-        Integer userId=confSession==null?-1:confSession.getCombUser().getPlatformUser().getUserId();
-        CombLog combLog=confMeta.getCombLog();
+    private static void initUserLog(MetaBean confMeta){
+        String serviceName=confMeta.getPlatformService().getServiceName();
+        PlatformSession confSession=confMeta.getPlatformSession();
+        Integer userId=confSession==null?-1:confMeta.getCurrentUser().getUserId();
+        PlatformLog combLog=confMeta.getServiceLogConfig();
         String logDir=
                 combLog.getLogDir()+yyyyMMdd.format(System.currentTimeMillis())
                         +"/"+ String.valueOf(userId==-1?"nosession":userId)
-                        +"/"+confMeta.getCombApp().getApp().getAppEn()
+                        +"/"+confMeta.getPlatformApp().getAppEn()
                         +"/"+ confMeta.getPlatformEntry().getEntryCode()
                         +"/"+ serviceName+"-"+HHmmssSSS.format(System.currentTimeMillis())+"-";
-        Log log=getLog(confMeta,logDir,combLog,serviceName);
+        Log log=getLog(confMeta.getLogNoGen(),combLog.getLogLevel()
+                ,logDir,
+                combLog,
+                serviceName);
         confMeta.setLog(log);
     }
 
-    private static Log getLog(ConfMeta confMeta, String logDir, CombLog combLog, String serviceName) {
-        PlatformLog platformLog=combLog.getPlatformLog();
+    private static Log getLog(
+            AtomicLong no,
+            int logLevel,
+                              String logDir,
+                              PlatformLog platformLog,
+                              String serviceName) {
         return LogEntry.submitInitEvent(
                 logDir,
-                combLog.getNextLogSeq(),
+                no,
                 serviceName+".log",
-                confMeta.getLogLevel(),
+                logLevel,
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
                 platformLog.getLogEncode()
