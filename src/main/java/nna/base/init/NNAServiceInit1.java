@@ -64,21 +64,24 @@ public class NNAServiceInit1 {
         getList(platformProxies,psts[16],Marco.PLATFORM_PROXY);
 
     }
-    public HashMap buildIMap(PreparedStatement pst,String methodName,Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+    public HashMap buildIMap(PreparedStatement pst,
+                             String methodName,
+                             Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         MapTransfer mapTransfer=new MapTransfer();
         HashMap<Integer,Clone> map=MapTransfer.getIMap(psts[0],methodName,serializableId);
         return mapTransfer.getIMap(map);
     }
-    public HashMap buildSMap(PreparedStatement pst,String methodName,Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+    public HashMap buildSMap(PreparedStatement pst,
+                             String methodName,
+                             Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         MapTransfer mapTransfer=new MapTransfer();
         HashMap<String,Clone> map=MapTransfer.getSMap(psts[0],methodName,serializableId);
         return mapTransfer.getSMap(map);
     }
 
-    public void getList(
-            List tList,
-            PreparedStatement pst,
-            int serializableId
+    public void getList(List tList,
+                        PreparedStatement pst,
+                        int serializableId
     ) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, InvocationTargetException {
         MapTransfer mapTransfer=new MapTransfer();
         ArrayList<Clone> arrayList=new ArrayList<Clone>();
