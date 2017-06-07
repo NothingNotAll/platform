@@ -23,7 +23,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static nna.transaction.AbstractTransaction.getBean;
