@@ -15,9 +15,10 @@ import java.util.Map;
 
 public class Dispatch {
 
-	public void dispatch(MetaBean metaBean) throws Exception{
+	public void dispatch(MetaBeanWrapper metaBean) throws Exception{
         Log log= metaBean.getLog();
         PlatformApp platformApp=metaBean.getPlatformApp();
+        checkApp(platformApp,log);
         PlatformController controller=metaBean.getPlatformController();
         log.log("开始校验控制器状态",Log.INFO);
         check(controller,log);
@@ -35,6 +36,13 @@ public class Dispatch {
         String appEncode=platformApp.getAppEncode();
         log.log("应用编码："+appEncode,Log.INFO);
 	}
+
+    private void checkApp(PlatformApp platformApp, Log log) throws Exception {
+	    LogUtil.log(platformApp,log,Log.INFO);
+	    if(!platformApp.isAppStatus()){
+	        throw new Exception("应用已被禁用");
+        }
+    }
 
     private static void check(PlatformController controller,Log log) throws Exception{
         LogUtil.log(controller,log,Log.INFO);

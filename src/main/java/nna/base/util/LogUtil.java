@@ -90,6 +90,10 @@ public class LogUtil {
         log.log(confMeta.toString(),10000);
     }
 
+    public static void log(PlatformApp confMeta, Log log){
+
+    }
+
     public static void log(PlatformColumn platformColumn, Log log,int logLevel){
         log.log("字段描述："+platformColumn.getColumnDesc(),logLevel);
         log.log("字段id："+platformColumn.getColumnId(),logLevel);

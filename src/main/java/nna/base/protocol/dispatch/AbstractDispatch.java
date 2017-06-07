@@ -55,7 +55,7 @@ public abstract class AbstractDispatch<R,S> {
             initUserLog(confMeta);
             Method dispatchMethod=confMeta.getAppServiceMethod();
             Object dispatchObject=confMeta.getAppServiceObject();
-            dispatchMethod.invoke(dispatchObject,confMeta);
+            dispatchMethod.invoke(dispatchObject,ConfMetaSetFactory.getMetaBeanWrapper());
             String renderPage=confMeta.getRenderPage();
         }catch (Exception e){
             e.printStackTrace();
