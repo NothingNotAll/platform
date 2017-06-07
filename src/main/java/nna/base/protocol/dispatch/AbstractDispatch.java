@@ -95,7 +95,7 @@ public abstract class AbstractDispatch<R,S> {
         String serviceName=confMeta.getPlatformService().getServiceName();
         PlatformSession confSession=confMeta.getPlatformSession();
         Integer userId=confSession==null?-1:confMeta.getCurrentUser().getUserId();
-        PlatformLog combLog=confMeta.getServiceLogConfig();
+        PlatformLog combLog=confMeta.getPlatformLog();
         String logDir=
                 combLog.getLogDir()+yyyyMMdd.format(System.currentTimeMillis())
                         +"/"+ String.valueOf(userId==-1?"nosession":userId)
