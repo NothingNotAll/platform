@@ -8,10 +8,7 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static nna.transaction.AbstractTransaction.getBean;
 
@@ -104,6 +101,45 @@ import static nna.transaction.AbstractTransaction.getBean;
              t=(T)iterator.next();
              tList.add(t);
          }
+    }
+
+    public void reduceSList(List list,
+                              String getMethodName,
+                              Map<String,ArrayList> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Iterator iterator=list.iterator();
+        while(iterator.hasNext()){
+            T t=(T)iterator.next();
+            Method method=ObjectUtil.loadMethodFromObjectAndMethodName(t,getMethodName);
+            String key=(String)method.invoke(t);
+            List temp=map.get(key);
+            put(temp,t,key,map);
+        }
+    }
+
+    public void reduceIList(List list,
+                             String getMethodName,
+                             Map<Integer,ArrayList> map) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Iterator iterator=list.iterator();
+        while(iterator.hasNext()){
+            T t=(T)iterator.next();
+            Method method=ObjectUtil.loadMethodFromObjectAndMethodName(t,getMethodName);
+            Integer key=(Integer)method.invoke(t);
+            List temp=map.get(key);
+            put(temp,t,key,map);
+        }
+    }
+
+    private void put(List temp,
+                     T t,
+                     Object key,
+                     Map map) {
+        if(temp==null){
+            temp=new ArrayList();
+            temp.add(t);
+            map.put(key,temp);
+        }else{
+            temp.add(t);
+        }
     }
 
 }

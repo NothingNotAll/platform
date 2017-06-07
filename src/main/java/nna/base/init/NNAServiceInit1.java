@@ -32,14 +32,14 @@ public class NNAServiceInit1 {
     public static ArrayList<PlatformServiceTransaction> serviceTrans=new ArrayList<PlatformServiceTransaction>();
     public static ArrayList<PlatformTransaction> trans=new ArrayList<PlatformTransaction>();
     public static ArrayList<PlatformUserRole> userRoles=new ArrayList<PlatformUserRole>();
-    public static ArrayList<PlatformProxy> platformProxies=new ArrayList<PlatformProxy>();
+    public static ArrayList<PlatformProxy> proxies=new ArrayList<PlatformProxy>();
 
-    public static HashMap<String,PlatformColumn[]> columnMap=new HashMap<String, PlatformColumn[]>();
-    public static HashMap<Integer,PlatformRoleResource[]> roleResourceMap=new HashMap<Integer,PlatformRoleResource[]>();
-    public static HashMap<String,PlatformServiceTransaction[]> platformServiceTranMap=new HashMap<String, PlatformServiceTransaction[]>();
-    public static HashMap<String,PlatformTransaction[]> platformTranMap=new HashMap<String, PlatformTransaction[]>();
-    public static HashMap<Integer,PlatformUserRole[]> platformUserRoleMap=new HashMap<Integer, PlatformUserRole[]>();
-    public static HashMap<String,PlatformProxy[]> platformProxyMap=new HashMap<String, PlatformProxy[]>();
+    public static HashMap<String,ArrayList<PlatformColumn>> columnMap=new HashMap<String, ArrayList<PlatformColumn>>();
+    public static HashMap<Integer,ArrayList<PlatformRoleResource>> roleResourceMap=new HashMap<Integer,ArrayList<PlatformRoleResource>>();
+    public static HashMap<String,ArrayList<PlatformServiceTransaction>> serviceTranMap=new HashMap<String, ArrayList<PlatformServiceTransaction>>();
+    public static HashMap<String,ArrayList<PlatformTransaction>> tranMap=new HashMap<String, ArrayList<PlatformTransaction>>();
+    public static HashMap<Integer,ArrayList<PlatformUserRole>> userRoleMap=new HashMap<Integer, ArrayList<PlatformUserRole>>();
+    public static HashMap<String,ArrayList<PlatformProxy>> proxyMap=new HashMap<String, ArrayList<PlatformProxy>>();
 
     public NNAServiceInit1(PreparedStatement[] psts){
         this.psts=psts;
@@ -61,13 +61,48 @@ public class NNAServiceInit1 {
         getList(serviceTrans,psts[13],Marco.PLATFORM_SERVICE_TRANSACTION);
         getList(trans,psts[14],Marco.PLATFORM_TRANSACTION);
         getList(userRoles,psts[15],Marco.PLATFORM_USER_ROLE);
-        getList(platformProxies,psts[16],Marco.PLATFORM_PROXY);
+        getList(proxies,psts[16],Marco.PLATFORM_PROXY);
 
-        reduce();
+        reduceSList(columns,"getColumnId",(Map)columnMap);
+        reduceIList(roleResources,"getRoleId",(Map)roleResourceMap);
+        reduceSList(serviceTrans,"getTransactions",(Map)serviceTranMap);
+        reduceSList(trans,"getTransactionName",(Map)tranMap);
+        reduceSList(userRoles,"getUserId",(Map)userRoleMap);
+        reducePlatformProxies();
+
     }
 
-    private void reduce() {
+    private void reducePlatformProxies() {
+        Iterator<PlatformProxy> iterator=proxies.iterator();
+        while(iterator.hasNext()){
+            PlatformProxy platformProxy=iterator.next();
+            ArrayList<PlatformProxy> platformProxies=proxyMap.get(platformProxy.getBeenproxyClassRegex()+platformProxy.getBeenproxyMethodRegex());
+            if(platformProxies==null){
+                ArrayList<PlatformProxy> arrayList=new ArrayList();
+                arrayList.add(platformProxy);
+                proxyMap.put(platformProxy.getBeenproxyClassRegex()+"/"+platformProxy.getBeenproxyMethodRegex(),arrayList);
+            }else{
+                platformProxies.add(platformProxy);
+            }
+        }
+    }
 
+    public void reduceSList(
+            List list,
+            String getMethodName,
+            Map<String,ArrayList> map
+    ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        MapTransfer mapTransfer=new MapTransfer();
+        mapTransfer.reduceSList(list,getMethodName,map);
+    }
+
+    public void reduceIList(
+            List list,
+            String getMethodName,
+            Map<Integer,ArrayList> map
+    ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        MapTransfer mapTransfer=new MapTransfer();
+        mapTransfer.reduceIList(list,getMethodName,map);
     }
 
     public HashMap buildIMap(PreparedStatement pst,
