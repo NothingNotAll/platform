@@ -3,10 +3,6 @@ package nna.base.init;
 import nna.Marco;
 import nna.base.bean.Clone;
 import nna.base.bean.dbbean.*;
-import nna.base.db.DBCon;
-import nna.base.proxy.ProxyFactory;
-import nna.base.proxy.ProxyService;
-import nna.transaction.AbstractTransaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
