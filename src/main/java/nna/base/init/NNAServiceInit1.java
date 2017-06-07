@@ -76,7 +76,7 @@ public class NNAServiceInit1 {
         Iterator<PlatformProxy> iterator=proxies.iterator();
         while(iterator.hasNext()){
             PlatformProxy platformProxy=iterator.next();
-            ArrayList<PlatformProxy> platformProxies=proxyMap.get(platformProxy.getBeenproxyClassRegex()+platformProxy.getBeenproxyMethodRegex());
+            ArrayList<PlatformProxy> platformProxies=proxyMap.get(platformProxy.getBeenproxyClassRegex()+"/"+platformProxy.getBeenproxyMethodRegex());
             if(platformProxies==null){
                 ArrayList<PlatformProxy> arrayList=new ArrayList();
                 arrayList.add(platformProxy);
