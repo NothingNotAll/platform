@@ -1,0 +1,8 @@
+1:关于异常处理机制的完善
+  需要定义全局统一响应描述 响应码值
+2:事务模块的合理整治，模块需要重新绘制
+3:高效序列化模块
+4:分布式模块;Redis搭配启动
+5:IOC
+
+The goal is that config with person instead of write with hand
