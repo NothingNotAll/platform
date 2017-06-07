@@ -4,5 +4,7 @@
 3:高效序列化模块
 4:分布式模块;Redis搭配启动
 5:IOC
+6:将ConfMeta与其它模块的耦合度去除，使得各个模块只使用到自己相关联的Meta-Bean,达到
+平台的任意修改与扩展
 
 The goal is that config with person instead of write with hand

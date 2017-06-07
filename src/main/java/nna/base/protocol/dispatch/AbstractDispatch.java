@@ -8,7 +8,6 @@ import nna.base.bean.confbean.ConfMeta;
 import nna.base.bean.confbean.ConfSession;
 import nna.base.bean.dbbean.PlatformLog;
 import nna.base.cache.CacheFactory;
-import nna.base.cache.NNAServiceInit0;
 import nna.base.cache.NNAServiceStart;
 import nna.base.log.Log;
 import nna.base.log.LogEntry;
@@ -52,16 +51,33 @@ public abstract class AbstractDispatch<R,S> {
 
 
     protected void dispatch(R request,S response) throws InvocationTargetException, IllegalAccessException, IOException {
-        Integer oid=getConfMetaOID(request);
-        ConfMeta confMeta=CacheFactory.getConfMetaCache().get(oid).clone();
-        confMeta.setOutsideReq(getReqColMap(request));
-        ConfMetaSetFactory.setConfMeta(confMeta);
-        initUserLog(confMeta);
-        CombApp combApp=confMeta.getCombApp();
-        Method dispatchMethod=combApp.getAppDispatchMethod();
-        Object dispatchObject=combApp.getAppDispatchObject();
-        dispatchMethod.invoke(dispatchObject,confMeta);
-        write(confMeta,response);
+        ConfMeta confMeta=null;
+        try{
+            Integer oid=getConfMetaOID(request);
+            confMeta=CacheFactory.getConfMetaCache().get(oid).clone();
+            confMeta.setOutsideReq(getReqColMap(request));
+            ConfMetaSetFactory.setConfMeta(confMeta);
+            initUserLog(confMeta);
+            CombApp combApp=confMeta.getCombApp();
+            Method dispatchMethod=combApp.getAppDispatchMethod();
+            Object dispatchObject=combApp.getAppDispatchObject();
+            dispatchMethod.invoke(dispatchObject,confMeta);
+            write(confMeta,response);
+        }catch (Exception e){
+            e.printStackTrace();
+        }catch (Throwable throwable){
+
+        }finally {
+            destroy(confMeta);
+        }
+    }
+
+    private void destroy(ConfMeta confMeta) {
+        Thread thread=Thread.currentThread();
+        Long id=thread.getId();
+        ConfMeta.getConfMetaMonitor().remove(id);
+        LogEntry.submitCloseEvent(confMeta.getLog());
+        ConfMetaSetFactory.setConfMeta(null);//for prevent memory leak
     }
 
     private Integer getConfMetaOID(R request) {
@@ -97,7 +113,6 @@ public abstract class AbstractDispatch<R,S> {
     }
 
     private void write(ConfMeta confMeta,S response) throws IOException {
-        try{
             OutputStream outputStream=getOutPutStream(response);
             Log log=confMeta.getLog();
             HashMap<String,String[]> rspMap=confMeta.getRspColumn();
@@ -112,12 +127,6 @@ public abstract class AbstractDispatch<R,S> {
                     renderObject,
                     rspMap,
                     appEncode);
-        }catch (Exception e){
-
-        }finally {
-            LogEntry.submitCloseEvent(confMeta.getLog());
-            ConfMetaSetFactory.setConfMeta(null);//for prevent memory leak
-        }
     }
 
     private void write(Log log,

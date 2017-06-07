@@ -29,14 +29,7 @@ public class Dispatch {
         log.log("开始校验服务状态",Log.INFO);
         PlatformService platformService=combService.getService();
         check(platformService,log);
-        switch (platformService.getServiceMethod()){
-            case execNonDB:
-                combService.getServiceMethod().invoke(combService.getServiceObject(),null);
-                break;
-            case execTransaction:
-                combService.getServiceMethod().invoke(combService.getServiceObject());
-                break;
-        }
+        combService.getServiceMethod().invoke(combService.getServiceObject());
         PlatformColumn[] rspColumns=confMeta.getResponse();
         log.log("开始校验出参字段",Log.INFO);
         HashMap<String,String[]> rspMap=confMeta.getRspColumn();

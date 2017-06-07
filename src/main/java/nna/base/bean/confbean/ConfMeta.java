@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Global Request Meta-Bean
@@ -26,6 +28,8 @@ import java.util.Map;
 public class ConfMeta extends Clone{
     private static final long serialVersionUID = -1L;
     private static HashSet<String> freeResources;
+
+    private static ConcurrentHashMap<Long,ConfMeta> confMetaMonitor=new ConcurrentHashMap<Long, ConfMeta>();
 
     //be live in the whole application life
     private transient static Log platformLog;
@@ -95,6 +99,9 @@ public class ConfMeta extends Clone{
         confMeta.setCurrentConnection(null);
         confMeta.setLog(null);
 
+        Thread thread=Thread.currentThread();
+        Long threadId=thread.getId();
+        confMetaMonitor.put(threadId,confMeta);
         return confMeta;
     }
 
@@ -339,5 +346,13 @@ public class ConfMeta extends Clone{
 
     public void setCombTransactions(CombTransaction[] combTransactions) {
         this.combTransactions = combTransactions;
+    }
+
+    public static ConcurrentHashMap<Long, ConfMeta> getConfMetaMonitor() {
+        return confMetaMonitor;
+    }
+
+    public static void setConfMetaMonitor(ConcurrentHashMap<Long, ConfMeta> confMetaMonitor) {
+        ConfMeta.confMetaMonitor = confMetaMonitor;
     }
 }
