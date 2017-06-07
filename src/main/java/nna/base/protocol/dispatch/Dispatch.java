@@ -1,7 +1,6 @@
 package nna.base.protocol.dispatch;
 
 
-import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformApp;
 import nna.base.bean.dbbean.PlatformColumn;
 import nna.base.bean.dbbean.PlatformController;
