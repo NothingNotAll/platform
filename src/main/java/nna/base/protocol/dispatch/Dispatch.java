@@ -18,6 +18,7 @@ public class Dispatch {
 	public void dispatch(MetaBeanWrapper metaBean) throws Exception{
         Log log= metaBean.getLog();
         PlatformApp platformApp=metaBean.getPlatformApp();
+        log.log("开始校验应用状态",Log.INFO);
         checkApp(platformApp,log);
         PlatformController controller=metaBean.getPlatformController();
         log.log("开始校验控制器状态",Log.INFO);
