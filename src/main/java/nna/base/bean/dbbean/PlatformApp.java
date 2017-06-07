@@ -23,10 +23,6 @@ public class PlatformApp extends Clone {
     private String appDispatchMethod;
     private Timestamp appCreateTimestamp;
     private String appEncode;
-    private String appWorkspace;
-    private int appLogId;
-    private int appDbId;
-    private int appMessageId;
     private String appUploadpath;
     private String appDownloadpath;
     private String appDesc;
@@ -105,30 +101,6 @@ public class PlatformApp extends Clone {
         System.out.println(platformApp1.appDesc);
     }
 
-    public String getAppWorkspace() {
-        return appWorkspace;
-    }
-
-    public void setAppWorkspace(String appWorkspace) {
-        this.appWorkspace = appWorkspace;
-    }
-
-    public int getAppLogId() {
-        return appLogId;
-    }
-
-    public void setAppLogId(int appLogId) {
-        this.appLogId = appLogId;
-    }
-
-    public int getAppDbId() {
-        return appDbId;
-    }
-
-    public void setAppDbId(int appDbId) {
-        this.appDbId = appDbId;
-    }
-
     public boolean isAppIsdistribute() {
         return appIsdistribute;
     }
@@ -161,11 +133,4 @@ public class PlatformApp extends Clone {
         this.appDownloadpath = appDownloadpath;
     }
 
-    public int getAppMessageId() {
-        return appMessageId;
-    }
-
-    public void setAppMessageId(int appMessageId) {
-        this.appMessageId = appMessageId;
-    }
 }

@@ -24,8 +24,6 @@ public class NNAServiceStart {
             nna1.build();
             NNAServiceInit2 nna2=new NNAServiceInit2(psts);
             nna2.build();
-            NNAServiceInit3 nna3=new NNAServiceInit3(psts);
-            nna3.build();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

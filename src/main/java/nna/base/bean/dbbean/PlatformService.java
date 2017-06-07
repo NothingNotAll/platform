@@ -16,11 +16,8 @@ public class PlatformService extends Clone {
 
     private String serviceName;
     private boolean status;
-    private boolean serviceLogEncrpt;
-    private int serviceLogLevel;
     private String serviceClass;
     private ServiceMethodType serviceMethodType;
-    private int serviceTempsize;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
     private String serviceDesc;
@@ -76,30 +73,6 @@ public class PlatformService extends Clone {
 
     public void setUpdateTimestamp(Timestamp updateTimestamp) {
         this.updateTimestamp = updateTimestamp;
-    }
-
-    public int getServiceLogLevel() {
-        return serviceLogLevel;
-    }
-
-    public void setServiceLogLevel(int serviceLogLevel) {
-        this.serviceLogLevel = serviceLogLevel;
-    }
-
-    public boolean isServiceLogEncrpt() {
-        return serviceLogEncrpt;
-    }
-
-    public void setServiceLogEncrpt(boolean serviceLogEncrpt) {
-        this.serviceLogEncrpt = serviceLogEncrpt;
-    }
-
-    public int getServiceTempsize() {
-        return serviceTempsize;
-    }
-
-    public void setServiceTempsize(int serviceTempsize) {
-        this.serviceTempsize = serviceTempsize;
     }
 
     public ServiceMethodType getServiceMethodType() {

@@ -15,7 +15,6 @@ public class PlatformController extends Clone {
 
     private int id;
     private boolean status;
-    private String service;
     private String renderClass;
     private String renderMethod;
     private String renderPage;
@@ -33,14 +32,6 @@ public class PlatformController extends Clone {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
     }
 
     public String getRenderClass() {

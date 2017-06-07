@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class MetaBean extends Clone{
     //Global App Config Cache;
-    private static Log platformLog;
+    private static Log pLog;
     private static ConcurrentHashMap<Long,MetaBean> metaMonitor=new ConcurrentHashMap<Long, MetaBean>();
     private static HashSet<String> freeResource=new HashSet<String>();
     private static HashSet<String> userIdSet=new HashSet<String>();
@@ -43,7 +43,7 @@ public class MetaBean extends Clone{
     private PlatformController platformController;
     private PlatformApp platformApp;
     private PlatformDB platformDB;
-    private PlatformLog serviceLogConfig;
+    private PlatformLog platformLog;
     private PlatformService platformService;
     private PlatformSession platformSession;
 
@@ -146,6 +146,14 @@ public class MetaBean extends Clone{
         MetaBean.sessions = sessions;
     }
 
+    public static Log getpLog() {
+        return pLog;
+    }
+
+    public static void setpLog(Log pLog) {
+        MetaBean.pLog = pLog;
+    }
+
     @Override
     public MetaBean clone(){
         AtomicLong servAL=logNoGen;
@@ -158,13 +166,6 @@ public class MetaBean extends Clone{
         Long threadId=thread.getId();
         metaMonitor.put(threadId,metaBean);
         return metaBean;
-    }
-    public static Log getPlatformLog() {
-        return platformLog;
-    }
-
-    public static void setPlatformLog(Log platformLog) {
-        MetaBean.platformLog = platformLog;
     }
 
     public static ConcurrentHashMap<Long, MetaBean> getMetaMonitor() {
@@ -317,14 +318,6 @@ public class MetaBean extends Clone{
 
     public void setPlatformDB(PlatformDB platformDB) {
         this.platformDB = platformDB;
-    }
-
-    public PlatformLog getServiceLogConfig() {
-        return serviceLogConfig;
-    }
-
-    public void setServiceLogConfig(PlatformLog serviceLogConfig) {
-        this.serviceLogConfig = serviceLogConfig;
     }
 
     public PlatformService getPlatformService() {
@@ -517,5 +510,13 @@ public class MetaBean extends Clone{
 
     public void setTranStack(ArrayList<PlatformServiceTransaction> tranStack) {
         this.tranStack = tranStack;
+    }
+
+    public PlatformLog getPlatformLog() {
+        return platformLog;
+    }
+
+    public void setPlatformLog(PlatformLog platformLog) {
+        this.platformLog = platformLog;
     }
 }

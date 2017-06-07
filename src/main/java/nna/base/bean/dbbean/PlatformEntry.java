@@ -14,9 +14,15 @@ public class PlatformEntry extends Clone {
     private int entryId;
     private String entryCode;
     private int entryAppId;
-    private String entryUri;
     private int entryControllerId;
+    private int entryServiceId;
+    private int entryDBId;
+    private int entryLogId;
+    private int entryTempSize;
     private float entryTimeout;
+    private String entryTransactions;
+    private String entryReqId;
+    private String entryRspId;
     private String entryDesc;
 
     public PlatformEntry(){
@@ -63,19 +69,67 @@ public class PlatformEntry extends Clone {
         this.entryAppId = entryAppId;
     }
 
-    public String getEntryUri() {
-        return entryUri;
-    }
-
-    public void setEntryUri(String entryUri) {
-        this.entryUri = entryUri;
-    }
-
     public float getEntryTimeout() {
         return entryTimeout;
     }
 
     public void setEntryTimeout(float entryTimeout) {
         this.entryTimeout = entryTimeout;
+    }
+
+    public int getEntryServiceId() {
+        return entryServiceId;
+    }
+
+    public void setEntryServiceId(int entryServiceId) {
+        this.entryServiceId = entryServiceId;
+    }
+
+    public int getEntryDBId() {
+        return entryDBId;
+    }
+
+    public void setEntryDBId(int entryDBId) {
+        this.entryDBId = entryDBId;
+    }
+
+    public int getEntryLogId() {
+        return entryLogId;
+    }
+
+    public void setEntryLogId(int entryLogId) {
+        this.entryLogId = entryLogId;
+    }
+
+    public int getEntryTempSize() {
+        return entryTempSize;
+    }
+
+    public void setEntryTempSize(int entryTempSize) {
+        this.entryTempSize = entryTempSize;
+    }
+
+    public String getEntryTransactions() {
+        return entryTransactions;
+    }
+
+    public void setEntryTransactions(String entryTransactions) {
+        this.entryTransactions = entryTransactions;
+    }
+
+    public String getEntryReqId() {
+        return entryReqId;
+    }
+
+    public void setEntryReqId(String entryReqId) {
+        this.entryReqId = entryReqId;
+    }
+
+    public String getEntryRspId() {
+        return entryRspId;
+    }
+
+    public void setEntryRspId(String entryRspId) {
+        this.entryRspId = entryRspId;
     }
 }

@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class PlatformServiceTransaction extends Clone {
     private static final Long serialVersionUID=7L;
 
-    private String serviceName;
+    private String transactions;
     private String transactionName;
     private int transactionSqlSize;
     private int serviceTransactionSequence;
@@ -30,14 +30,6 @@ public class PlatformServiceTransaction extends Clone {
 
     public PlatformServiceTransaction(){
 
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
     }
 
     public String getTransactionName() {
@@ -126,5 +118,13 @@ public class PlatformServiceTransaction extends Clone {
 
     public void setFailIndex(Integer failIndex) {
         this.failIndex = failIndex;
+    }
+
+    public String getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(String transactions) {
+        this.transactions = transactions;
     }
 }
