@@ -68,14 +68,14 @@ public class NNAServiceInit1 {
                              String methodName,
                              Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         MapTransfer mapTransfer=new MapTransfer();
-        HashMap<Integer,Clone> map=MapTransfer.getIMap(psts[0],methodName,serializableId);
+        HashMap<Integer,Clone> map=MapTransfer.getIMap(pst,methodName,serializableId);
         return mapTransfer.getIMap(map);
     }
     public HashMap buildSMap(PreparedStatement pst,
                              String methodName,
                              Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         MapTransfer mapTransfer=new MapTransfer();
-        HashMap<String,Clone> map=MapTransfer.getSMap(psts[0],methodName,serializableId);
+        HashMap<String,Clone> map=MapTransfer.getSMap(pst,methodName,serializableId);
         return mapTransfer.getSMap(map);
     }
 
