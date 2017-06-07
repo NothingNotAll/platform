@@ -50,7 +50,6 @@ public class NNAServiceInit1 {
         platformDBMap=buildIMap(psts[2],"getDbId",Marco.PLATFORM_DB);
         platformEntryMap=buildIMap(psts[3],"getEntryId",Marco.PLATFORM_ENTRY);
         platformLogMap=buildIMap(psts[4],"getLogId",Marco.PLATFORM_LOG);
-
         platformResourceMap=buildIMap(psts[6],"getResourceId",Marco.PLATFORM_RESOURCE);
         platformRoleMap=buildIMap(psts[7],"getRoleId",Marco.PLATFORM_ROLE);
         platformServiceMap=buildSMap(psts[8],"getServiceName",Marco.PLATFORM_SERVICE);
