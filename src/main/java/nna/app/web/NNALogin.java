@@ -3,8 +3,7 @@ package nna.app.web;
 import nna.Marco;
 import nna.app.tran.ext.TranSelPriUser;
 import nna.base.bean.combbean.CombUser;
-import nna.base.bean.confbean.ConfMeta;
-import nna.base.cache.CacheFactory;
+import nna.base.bean.confbean.MetaBean;
 import nna.base.protocol.dispatch.AppUtil;
 import nna.base.proxy.Logic;
 import nna.transaction.Transaction;
@@ -45,7 +44,7 @@ public class NNALogin {
             if(combUser.getPlatformUser().getUserPassword().equals(AppUtil.getRequest("userPassword")[0])){
                 return ;
             }else{
-                ConfMeta confMeta=CacheFactory.
+                MetaBean confMeta=MetaBean.
                         getConfMetaCache().
                         get(Marco.LOGIN_PASSWORD_ERROR);
                 AppUtil.setConfMeta(confMeta);

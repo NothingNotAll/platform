@@ -1,16 +1,18 @@
-package nna.base.cache;
+package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.combbean.*;
-import nna.base.bean.confbean.ConfMeta;
-import nna.base.bean.dbbean.PlatformColumn;
+import nna.base.bean.confbean.MetaBean;
 import nna.base.bean.dbbean.PlatformEntry;
+import nna.base.bean.dbbean.PlatformServiceTransaction;
 import nna.base.protocol.dispatch.AppUtil;
 import nna.base.log.Log;
+import nna.base.util.List;
 import nna.base.util.LogUtil;
 import nna.transaction.AbstractTransaction;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
@@ -45,8 +48,7 @@ public class NNAServiceInit3 {
     private void buildCMSCache(PreparedStatement pst) throws SQLException {
         ResultSet cmsCountRs=pst.executeQuery();
         cmsCountRs.next();
-        CacheFactory.initConfMetaCache(cmsCountRs.getInt(1));
-        CacheFactory.initEnToIdCache(cmsCountRs.getInt(1));
+        MetaBean.setConfMetaCache(new List<MetaBean>(cmsCountRs.getInt(1)));
         cmsCountRs.close();
         pst.close();
     }
@@ -55,52 +57,52 @@ public class NNAServiceInit3 {
         assert cmPst!=null;
         ResultSet rs=cmPst.executeQuery();
         PlatformEntry platformEntry;
-        ConfMeta cm;
+        MetaBean cm=null;
         Log log = null;
         while(rs.next()){
-            cm=new ConfMeta();
+            cm=new MetaBean();
             ConfMeta.setFreeResources(NNAServiceInit2.freeResourceSet);
             platformEntry= (PlatformEntry) AbstractTransaction.getBean(rs, Marco.PLATFORM_ENTRY);
-            CacheFactory.getEnToIdCache().put(platformEntry.getEntryUri(),platformEntry.getEntryControllerId());
-            CacheFactory.getConfMetaCache().insert(cm,100);
-            CombController combController=NNAServiceInit2.combControllerMap.get(platformEntry.getEntryControllerId());
-            cm.setCombController(combController);
-            CombApp combApp=NNAServiceInit2.combAppMap.get(platformEntry.getEntryAppId());
-            cm.setCombApp(combApp);
-            CombDB combDB=NNAServiceInit2.combDBMap.get(combApp.getApp().getAppDbId());
-            cm.setCombDB(combDB);
-            CombLog combLog=NNAServiceInit2.combLogMap.get(combApp.getApp().getAppLogId());
-            cm.setCombLog(combLog);
-            CombService combService=NNAServiceInit2.combServiceMap.get(combController.getController().getService());
-            cm.setCombService(combService);
-            HashMap<String,CombTransaction> combTransactionMap=NNAServiceInit2.combTransactionHashMap.get(combService.getService().getServiceName());
-            cm.setCombTransactionMap(combTransactionMap);
-            setServiceTranList(cm);
-            HashMap<Integer,CombUser> combUserMap=NNAServiceInit2.combUserHashMap.get(platformEntry.getEntryControllerId());
-            cm.setCombUserMap(combUserMap);
-            PlatformColumn[] request=NNAServiceInit2.colMap.get(combService.getService().getServiceName()+"/req");
-            cm.setRequest(request==null?new PlatformColumn[0]:request);
-            PlatformColumn[] response=NNAServiceInit2.colMap.get(combService.getService().getServiceName()+"/rsp");
-            cm.setResponse(response==null?new PlatformColumn[0]:response);
-            cm.setLogEncrypt(combService.getService().isServiceLogEncrpt());
-            cm.setLogLevel(combService.getService().getServiceLogLevel());
+            MetaBean.getConfMetaCache().insert(cm,1000);
+            cm.setPlatformController(NNAServiceInit2.combControllerMap.get(platformEntry.getEntryId()));
+            cm.setRenderMethod((Method) NNAServiceInit2.renderMap.get(platformEntry.getEntryId())[0]);
+            cm.setRenderObject(NNAServiceInit2.renderMap.get(platformEntry.getEntryId())[1]);
+            cm.setPlatformApp(NNAServiceInit2.combAppMap.get(platformEntry.getEntryAppId()));
+            cm.setAppServiceMethod((Method)NNAServiceInit2.appServiceMap.get(platformEntry.getEntryAppId())[0]);
+            cm.setAppServiceObject(NNAServiceInit2.appServiceMap.get(platformEntry.getEntryAppId())[1]);
+            cm.setPlatformDB(NNAServiceInit2.combDBMap.get(cm.getPlatformApp().getAppDbId()));
+            cm.setDbCon(NNAServiceInit2.dbConMap.get(cm.getPlatformApp().getAppId()));
+            cm.setServiceLogConfig(NNAServiceInit2.combLogMap.get(cm.getPlatformApp().getAppLogId()));
+            cm.setLogNoGen(new AtomicLong());
+            cm.setPlatformService(NNAServiceInit2.combServiceMap.get(cm.getPlatformController().getService()));
+//            HashMap<String,CombTransaction> combTransactionMap=NNAServiceInit2.combTransactionHashMap.get(combService.getService().getServiceName());
+//            cm.setCombTransactionMap(combTransactionMap);
+//            setServiceTranList(cm);
+//            HashMap<Integer,CombUser> combUserMap=NNAServiceInit2.combUserHashMap.get(platformEntry.getEntryControllerId());
+//            cm.setCombUserMap(combUserMap);
+//            PlatformColumn[] request=NNAServiceInit2.colMap.get(combService.getService().getServiceName()+"/req");
+//            cm.setRequest(request==null?new PlatformColumn[0]:request);
+//            PlatformColumn[] response=NNAServiceInit2.colMap.get(combService.getService().getServiceName()+"/rsp");
+//            cm.setResponse(response==null?new PlatformColumn[0]:response);
+//            cm.setLogEncrypt(combService.getService().isServiceLogEncrpt());
+//            cm.setLogLevel(combService.getService().getServiceLogLevel());
             setColMap(cm);
             log=AppUtil.getLog();
-            LogUtil.log(request,log,10000);
-            LogUtil.log(response,log,10000);
+//            LogUtil.log(request,log,10000);
+//            LogUtil.log(response,log,10000);
             cm.setPlatformEntry(platformEntry);
             LogUtil.log(cm.getPlatformEntry(),log,1000000);
-            LogUtil.log(cm.getCombApp().getApp(),log,1000000);
-            LogUtil.log(cm.getCombDB().getPlatformDB(),log,10000);
-            LogUtil.log(cm.getCombController().getController(),log,1000000);
-            LogUtil.log(cm.getCombLog().getPlatformLog(),log,1000000);
-            LogUtil.log(cm.getCombService().getService(),log,1000000);
+            LogUtil.log(cm.getPlatformApp(),log,1000000);
+            LogUtil.log(cm.getPlatformDB(),log,10000);
+            LogUtil.log(cm.getPlatformController(),log,1000000);
+            LogUtil.log(cm.getServiceLogConfig(),log,1000000);
+            LogUtil.log(cm.getPlatformService(),log,1000000);
             log.log("应用日志级别："+cm.getLogLevel(),10000);
             log.log("应用日志是否启用加密机制："+cm.isLogEncrypt(),1000);
-            log.log("请求KEY-VALUE容器容量："+(cm.getOutsideReq()==null?"0":""+(cm.getOutsideReq().size())),100000);
+            log.log("请求KEY-VALUE容器容量："+(cm.getOutReq()==null?"0":""+(cm.getOutReq().size())),100000);
             log.log("临时字段容器容量:"+(cm.getTemp()==null?"0":""+cm.getTemp().size()),100000);
-            log.log("响应字段容器容量："+(cm.getRspColumn()==null?"0":""+cm.getRspColumn().size()),100000);
-            log.log("入参字段容器容量："+(cm.getReqColumn()==null?"0":""+cm.getReqColumn().size()),100000);
+            log.log("响应字段容器容量："+(cm.getRsp()==null?"0":""+cm.getRsp().size()),100000);
+            log.log("入参字段容器容量："+(cm.getReq()==null?"0":""+cm.getReq().size()),100000);
             log.log("-------------------------------------------------------------------------------------",100000000);
         }
         rs.close();
@@ -132,16 +134,12 @@ public class NNAServiceInit3 {
         cm.setCombTransactions(combTransactions);
     }
 
-    private void setColMap(ConfMeta cm) {
-        CombService cs=cm.getCombService();
-        cm.setOutsideReq(new HashMap<String, String[]>(cm.getRequest()==null?0:cm.getRequest().length));
-        cm.setReqColumn(new HashMap<String, String[]>(cm.getRequest()==null?0:cm.getRequest().length));
-        cm.setRspColumn(new HashMap<String, String[]>(cm.getResponse()==null?0:cm.getResponse().length));
-        cm.setTemp(new HashMap<String, Object>(cs.
-                getService().
-                getServiceTempsize()));
-        cm.setTranStack(new ArrayList<CombTransaction>(cm.getCombTransactionMap().size()));
-        cm.setPstStack(new ArrayList<PreparedStatement[]>(cm.getCombTransactionMap().size()));
-        cm.setConStack(new ArrayList<Connection>(cm.getCombTransactionMap().size()));
+    private void setColMap(MetaBean cm) {
+        cm.setOutReq(new HashMap<String, String[]>(cm.getReqColConfig()==null?0:cm.getReqColConfig().length));
+        cm.setReq(new HashMap<String, String[]>(cm.getReqColConfig()==null?0:cm.getReqColConfig().length));
+        cm.setRsp(new HashMap<String, String[]>(cm.getRspColConfig()==null?0:cm.getRspColConfig().length));
+        cm.setTranStack(new ArrayList<PlatformServiceTransaction>(cm.getServiceTrans().length));
+        cm.setPstStack(new ArrayList<PreparedStatement[]>(cm.getServiceTrans().length));
+        cm.setConStack(new ArrayList<Connection>(cm.getServiceTrans().length));
     }
 }

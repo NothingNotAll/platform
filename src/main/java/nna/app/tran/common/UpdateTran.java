@@ -2,7 +2,6 @@ package nna.app.tran.common;
 
 import nna.Marco;
 import nna.base.bean.combbean.CombTransaction;
-import nna.base.bean.confbean.ConfMeta;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.enums.DBSQLConValType;
 import nna.transaction.AbstractTransaction;
@@ -25,21 +24,21 @@ public class UpdateTran extends AbstractTransaction<Object> {
 
     @Override
     public Object execTransaction(String transactionName) throws SQLException{
-        ConfMeta confMeta= ConfMetaSetFactory.getConfMeta();
-        String tranNm=confMeta.getReqColumn().get(Marco.TRAN_NAME)[0];
+        MetaBean confMeta= ConfMetaSetFactory.getConfMeta();
+        String tranNm=confMeta.getReq().get(Marco.TRAN_NAME)[0];
         super.execTransaction(tranNm);
         return null;
     }
 
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
         PreparedStatement updatePst=sts[0];
-        ConfMeta confMeta=ConfMetaSetFactory.getConfMeta();
-        CombTransaction deleteCombTran=confMeta.getCombTransactions()[0];
+        MetaBean confMeta=ConfMetaSetFactory.getConfMeta();
+        CombTransaction deleteCombTran=null;
         ArrayList<String[]> cons=deleteCombTran.getConditions();
         ArrayList<DBSQLConValType[]> dbConTypes=deleteCombTran.getConditionValueTypes();
         String[] columns=cons.get(0);
         DBSQLConValType[] dbsqlConValTypes=dbConTypes.get(0);
-        HashMap<String,String[]> conMap=confMeta.getReqColumn();
+        HashMap<String,String[]> conMap=confMeta.getReq();
         exeMultiUpdate(updatePst,conMap,columns,dbsqlConValTypes);
         return null;
     }

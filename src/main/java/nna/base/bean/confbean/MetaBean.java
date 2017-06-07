@@ -29,15 +29,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MetaBean extends Clone{
     //Global App Config Cache;
     private static Log platformLog;
-    private static ConcurrentHashMap<Long,MetaBean> metaMonitor;
-    private static HashSet<String> freeResource;
-    private static HashSet<String> userIdSet;
-    private static HashMap<String,PlatformRole[]> allUserRole;
-    private static HashMap<String,PlatformResource[]> allUserResource;
+    private static ConcurrentHashMap<Long,MetaBean> metaMonitor=new ConcurrentHashMap<Long, MetaBean>();
+    private static HashSet<String> freeResource=new HashSet<String>();
+    private static HashSet<String> userIdSet=new HashSet<String>();
+    private static HashMap<String,PlatformRole[]> allUserRole=new HashMap<String, PlatformRole[]>();
+    private static HashMap<String,PlatformResource[]> allUserResource=new HashMap<String, PlatformResource[]>();
     private static List<MetaBean> confMetaCache;
     private static List<ObjectFactory> objectFactoryCache;
     private static ConcurrentHashMap<String,Integer> srvEnNmToId=new ConcurrentHashMap<String, Integer>();
-    private static ConcurrentHashMap<String,ConfSession> sessions=new ConcurrentHashMap<String, ConfSession>();
+    private static ConcurrentHashMap<String,PlatformSession> sessions=new ConcurrentHashMap<String, PlatformSession>();
 
     private PlatformEntry platformEntry;
     private PlatformController platformController;
@@ -81,6 +81,7 @@ public class MetaBean extends Clone{
 
     private ArrayList<Connection> conStack;
     private ArrayList<PreparedStatement[]> pstStack;
+    private ArrayList<PlatformServiceTransaction> tranStack;
 
     private PreparedStatement[] currentPsts;
     private Connection currentCon;
@@ -137,11 +138,11 @@ public class MetaBean extends Clone{
         MetaBean.srvEnNmToId = srvEnNmToId;
     }
 
-    public static ConcurrentHashMap<String, ConfSession> getSessions() {
+    public static ConcurrentHashMap<String, PlatformSession> getSessions() {
         return sessions;
     }
 
-    public static void setSessions(ConcurrentHashMap<String, ConfSession> sessions) {
+    public static void setSessions(ConcurrentHashMap<String, PlatformSession> sessions) {
         MetaBean.sessions = sessions;
     }
 
@@ -508,5 +509,13 @@ public class MetaBean extends Clone{
 
     public void setRenderPage(String renderPage) {
         this.renderPage = renderPage;
+    }
+
+    public ArrayList<PlatformServiceTransaction> getTranStack() {
+        return tranStack;
+    }
+
+    public void setTranStack(ArrayList<PlatformServiceTransaction> tranStack) {
+        this.tranStack = tranStack;
     }
 }

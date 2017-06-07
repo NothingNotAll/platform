@@ -1,4 +1,4 @@
-package nna.base.cache;
+package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.Clone;
@@ -28,11 +28,9 @@ public class NNAServiceInit1 {
     public static HashMap<Integer,PlatformResource[]> roleResourceMap=new HashMap<Integer, PlatformResource[]>();
     public static HashMap<Integer,PlatformRole> roleMap=new HashMap<Integer, PlatformRole>();
     public static HashMap<Integer,PlatformRole[]> userRoleMap=new HashMap<Integer, PlatformRole[]>();
-    public static HashMap<String,CombSQL> combSQLHashMap=new HashMap<String, CombSQL>();
-    public static HashMap<Integer,CombUser> comUserMap=new HashMap<Integer, CombUser>();
 
+    public static HashMap<String,PlatformSql> platformSqlMap=new HashMap<String, PlatformSql>();
     public static HashMap<Integer,PlatformResource[]> roleResources=new HashMap<Integer, PlatformResource[]>();
-    public static HashMap<String,CombTransaction> tranMap=new HashMap<String, CombTransaction>();
 
     public NNAServiceInit1(PreparedStatement[] psts){
         this.psts=psts;

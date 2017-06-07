@@ -2,7 +2,6 @@ package nna.app.tran.common;
 
 import nna.Marco;
 import nna.base.bean.combbean.CombTransaction;
-import nna.base.bean.confbean.ConfMeta;
 import nna.base.bean.dbbean.PlatformServiceTransaction;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.bean.dbbean.PlatformTransaction;
@@ -30,16 +29,16 @@ public class SingleTran extends AbstractTransaction<Object> {
 
     @Override
     public Object execTransaction(String transactionName) throws SQLException{
-        ConfMeta confMeta= ConfMetaSetFactory.getConfMeta();
-        String tranNm=confMeta.getReqColumn().get(Marco.TRAN_NAME)[0];
-        HashMap<String,CombTransaction> map=confMeta.getCombTransactionMap();
-        CombTransaction combTransaction=map.get(tranNm);
+        MetaBean confMeta= ConfMetaSetFactory.getConfMeta();
+        String tranNm=confMeta.getReq().get(Marco.TRAN_NAME)[0];
+//        HashMap<String,CombTransaction> map=confMeta.getCombTransactionMap();
+        CombTransaction combTransaction=null;
         execTran(confMeta,combTransaction);
         return null;
     }
 
-    public void execTran(ConfMeta confMeta, CombTransaction combTransaction) throws SQLException {
-        DBCon dbCon=confMeta.getCombDB().getDbCon();
+    public void execTran(MetaBean confMeta, CombTransaction combTransaction) throws SQLException {
+        DBCon dbCon=confMeta.getDbCon();
         Connection con=dbCon.getCon();
         PlatformServiceTransaction platformServiceTransaction=combTransaction.getTransaction();
         PlatformTransaction[] platformTransactions=combTransaction.getPlatformTransactions();
@@ -56,7 +55,7 @@ public class SingleTran extends AbstractTransaction<Object> {
         PreparedStatement pst;
         int exeCount=psts.length;
         PlatformSql platformSql;
-        HashMap<String,String[]> conMap=confMeta.getReqColumn();
+        HashMap<String,String[]> conMap=confMeta.getReq();
         for(int index=0;index < exeCount;index++){
             platformSql=platformSqls[index];
             platformTransaction=platformTransactions[index];

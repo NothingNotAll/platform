@@ -1,6 +1,5 @@
 package nna.base.util;
 
-import nna.base.bean.confbean.ConfMeta;
 import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
 

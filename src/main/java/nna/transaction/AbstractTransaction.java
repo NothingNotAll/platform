@@ -3,11 +3,9 @@ package nna.transaction;
 import nna.Marco;
 import nna.base.bean.Clone;
 import nna.base.bean.combbean.CombDB;
-import nna.base.bean.confbean.ConfMeta;
 import nna.base.bean.dbbean.PlatformServiceTransaction;
 import nna.base.bean.dbbean.PlatformSql;
-import nna.base.cache.CacheFactory;
-import nna.base.cache.NNAServiceInit0;
+import nna.base.init.NNAServiceInit0;
 import nna.base.protocol.dispatch.AppUtil;
 import nna.base.log.Log;
 import nna.base.util.List;
@@ -265,7 +263,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
         }
     }
     protected static void setCurrentPstParameter(int sqlIndex) throws SQLException {
-        ConfMeta intimeConfMeta = ConfMetaSetFactory.getConfMeta();
+        MetaBean intimeConfMeta = ConfMetaSetFactory.getConfMeta();
         CombTransaction current=intimeConfMeta.getCurrentCombTransaction();
         String[] conditionList=current.getConditions().get(sqlIndex);
         int size=conditionList.length;
@@ -486,7 +484,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
             ClassNotFoundException,
             InvocationTargetException {
 //        Long start=System.currentTimeMillis();
-        List<ObjectFactory> cache=CacheFactory.getObjectFactoryCache();
+        List<ObjectFactory> cache=MetaBean.getObjectFactoryCache();
         ObjectFactory objectFactory = cache.get(serialVersionUID);
         Clone object=objectFactory.getClone();
         object=object.clone();
@@ -516,7 +514,7 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
     }
 
     public static boolean saveBean(PreparedStatement pst, int serialVersionUID) throws SQLException {
-        List<ObjectFactory> container=CacheFactory.getObjectFactoryCache();
+        List<ObjectFactory> container=MetaBean.getObjectFactoryCache();
         ObjectFactory objectFactory = container.get(serialVersionUID);
         int length=objectFactory.getFieldsCount();
         Clone object=objectFactory.getClone();

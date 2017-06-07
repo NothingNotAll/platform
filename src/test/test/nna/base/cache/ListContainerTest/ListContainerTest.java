@@ -1,7 +1,7 @@
 package test.nna.base.cache.ListContainerTest;
 
 import junit.framework.TestCase;
-import nna.base.cache.ListContainer;
+import nna.base.init.ListContainer;
 
 /**
  * ${description}

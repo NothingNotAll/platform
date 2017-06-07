@@ -2,7 +2,7 @@ package nna.base.util;
 
 
 import nna.Marco;
-import nna.base.cache.NNAServiceInit0;
+import nna.base.init.NNAServiceInit0;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

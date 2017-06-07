@@ -1,4 +1,4 @@
-package nna.base.cache;
+package nna.base.init;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

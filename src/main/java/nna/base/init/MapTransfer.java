@@ -1,4 +1,4 @@
-package nna.base.cache;
+package nna.base.init;
 
 import nna.base.bean.Clone;
 import nna.base.util.ObjectUtil;

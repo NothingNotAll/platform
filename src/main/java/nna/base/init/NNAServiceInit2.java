@@ -1,4 +1,4 @@
-package nna.base.cache;
+package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.Clone;
@@ -28,15 +28,19 @@ import java.util.concurrent.atomic.AtomicLong;
 public class NNAServiceInit2 {
     private PreparedStatement[] psts;
     public static HashSet<String> freeResourceSet=new HashSet<String>();
-    public static HashMap<Integer,CombLog> combLogMap=new HashMap<Integer, CombLog>();
-    public static HashMap<Integer,CombDB> combDBMap=new HashMap<Integer, CombDB>();
-    public static HashMap<Integer,CombController> combControllerMap=new HashMap<Integer, CombController>();
-    public static HashMap<String, CombService> combServiceMap=new HashMap<String, CombService>();
+    public static HashMap<Integer,PlatformLog> combLogMap=new HashMap<Integer, PlatformLog>();
+    public static HashMap<Integer,PlatformDB> combDBMap=new HashMap<Integer, PlatformDB>();
+    public static HashMap<Integer,DBCon> dbConMap=new HashMap<Integer, DBCon>();
+    public static HashMap<Integer,PlatformController> combControllerMap=new HashMap<Integer, PlatformController>();
+    public static HashMap<Integer,Object[]> renderMap=new HashMap<Integer, Object[]>();
+    public static HashMap<String, PlatformService> combServiceMap=new HashMap<String, PlatformService>();
+    public static HashMap<String,Object[]> serviceObjectMap=new HashMap<String, Object[]>();
     public static HashMap<String,PlatformColumn[]> colMap=new HashMap<String, PlatformColumn[]>();
 
-    public static HashMap<Integer,CombApp> combAppMap=new HashMap<Integer, CombApp>();
-    public static HashMap<Integer, HashMap<Integer,CombUser>> combUserHashMap=new HashMap<Integer, HashMap<Integer, CombUser>>();
-    public static HashMap<String,HashMap<String,CombTransaction>> combTransactionHashMap=new HashMap<String, HashMap<String, CombTransaction>>();
+    public static HashMap<Integer,PlatformApp> combAppMap=new HashMap<Integer, PlatformApp>();
+    public static HashMap<Integer,Object[]> appServiceMap=new HashMap<Integer, Object[]>();
+    public static HashMap<Integer, HashMap<Integer,PlatformUser>> combUserHashMap=new HashMap<Integer, HashMap<Integer, PlatformUser>>();
+    public static HashMap<String,PlatformServiceTransaction> serviceTransactionMap=new HashMap<String, PlatformServiceTransaction>();
     public static Log log;
 
 
@@ -80,13 +84,13 @@ public class NNAServiceInit2 {
                 Map.Entry<String,PlatformResource> entry1=iterator1.next();
                 PlatformResource platformResource=entry1.getValue();
                 if(platformResource.getResourceType().toString().equals("CONTROLLER")){
-                    HashMap<Integer,CombUser> map=combUserHashMap.get(userId);
+                    HashMap<Integer,PlatformUser> map=combUserHashMap.get(userId);
                     if(map==null){
                         HashMap<Integer,CombUser> map2=new HashMap<Integer, CombUser>();
                         map2.put(userId,combUser);
-                        combUserHashMap.put(platformResource.getResourcePk(),map2);
+//                        combUserHashMap.put(platformResource.getResourcePk(),map2);
                     }else{
-                        map.put(platformResource.getResourcePk(),combUser);
+//                        map.put(platformResource.getResourcePk(),combUser);
                     }
                 }
             }
@@ -149,7 +153,8 @@ public class NNAServiceInit2 {
             combService.setService(platformService);
             combService.setServiceMethod((Method) objects[1]);
             combService.setServiceObject(objects[0]);
-            combServiceMap.put(entry.getKey(),combService);
+            combServiceMap.put(entry.getKey(),platformService);
+            serviceObjectMap.put(entry.getKey(),objects);
         }
     }
 
@@ -167,7 +172,8 @@ public class NNAServiceInit2 {
             combApp.setApp(platformApp);
             combApp.setAppDispatchMethod((Method) objects[1]);
             combApp.setAppDispatchObject(objects[0]);
-            combAppMap.put(entry.getKey(),combApp);
+            combAppMap.put(entry.getKey(),platformApp);
+            appServiceMap.put(entry.getKey(),objects);
         }
 
     }
@@ -184,7 +190,7 @@ public class NNAServiceInit2 {
             CombLog combLog=new CombLog();
             combLog.setNextLogSeq(new AtomicLong());
             combLog.setPlatformLog(platformLog);
-            combLogMap.put(entry.getKey(),combLog);
+            combLogMap.put(entry.getKey(),platformLog);
         }
     }
 
@@ -197,15 +203,15 @@ public class NNAServiceInit2 {
         while(iterator.hasNext()){
             Map.Entry<Integer,PlatformDB> entry=iterator.next();
             PlatformDB platformDB=entry.getValue();
-            CombLog combLog=combLogMap.get(platformDB.getDbLogId());
+            PlatformLog combLog=combLogMap.get(platformDB.getDbLogId());
             Log log= LogEntry.submitInitEvent(
-                    combLog.getPlatformLog().getLogDir(),
-                    combLog.getNextLogSeq(),
+                    combLog.getLogDir(),
+                    new AtomicLong(),
                     "db.log",
-            combLog.getPlatformLog().getLogLevel(),
-            combLog.getPlatformLog().getLogBufferThreshold(),
-            combLog.getPlatformLog().getLogCloseTimedout(),
-            combLog.getPlatformLog().getLogEncode()
+            combLog.getLogLevel(),
+            combLog.getLogBufferThreshold(),
+            combLog.getLogCloseTimedout(),
+            combLog.getLogEncode()
             );
             CombDB combDB=new CombDB();
             combDB.setPlatformDB(platformDB);
@@ -221,7 +227,8 @@ public class NNAServiceInit2 {
             platformDB.getDbFailTrytime()
             ),log);
             combDB.setDbCon(dbCon);
-            combDBMap.put(entry.getKey(),combDB);
+            combDBMap.put(entry.getKey(),platformDB);
+            dbConMap.put(entry.getKey(),dbCon);
         }
     }
 
@@ -242,7 +249,8 @@ public class NNAServiceInit2 {
             combController.setController(platformController);
             combController.setRenderMethod((Method) objects[1]);
             combController.setRenderObject(objects[0]);
-            combControllerMap.put(entry.getKey(),combController);
+            combControllerMap.put(entry.getKey(),platformController);
+            renderMap.put(entry.getKey(),objects);
         }
     }
 }

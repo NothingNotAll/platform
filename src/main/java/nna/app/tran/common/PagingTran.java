@@ -2,7 +2,6 @@ package nna.app.tran.common;
 
 import nna.Marco;
 import nna.base.bean.combbean.CombTransaction;
-import nna.base.bean.confbean.ConfMeta;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.enums.DBSQLConValType;
 import nna.transaction.AbstractTransaction;
@@ -27,17 +26,14 @@ public class PagingTran extends AbstractTransaction<Object>{
 
     @Override
     public Object execTransaction(String transactionName) throws SQLException{
-        ConfMeta confMeta= ConfMetaSetFactory.getConfMeta();
-        String tranNm=confMeta.getReqColumn().get(Marco.TRAN_NAME)[0];
-        super.execTransaction(tranNm);
         return null;
     }
 
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
         PreparedStatement countPst=sts[0];
         PreparedStatement pagePst=sts[1];
-        ConfMeta confMeta=ConfMetaSetFactory.getConfMeta();
-        CombTransaction[] combTransactions=confMeta.getCombTransactions();
+        MetaBean confMeta=ConfMetaSetFactory.getConfMeta();
+        CombTransaction[] combTransactions=null;
         CombTransaction pageTran=combTransactions[0];
         ArrayList<DBSQLConValType[]> dbsqlConValTypes=pageTran.getConditionValueTypes();
         ArrayList<String[]> conNmsList=pageTran.getConditions();
@@ -45,12 +41,12 @@ public class PagingTran extends AbstractTransaction<Object>{
         DBSQLConValType[] valTypes=dbsqlConValTypes.get(0);
         String[] conNms=conNmsList.get(1);
         String[] columns=columnsList.get(1);
-        HashMap<String,String[]> reqMap=confMeta.getReqColumn();
+        HashMap<String,String[]> reqMap=confMeta.getReq();
         ResultSet rs=setParameterAndExe(countPst,conNms,valTypes,reqMap);
         rs.next();
         int totalCount=rs.getInt(1);
         setParameter(pagePst,columns,valTypes,reqMap,0);
-        HashMap<String,String[]> rspMap=confMeta.getRspColumn();
+        HashMap<String,String[]> rspMap=confMeta.getRsp();
         rs.close();
         /*
         * 计算 分页 参数

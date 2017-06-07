@@ -2,7 +2,6 @@ package nna.app.tran.common;
 
 import nna.Marco;
 import nna.base.bean.combbean.CombTransaction;
-import nna.base.bean.confbean.ConfMeta;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.enums.DBSQLConValType;
 import nna.transaction.AbstractTransaction;
@@ -25,17 +24,17 @@ import java.util.HashMap;
 public class SelectTran extends AbstractTransaction<Object> {
     @Override
     public Object execTransaction(String transactionName) throws SQLException{
-        ConfMeta confMeta= ConfMetaSetFactory.getConfMeta();
-        String tranNm=confMeta.getReqColumn().get(Marco.TRAN_NAME)[0];
+        MetaBean confMeta= ConfMetaSetFactory.getConfMeta();
+        String tranNm=confMeta.getReq().get(Marco.TRAN_NAME)[0];
         super.execTransaction(tranNm);
         return null;
     }
     public Object inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
         PreparedStatement countPst=sts[0];
         PreparedStatement selectPst=sts[1];
-        ConfMeta confMeta=ConfMetaSetFactory.getConfMeta();
-        HashMap<String,String[]> reqMap=confMeta.getReqColumn();
-        CombTransaction[] trans=confMeta.getCombTransactions();
+        MetaBean confMeta=ConfMetaSetFactory.getConfMeta();
+        HashMap<String,String[]> reqMap=confMeta.getReq();
+        CombTransaction[] trans=null;
         CombTransaction combTransaction=trans[0];
         ArrayList<String[]> cons=combTransaction.getConditions();
         ArrayList<DBSQLConValType[]> dbsqlConValTypes=combTransaction.getConditionValueTypes();
@@ -50,7 +49,7 @@ public class SelectTran extends AbstractTransaction<Object> {
         rs=setParameterAndExe(selectPst,selectCons,selectDBCONTypes,reqMap);
         ArrayList<String[]> columns=combTransaction.getColumns();
         String[] column=columns.get(0);
-        HashMap<String,String[]> rspMap=confMeta.getRspColumn();
+        HashMap<String,String[]> rspMap=confMeta.getRsp();
         setRspMap(count,rs,column,rspMap,Marco.ARRAY_COUNT);
         countPst.close();
         selectPst.close();

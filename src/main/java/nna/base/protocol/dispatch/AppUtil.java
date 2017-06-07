@@ -1,6 +1,6 @@
 package nna.base.protocol.dispatch;
 
-import nna.base.bean.confbean.ConfMeta;
+import nna.base.bean.confbean.MetaBean;
 import nna.base.log.Log;
 
 
@@ -25,18 +25,18 @@ public class AppUtil {
     }
 
     public static void putRspColumn(String rspColumnKey,String[] rspColumnValue){
-        StoreData.getConfig().getReqColumn().put(rspColumnKey,rspColumnValue);
+        StoreData.getConfig().getReq().put(rspColumnKey,rspColumnValue);
     }
 
     public static String[] getRequest(String name){
-        return StoreData.getConfig().getReqColumn().get(name);
+        return StoreData.getConfig().getReq().get(name);
     }
 
     public static Object getTemp(String name){
         return StoreData.getConfig().getTemp();
     }
 
-    public static void setConfMeta(ConfMeta confMeta){
+    public static void setConfMeta(MetaBean confMeta){
         StoreData.setConfig(confMeta);
     }
 

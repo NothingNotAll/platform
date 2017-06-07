@@ -1,4 +1,4 @@
-package nna.base.cache;
+package nna.base.init;
 /**
  * ${description}
  *
@@ -7,17 +7,18 @@ package nna.base.cache;
  */
 
 import nna.Marco;
-import nna.base.bean.confbean.ConfMeta;
+import nna.base.bean.confbean.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.log.Log;
 import nna.base.log.LogEntry;
 import nna.base.util.BuildSQL;
+import nna.base.util.List;
+import nna.base.util.ObjectFactory;
 import nna.base.util.ObjectUtil;
 import nna.transaction.AbstractTransaction;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -69,7 +70,7 @@ public class NNAServiceInit0 {
              rs.next();
              PlatformLog platformLog=(PlatformLog) getBean(rs,Marco.PLATFORM_LOG);
              Log log=getPlatformLog(platformLog);
-             ConfMeta confMeta=new ConfMeta();
+             MetaBean confMeta=new MetaBean();
              ConfMeta.setPlatformLog(log);
              confMeta.setLog(log);
              ConfMetaSetFactory.setConfMeta(confMeta);
@@ -136,7 +137,7 @@ public class NNAServiceInit0 {
         ResultSet rs=objectFactoryPst.executeQuery();
         while(rs.next()){
             String dbBeanClassName=rs.getString(2);
-            CacheFactory.getObjectFactoryCache().insert(ObjectUtil.buildObjectFactory(dbBeanClassName),100);
+            MetaBean.getObjectFactoryCache().insert(ObjectUtil.buildObjectFactory(dbBeanClassName),100);
         }
         rs.close();
         objectFactoryPst.close();
@@ -150,7 +151,7 @@ public class NNAServiceInit0 {
         }
         count.close();
         objectFactoryCountPst.close();
-        CacheFactory.initObjectFactoryCache(clazzCount);
+        MetaBean.setObjectFactoryCache(new List<ObjectFactory>(clazzCount));
     }
 
     public static Connection init(){
