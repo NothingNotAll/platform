@@ -155,13 +155,7 @@ public class NNAServiceInit0 {
 
     public static Connection init(){
          Connection con=null;
-        Properties properties=new Properties();
         try {
-//            properties.load(new FileInputStream(new File(NNAServiceInit0.class.getClassLoader().getResource(".").getPath()+File.separator+"/conf.properties")));
-//            String URL=properties.getProperty("URL");
-//            String DRIVER=properties.getProperty("DRIVER");
-//            String ACCOUNT=properties.getProperty("ACCOUNT");
-//            String PASSWORD=properties.getProperty("PASSWORD");
             String URL=Marco.URL;
             String DRIVER=Marco.DRIVER;
             String ACCOUNT=Marco.ACCOUNT;

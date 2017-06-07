@@ -4,7 +4,6 @@ import nna.base.db.DBCon;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 

@@ -31,12 +31,12 @@ public class NNAServiceInit1 {
     public static HashMap<String,PlatformSql> platformSQLMap=new HashMap<String, PlatformSql>();
     public static HashMap<Integer,PlatformUser> platformUserMap=new HashMap<Integer, PlatformUser>();
 
-    public static List columns=new ArrayList();
-    public static List roleResources=new ArrayList();
-    public static List serviceTrans=new ArrayList();
-    public static List trans=new ArrayList();
-    public static List userRoles=new ArrayList();
-    public static List platformProxies=new ArrayList();
+    public static ArrayList<PlatformColumn> columns=new ArrayList<PlatformColumn>();
+    public static ArrayList<PlatformRoleResource> roleResources=new ArrayList<PlatformRoleResource>();
+    public static ArrayList<PlatformServiceTransaction> serviceTrans=new ArrayList<PlatformServiceTransaction>();
+    public static ArrayList<PlatformTransaction> trans=new ArrayList<PlatformTransaction>();
+    public static ArrayList<PlatformUserRole> userRoles=new ArrayList<PlatformUserRole>();
+    public static ArrayList<PlatformProxy> platformProxies=new ArrayList<PlatformProxy>();
 
     public static HashMap<String,PlatformColumn[]> columnMap=new HashMap<String, PlatformColumn[]>();
     public static HashMap<Integer,PlatformRoleResource[]> roleResourceMap=new HashMap<Integer,PlatformRoleResource[]>();
