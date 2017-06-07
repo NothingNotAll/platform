@@ -63,7 +63,13 @@ public class NNAServiceInit1 {
         getList(userRoles,psts[15],Marco.PLATFORM_USER_ROLE);
         getList(platformProxies,psts[16],Marco.PLATFORM_PROXY);
 
+        reduce();
     }
+
+    private void reduce() {
+
+    }
+
     public HashMap buildIMap(PreparedStatement pst,
                              String methodName,
                              Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
