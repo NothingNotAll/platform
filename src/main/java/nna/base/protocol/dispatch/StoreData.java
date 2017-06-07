@@ -10,10 +10,10 @@ import nna.base.bean.confbean.ConfMeta;
 
     static private ThreadLocal<ConfMeta> configThreadLocal=new ThreadLocal<ConfMeta>();
 
-     static void setConfig(ConfMeta confMeta){
+    static void setConfig(ConfMeta confMeta){
         configThreadLocal.set(confMeta);
     }
-     static ConfMeta getConfig(){
+    static ConfMeta getConfig(){
         return configThreadLocal.get();
     }
 

@@ -14,7 +14,7 @@ public class ConfMetaSetFactory {
     public static ConfMeta getConfMeta(){
         return StoreData.getConfig();
     }
-    public static void setConfMeta(ConfMeta intimeConfMeta){
-        StoreData.setConfig(intimeConfMeta);
+    public static void setConfMeta(ConfMeta confMeta){
+        StoreData.setConfig(confMeta);
     }
 }
