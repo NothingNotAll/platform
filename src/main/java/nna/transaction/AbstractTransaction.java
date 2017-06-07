@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 
-public abstract class AbstractTransaction<V> implements Transaction<V> {
+public class AbstractTransaction<V> implements Transaction<V> {
 
     protected void setRspMap(int count,ResultSet rs,String[] column,HashMap<String,String[]> rspMap,String countNm) throws SQLException {
         int index=0;
@@ -75,8 +75,6 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
             }
         }
     }
-
-    public abstract V inTransaction(Connection connection,PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException;
 
 	public V execTransaction(String transactionName) throws SQLException{
         return null;
@@ -350,5 +348,9 @@ public abstract class AbstractTransaction<V> implements Transaction<V> {
                 throw new SQLException("update failed !");
             }
         }
+    }
+
+    public V execTransaction(MetaBeanWrapper metaBeanWrapper) throws SQLException {
+        return null;
     }
 }

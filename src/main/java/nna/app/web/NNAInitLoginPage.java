@@ -1,9 +1,9 @@
 package nna.app.web;
 
-import nna.Marco;
 import nna.app.tran.ext.TranSelAllRole;
 import nna.base.bean.dbbean.PlatformRole;
 import nna.base.protocol.dispatch.AppUtil;
+import nna.transaction.MetaBeanWrapper;
 import nna.transaction.Transaction;
 
 import java.sql.SQLException;
@@ -16,10 +16,10 @@ import java.sql.SQLException;
 public class NNAInitLoginPage {
     Transaction<PlatformRole[]> selAllRole=new TranSelAllRole();
 
-    public void initLoginPage(){
+    public void initLoginPage(MetaBeanWrapper metaBeanWrapper){
         PlatformRole[] roles;
         try {
-            roles = selAllRole.execTransaction(Marco.TRAN_SEL_ALL_ROLE);
+            roles = selAllRole.execTransaction(metaBeanWrapper);
             int size=roles.length;
             String[] roleId=new String[size];
             String[] roleName=new String[size];
