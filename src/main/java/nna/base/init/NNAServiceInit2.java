@@ -21,8 +21,16 @@ public class NNAServiceInit2 {
     public static HashMap<Integer,DBCon> dbConMap=new HashMap<Integer, DBCon>();
 
     public void build() throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException, NoSuchMethodException, ClassNotFoundException, IOException {
-        MetaBean.setConfMetaCache(new List<MetaBean>(NNAServiceInit1.platformEntryMap.size()));
+        int confCacheCount=NNAServiceInit1.platformEntryMap.size();
+        MetaBean.setConfMetaCache(new List<MetaBean>(confCacheCount));
         Iterator<Map.Entry<Integer,PlatformEntry>> iterator=NNAServiceInit1.platformEntryMap.entrySet().iterator();
+        while(iterator.hasNext()){
+            MetaBean metaBean=new MetaBean();
+            Map.Entry<Integer,PlatformEntry> entry=iterator.next();
+            PlatformEntry platformEntry=entry.getValue();
+            metaBean.setPlatformEntry(platformEntry);
+
+        }
     }
 
 

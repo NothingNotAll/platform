@@ -25,7 +25,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static nna.transaction.AbstractTransaction.getBean;
+import static nna.base.util.ObjectFactory.getBean;
+import static nna.transaction.TranUtil.buildSQL;
+
 
 /**
  * for platform initial
@@ -99,7 +101,7 @@ public class NNAServiceInit0 {
             ResultSet sqlRS=initPsts[4].executeQuery();
             while(sqlRS.next()){
                 PlatformSql platformSql=(PlatformSql) getBean(sqlRS,Marco.PLATFORM_SQL);
-                String sql= AbstractTransaction.buildSQL(platformSql);
+                String sql= buildSQL(platformSql);
                 sqls.add(sql);
             }
             sqlRS.close();

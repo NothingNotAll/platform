@@ -1,6 +1,7 @@
 package nna.base.util;
 
 import nna.Marco;
+import nna.MetaBean;
 import nna.base.bean.Clone;
 import nna.enums.*;
 
@@ -11,8 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * s
@@ -285,6 +285,65 @@ import java.util.Map;
 
     public void setJavaValueTypesV2(int[] javaValueTypesV2) {
         this.javaValueTypesV2 = javaValueTypesV2;
+    }
+
+
+
+    public static Clone getBean(ResultSet rs, int serialVersionUID) throws SQLException,
+            IllegalAccessException,
+            InstantiationException,
+            ClassNotFoundException,
+            InvocationTargetException {
+//        Long start=System.currentTimeMillis();
+        List<ObjectFactory> cache= MetaBean.getObjectFactoryCache();
+        ObjectFactory objectFactory = cache.get(serialVersionUID);
+        Clone object=objectFactory.getClone();
+        object=object.clone();
+        int length=objectFactory.getFieldsCount();
+        //from the index 1 and discard the serial id
+        for(int index=1;index < length;index++){
+            objectFactory.setFieldValueV2(rs,index,object);
+        }
+//        Long end=System.currentTimeMillis()-start;
+//        System.out.println(object.getClass().getCanonicalName()+"数据库操作耗费时间："+end+"L");
+        return object;
+    }
+
+    public static Clone[] getBeans(PreparedStatement pst,int serialVersionUID) throws SQLException,
+            ClassNotFoundException,
+            InvocationTargetException,
+            InstantiationException,
+            IllegalAccessException {
+        ArrayList<Clone> clones=new ArrayList<Clone>();
+        ResultSet rs=pst.executeQuery();
+        Clone clone;
+        while(rs.next()){
+            clone=getBean(rs,serialVersionUID);
+            clones.add(clone);
+        }
+        return clones.toArray(new Clone[0]);
+    }
+
+    public static boolean saveBean(PreparedStatement pst, int serialVersionUID) throws SQLException {
+        List<ObjectFactory> container=MetaBean.getObjectFactoryCache();
+        ObjectFactory objectFactory = container.get(serialVersionUID);
+        int length=objectFactory.getFieldsCount();
+        Clone object=objectFactory.getClone();
+        for(int index=1;index <= length;index++){
+            objectFactory.setParameterV2(pst,index,object);
+        }
+        return pst.executeUpdate() == 1;
+    }
+
+    public static void saveBean(PreparedStatement pst, Collection<Object> collection, int serialVersionUID) throws SQLException {
+        Iterator<Object> iterator=collection.iterator();
+        Object object;
+        while(iterator.hasNext()){
+            object=iterator.next();
+            if(!saveBean(pst,serialVersionUID)){
+                throw new SQLException("update failed !");
+            }
+        }
     }
 
 }

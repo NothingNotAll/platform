@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static nna.base.util.ObjectFactory.getBean;
+
 /**
  * @author NNA-SHUAI
  * @create 2017-05-26 13:23

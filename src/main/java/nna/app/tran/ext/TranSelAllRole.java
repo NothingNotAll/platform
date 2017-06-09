@@ -14,6 +14,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static nna.base.util.ObjectFactory.getBean;
+
 /**
  * @author NNA-SHUAI
  * @create 2017-05-24 13:30

@@ -10,7 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static nna.transaction.AbstractTransaction.getBean;
+import static nna.base.util.ObjectFactory.getBean;
+
 
 /**
  * @author NNA-SHUAI
