@@ -124,7 +124,6 @@ public class DefaultTransaction<V> implements Transaction<V> {
                                DBSQLConValType[] conValTypes
     ) throws SQLException {
         HashMap<String,String[]> req=metaBeanWrapper.getReq();
-        HashMap<String,String[]> rsp=metaBeanWrapper.getRsp();
         DBOperType dbOperType=sqlType.getOpertype();
         PreparedStatement pst;
         switch (dbOperType){

@@ -25,13 +25,15 @@ public class Dispatch {
         PlatformService platformService=metaBean.getPlatformService();
         PlatformColumn[] reqColumns=metaBean.getReqColConfig();
         log.log("开始校验入参字段",Log.INFO);
-        checkReq(metaBean.getOutReq(),metaBean.getReq(),reqColumns,log);
+        Map<String,String[]> reqMap=metaBean.getReq();
+        checkReq(metaBean.getOutReq(),reqMap,reqColumns,log);
         log.log("开始校验服务状态",Log.INFO);
         check(platformService,log);
         metaBean.getServiceMethod().invoke(metaBean.getServiceObject());
         PlatformColumn[] rspColumns=metaBean.getRspColConfig();
         log.log("开始校验出参字段",Log.INFO);
         HashMap<String,String[]> rspMap=metaBean.getRsp();
+        rspMap.putAll(reqMap);
         checkRsp(rspMap,rspColumns,log);
         String appEncode=platformApp.getAppEncode();
         log.log("应用编码："+appEncode,Log.INFO);
@@ -116,14 +118,14 @@ public class Dispatch {
             arrayPathNm=innerName.substring(0,index);
         }
         String[] values=map.get(innerName);
-        String defalutValue=temp.getColumnDefaultvalue();
+        String defaultValue=temp.getColumnDefaultvalue();
         boolean isMust=temp.isColumnIsmust();
-        if(values==null&&isMust&&defalutValue==null){
+        if(values==null&&isMust&&defaultValue==null){
             log.log(innerName+"response column not null",Log.ERROR);
             throw new Exception("response column not null");
         }
-        if(defalutValue!=null&&values==null){
-            values=new String[]{defalutValue};
+        if(defaultValue!=null&&values==null){
+            values=new String[]{defaultValue};
             map.put(outsideName,values);
         }
         int arraySize=values.length;
@@ -163,31 +165,31 @@ public class Dispatch {
         }
     }
     private static void checkReqNonArray(Map<String, String[]> map, Map<String, String[]> innerMap, HashMap<String, Integer> arraySizeMap, PlatformColumn temp, Log log) throws Exception {
-        String innserName=temp.getColumnOutsideName();
-        String[] values=map.get(innserName);
+        String innerNm=temp.getColumnOutsideName();
+        String[] values=map.get(innerNm);
         boolean isMust=temp.isColumnIsmust();
         String defaultValue=temp.getColumnDefaultvalue();
         if(isMust&&(values==null||values.length==0)&&defaultValue==null){
-            log.log(innserName+"request column not null",Log.ERROR);
+            log.log(innerNm+"request column not null",Log.ERROR);
             throw new Exception("request column not null");
         }
         String value;
         if(values!=null){
             value=values[0];
             if(value==null&&isMust){
-                log.log(innserName+"request column not null",Log.ERROR);
+                log.log(innerNm+"request column not null",Log.ERROR);
                 throw new Exception("request column not null");
             }
             if(value.length()> temp.getColumnLength()){
-                log.log(innserName+"request column too long",Log.ERROR);
+                log.log(innerNm+"request column too long",Log.ERROR);
                 throw new Exception("request column too long");
             }
         }else{
             if(defaultValue!=null){
-                innerMap.put(innserName,new String[]{defaultValue});
+                innerMap.put(innerNm,new String[]{defaultValue});
             }
         }
-        innerMap.put(innserName,values);
+        innerMap.put(innerNm,values);
     }
     private static void checkReqArray(HashMap<String,Integer> arraySizeMap,Map<String, String[]> outsideMap, Map<String, String[]> innerReqMap,PlatformColumn temp, Log log) throws Exception {
         String outsideName=temp.getColumnOutsideName();
