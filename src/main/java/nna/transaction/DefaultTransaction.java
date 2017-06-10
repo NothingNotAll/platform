@@ -36,7 +36,11 @@ public class DefaultTransaction<V> implements Transaction<V> {
         return null;
     }
 
-    private boolean processSevTran(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, int currentSevTranIndex) throws SQLException {
+    private boolean processSevTran(
+            MetaBeanWrapper metaBeanWrapper,
+            PlatformEntryTransaction currentSevTran,
+            int currentSevTranIndex
+    ) throws SQLException {
         Connection con=getCon(metaBeanWrapper);//得到执行此次事务的Connection
         setTranPgl(metaBeanWrapper,currentSevTran,con);//设置事务的隔离级别
         ArrayList<String[]> SQLArray=metaBeanWrapper.getSQLS();
@@ -56,7 +60,8 @@ public class DefaultTransaction<V> implements Transaction<V> {
                 currentSevTranIndex);
     }
 
-    private boolean executeSQL(MetaBeanWrapper metaBeanWrapper,
+    private boolean executeSQL(
+            MetaBeanWrapper metaBeanWrapper,
                                ArrayList<String[]> SQLArray,
                                ArrayList<PlatformTransaction[]> trans,
                                ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray,
@@ -87,7 +92,14 @@ public class DefaultTransaction<V> implements Transaction<V> {
             sqlType=sqlTypes[index];
             columns=selCols.get(index);
             platformTransaction=tranCfg[index];
-            isExeSQLSuccess=execOneSql(metaBeanWrapper,con,sqlType,SQL,columns,cons,conValTypes);
+            isExeSQLSuccess=execOneSql(
+                    metaBeanWrapper,
+                    con,
+                    sqlType,
+                    SQL,
+                    columns,
+                    cons,
+                    conValTypes);
             if(isExeSQLSuccess){
                 nextSQLIndex=platformTransaction.getSuccessSequence();
             }else{
@@ -102,7 +114,15 @@ public class DefaultTransaction<V> implements Transaction<V> {
         return true;
     }
 
-    private boolean execOneSql(MetaBeanWrapper metaBeanWrapper, Connection con, PlatformSql sqlType, String sql, String[] columns, String[] cons, DBSQLConValType[] conValTypes) throws SQLException {
+    private boolean execOneSql(
+            MetaBeanWrapper metaBeanWrapper,
+                               Connection con,
+                               PlatformSql sqlType,
+                               String sql,
+                               String[] columns,
+                               String[] cons,
+                               DBSQLConValType[] conValTypes
+    ) throws SQLException {
         HashMap<String,String[]> req=metaBeanWrapper.getReq();
         HashMap<String,String[]> rsp=metaBeanWrapper.getRsp();
         DBOperType dbOperType=sqlType.getOpertype();
@@ -146,7 +166,12 @@ public class DefaultTransaction<V> implements Transaction<V> {
         return false;
     }
 
-    private void executeSelect(PreparedStatement pst, HashMap<String, String[]> req,String[] columns, String[] cons, DBSQLConValType[] conValTypes) throws SQLException {
+    private void executeSelect(
+            PreparedStatement pst,
+                               HashMap<String, String[]> req,
+                               String[] columns, String[] cons,
+                               DBSQLConValType[] conValTypes
+    ) throws SQLException {
         String conNm;
         String conVal;
         DBSQLConValType conValType;
@@ -180,7 +205,12 @@ public class DefaultTransaction<V> implements Transaction<V> {
         pst.close();
     }
 
-    private void executeUpdate(PreparedStatement pst, HashMap<String, String[]> req, String[] cons, DBSQLConValType[] conValTypes) throws SQLException {
+    private void executeUpdate(
+            PreparedStatement pst,
+                               HashMap<String, String[]> req,
+                               String[] cons,
+                               DBSQLConValType[] conValTypes
+    ) throws SQLException {
         int updateCount=req.get(cons[0]).length;
         int conCount=cons.length;
         for(int index=0;index < updateCount;index++){
@@ -198,7 +228,12 @@ public class DefaultTransaction<V> implements Transaction<V> {
         pst.close();
     }
 
-    private void setCon(PreparedStatement pst,int index, String conVal, DBSQLConValType conValType) throws SQLException {
+    private void setCon(
+            PreparedStatement pst,
+                        int index,
+                        String conVal,
+                        DBSQLConValType conValType
+    ) throws SQLException {
         switch (conValType){
             case INTEGER:
                 pst.setInt(index,Integer.valueOf(conVal));
@@ -212,11 +247,17 @@ public class DefaultTransaction<V> implements Transaction<V> {
         }
     }
 
-    private void setTranPgl(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, Connection con) {
+    private void setTranPgl(
+            MetaBeanWrapper metaBeanWrapper,
+            PlatformEntryTransaction currentSevTran,
+            Connection con
+    ) {
 
     }
 
-    private Connection getCon(MetaBeanWrapper metaBeanWrapper) {
+    private Connection getCon(
+            MetaBeanWrapper metaBeanWrapper
+    ) {
         Connection con=null;
 
         return con;
