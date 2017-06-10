@@ -156,6 +156,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
                 selValCount=selVal.length;
                 selValTemp=new String[selValCount+1];
                 selValTemp[selValCount]=temp;
+                System.arraycopy(selVal,0,selValTemp,0,selValCount);
                 req.put(nm,selValTemp);
             }
         }
