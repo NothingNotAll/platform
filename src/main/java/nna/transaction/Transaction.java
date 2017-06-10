@@ -5,7 +5,7 @@ import java.sql.SQLException;
 /*
  * provided as the database operations helper interface for the application
  * if implements the interface, u must specify the result of sql's executing;
- * application layer can not implement the interface immediately but extends the AbstractTransaction class .
+ * application layer can not implement the interface immediately but extends the Transactions class .
  *
  * For the performance of app :
  * the IO Time consuming in the Connection.preparedStatment

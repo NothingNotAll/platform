@@ -16,7 +16,6 @@ import nna.base.util.BuildSQL;
 import nna.base.util.List;
 import nna.base.util.ObjectFactory;
 import nna.base.util.ObjectUtil;
-import nna.transaction.AbstractTransaction;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
