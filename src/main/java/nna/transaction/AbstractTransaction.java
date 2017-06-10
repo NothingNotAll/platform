@@ -8,6 +8,7 @@ import nna.enums.DBSQLConValType;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class AbstractTransaction<V> implements Transaction<V> {
@@ -16,20 +17,34 @@ public class AbstractTransaction<V> implements Transaction<V> {
         PlatformEntryTransaction[] serviceTrans=metaBeanWrapper.getServiceTrans();
         PlatformEntryTransaction tempSevTran;
         int sevTranCount=serviceTrans.length;
+        boolean isExeTranSuccess;
+        Integer nextTranIndex;
         for(int index=0;index < sevTranCount;index++){
             tempSevTran=serviceTrans[index];
-            processSevTran(metaBeanWrapper,tempSevTran,index);
+            isExeTranSuccess=processSevTran(metaBeanWrapper,tempSevTran,index);
+            if(isExeTranSuccess){
+                nextTranIndex=tempSevTran.getSuccessIndex();
+                if(nextTranIndex==null){
+                    return null;
+                }
+            }else {
+                nextTranIndex=tempSevTran.getFailIndex();
+                if(nextTranIndex==null){
+                    return null;
+                }
+            }
+            index=nextTranIndex;
         }
         return null;
     }
 
-    private void processSevTran(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, int currentSevTranIndex) throws SQLException {
+    private boolean processSevTran(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, int currentSevTranIndex) throws SQLException {
         Connection con=getCon(metaBeanWrapper);//得到执行此次事务的Connection
         setTranPgl(metaBeanWrapper,currentSevTran,con);//设置事务的隔离级别
-        executeSQL(metaBeanWrapper,currentSevTran,con,currentSevTranIndex);
+        return executeSQL(metaBeanWrapper,currentSevTran,con,currentSevTranIndex);
     }
 
-    private void executeSQL(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, Connection con,int currentIndex) throws SQLException {
+    private boolean executeSQL(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, Connection con,int currentIndex) throws SQLException {
         ArrayList<String[]> SQLArray=metaBeanWrapper.getSQLS();
         ArrayList<PlatformTransaction[]> trans=metaBeanWrapper.getTrans();
         ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray=metaBeanWrapper.getDbsqlConValTypes();
@@ -64,9 +79,12 @@ public class AbstractTransaction<V> implements Transaction<V> {
                 index=platformTransaction.getFailSequence();
             }
         }
+        return true;
     }
 
     private boolean execOneSql(MetaBeanWrapper metaBeanWrapper, Connection con, PlatformSql sqlType, String sql, String[] columns, String[] cons, DBSQLConValType[] conValTypes) throws SQLException {
+        HashMap<String,String[]> req=metaBeanWrapper.getReq();
+        HashMap<String,String[]> rsp=metaBeanWrapper.getRsp();
         DBOperType dbOperType=sqlType.getOpertype();
         PreparedStatement pst;
         switch (dbOperType){
@@ -81,31 +99,96 @@ public class AbstractTransaction<V> implements Transaction<V> {
                 ;
                 return true;
             case D:
-                ;
+                executeUpdate(pst,req,cons,conValTypes);
                 return true;
             case I:
-                ;
+                executeUpdate(pst,req,cons,conValTypes);
                 return true;
             case S:
-                ;
+                executeSelect(pst,req,columns,cons,conValTypes);
                 return true;
             case U:
-                ;
+                executeUpdate(pst,req,cons,conValTypes);
                 return true;
             case GS:
-                ;
+                executeSelect(pst,req,columns,cons,conValTypes);
                 return true;
             case GD:
-                ;
+                executeUpdate(pst,req,cons,conValTypes);;
                 return true;
             case GU:
-                ;
+                executeUpdate(pst,req,cons,conValTypes);;
                 return true;
             case MS:
-                ;
+                executeSelect(pst,req,columns,cons,conValTypes);
                 return true;
         }
         return false;
+    }
+
+    private void executeSelect(PreparedStatement pst, HashMap<String, String[]> req,String[] columns, String[] cons, DBSQLConValType[] conValTypes) throws SQLException {
+        String conNm;
+        String conVal;
+        DBSQLConValType conValType;
+        int conCount=cons.length;
+        for(int conIndex=0;conIndex< conCount;conIndex++){
+            conNm=cons[conIndex];
+            conValType=conValTypes[conIndex];
+            conVal=req.get(conNm)[0];
+            setCon(pst,conIndex,conVal,conValType);
+        }
+        ResultSet rs=pst.executeQuery();
+        int columnCount=columns.length;
+        String temp;
+        String nm;
+        String[] selVal;
+        String[] selValTemp;
+        int selValCount;
+        while(rs.next()){
+            for(int index=0;index < columnCount;index++){
+                nm=columns[index];
+                temp=rs.getString(index);
+                selVal=req.get(nm);
+                selValCount=selVal.length;
+                selValTemp=new String[selValCount+1];
+                selValTemp[selValCount]=temp;
+                req.put(nm,selValTemp);
+            }
+        }
+        rs.close();
+        pst.close();
+    }
+
+    private void executeUpdate(PreparedStatement pst, HashMap<String, String[]> req, String[] cons, DBSQLConValType[] conValTypes) throws SQLException {
+        int updateCount=req.get(cons[0]).length;
+        int conCount=cons.length;
+        for(int index=0;index < updateCount;index++){
+            String conNm;
+            String conVal;
+            DBSQLConValType conValType;
+            for(int conIndex=0;conIndex< conCount;conIndex++){
+                conNm=cons[conIndex];
+                conValType=conValTypes[conIndex];
+                conVal=req.get(conNm)[index];
+                setCon(pst,conIndex,conVal,conValType);
+            }
+            pst.executeUpdate();
+        }
+        pst.close();
+    }
+
+    private void setCon(PreparedStatement pst,int index, String conVal, DBSQLConValType conValType) throws SQLException {
+        switch (conValType){
+            case INTEGER:
+                pst.setInt(index,Integer.valueOf(conVal));
+                break;
+            case STRING:
+                pst.setString(index,conVal);
+                break;
+            case BOOLEAN:
+                pst.setBoolean(index,Boolean.valueOf(conVal));
+                break;
+        }
     }
 
     private void setTranPgl(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, Connection con) {

@@ -7,6 +7,7 @@ import nna.base.bean.dbbean.PlatformTransaction;
 import nna.enums.DBSQLConValType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * For Transactions Meta Info
@@ -48,6 +49,14 @@ public class MetaBeanWrapper {
 
     public ArrayList<ArrayList<String[]>> getCols() {
         return metaBean.getCols();
+    }
+
+    public HashMap<String, String[]> getReq() {
+        return metaBean.getReq();
+    }
+
+    public HashMap<String, String[]> getRsp() {
+        return metaBean.getRsp();
     }
 
 }
