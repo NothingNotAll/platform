@@ -39,16 +39,32 @@ public class DefaultTransaction<V> implements Transaction<V> {
     private boolean processSevTran(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, int currentSevTranIndex) throws SQLException {
         Connection con=getCon(metaBeanWrapper);//得到执行此次事务的Connection
         setTranPgl(metaBeanWrapper,currentSevTran,con);//设置事务的隔离级别
-        return executeSQL(metaBeanWrapper,currentSevTran,con,currentSevTranIndex);
-    }
-
-    private boolean executeSQL(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, Connection con,int currentIndex) throws SQLException {
         ArrayList<String[]> SQLArray=metaBeanWrapper.getSQLS();
         ArrayList<PlatformTransaction[]> trans=metaBeanWrapper.getTrans();
         ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray=metaBeanWrapper.getDbsqlConValTypes();
         ArrayList<PlatformSql[]> platformSqls=metaBeanWrapper.getTranPlatformSql();
         ArrayList<ArrayList<String[]>> conArray=metaBeanWrapper.getCons();
         ArrayList<ArrayList<String[]>> colArray=metaBeanWrapper.getCols();
+        return executeSQL(metaBeanWrapper,
+                SQLArray,
+                trans,
+                valTypeArray,
+                platformSqls,
+                conArray,
+                colArray,
+                con,
+                currentSevTranIndex);
+    }
+
+    private boolean executeSQL(MetaBeanWrapper metaBeanWrapper,
+                               ArrayList<String[]> SQLArray,
+                               ArrayList<PlatformTransaction[]> trans,
+                               ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray,
+                               ArrayList<PlatformSql[]> platformSqls,
+                               ArrayList<ArrayList<String[]>> conArray,
+                               ArrayList<ArrayList<String[]>> colArray,
+                               Connection con,
+                               int currentIndex) throws SQLException {
         ArrayList<String[]> selCols=colArray.get(currentIndex);
         PlatformTransaction[] tranCfg=trans.get(currentIndex);
         String[] SQLS=SQLArray.get(currentIndex);
