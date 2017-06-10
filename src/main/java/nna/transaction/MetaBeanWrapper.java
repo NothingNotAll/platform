@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * For Transactions Meta Info
+ * For DefaultTransaction Meta Info
  *
  * @author NNA-SHUAI
  * @create 2017-06-07 17:33

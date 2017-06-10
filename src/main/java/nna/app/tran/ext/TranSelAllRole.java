@@ -6,7 +6,7 @@ import nna.base.protocol.dispatch.AppUtil;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.log.Log;
 import nna.base.util.LogUtil;
-import nna.transaction.Transactions;
+import nna.transaction.DefaultTransaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -21,7 +21,7 @@ import static nna.base.util.ObjectFactory.getBean;
  * @create 2017-05-24 13:30
  **/
 
-public class TranSelAllRole extends Transactions<PlatformRole[]> {
+public class TranSelAllRole extends DefaultTransaction<PlatformRole[]> {
     public PlatformRole[] inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Log log=AppUtil.getLog();
         ResultSet countRs=sts[0].executeQuery();

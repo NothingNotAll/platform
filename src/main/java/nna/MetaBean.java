@@ -57,7 +57,7 @@ public class MetaBean extends Clone{
     private Template template;
     private String renderPage;//used as check write flag;
 
-    // For Transactions
+    // For DefaultTransaction
     private PlatformEntryTransaction[] serviceTrans;
     private ArrayList<PlatformTransaction[]> trans;
     private ArrayList<PlatformSql[]> tranPlatformSql;
