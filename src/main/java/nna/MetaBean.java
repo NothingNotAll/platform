@@ -58,7 +58,7 @@ public class MetaBean extends Clone{
     private String renderPage;//used as check write flag;
 
     // For Transactions
-    private PlatformServiceTransaction[] serviceTrans;
+    private PlatformEntryTransaction[] serviceTrans;
     private ArrayList<PlatformTransaction[]> trans;
     private ArrayList<PlatformSql[]> tranPlatformSql;
     private ArrayList<String[]> SQLS;
@@ -81,7 +81,7 @@ public class MetaBean extends Clone{
 
     private ArrayList<Connection> conStack;
     private ArrayList<PreparedStatement[]> pstStack;
-    private ArrayList<PlatformServiceTransaction> tranStack;
+    private ArrayList<PlatformEntryTransaction> tranStack;
 
     private PreparedStatement[] currentPsts;
     private Connection currentCon;
@@ -384,11 +384,11 @@ public class MetaBean extends Clone{
         this.template = template;
     }
 
-    public PlatformServiceTransaction[] getServiceTrans() {
+    public PlatformEntryTransaction[] getServiceTrans() {
         return serviceTrans;
     }
 
-    public void setServiceTrans(PlatformServiceTransaction[] serviceTrans) {
+    public void setServiceTrans(PlatformEntryTransaction[] serviceTrans) {
         this.serviceTrans = serviceTrans;
     }
 
@@ -504,11 +504,11 @@ public class MetaBean extends Clone{
         this.renderPage = renderPage;
     }
 
-    public ArrayList<PlatformServiceTransaction> getTranStack() {
+    public ArrayList<PlatformEntryTransaction> getTranStack() {
         return tranStack;
     }
 
-    public void setTranStack(ArrayList<PlatformServiceTransaction> tranStack) {
+    public void setTranStack(ArrayList<PlatformEntryTransaction> tranStack) {
         this.tranStack = tranStack;
     }
 

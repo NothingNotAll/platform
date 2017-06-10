@@ -125,15 +125,15 @@ public class LogUtil {
         log.log("更新时间戳："+platformController.getUpdateTimestamp(),logLevel);
     }
 
-    public static void log(Log log, PlatformServiceTransaction platformServiceTransaction, int logLevel) {
-        log.log(""+platformServiceTransaction.getTransactionLevel(),logLevel);
-        log.log("事务描述-"+platformServiceTransaction.getTransactionDesc(),logLevel);
-        log.log("事务传播类型-"+platformServiceTransaction.getTransactionPropagation(),logLevel);
-        log.log("事务隔离级别-"+platformServiceTransaction.getTransactionLevel(),logLevel);
-//        log.log("调用事务服务码-"+platformServiceTransaction.getServiceName(),logLevel);
-        log.log("事务名称-"+platformServiceTransaction.getTransactionName(),logLevel);
-        log.log("事务版本创建时间戳-"+platformServiceTransaction.getCreateTimestamp(),logLevel);
-        log.log("事务版本更新时间戳-"+platformServiceTransaction.getUpdateTimestamp(),logLevel);
-        log.log("关联事务索引"+platformServiceTransaction.getPreviousTransactionIndex(),logLevel);
+    public static void log(Log log, PlatformEntryTransaction platformEntryTransaction, int logLevel) {
+        log.log(""+ platformEntryTransaction.getTransactionLevel(),logLevel);
+        log.log("事务描述-"+ platformEntryTransaction.getTransactionDesc(),logLevel);
+        log.log("事务传播类型-"+ platformEntryTransaction.getTransactionPropagation(),logLevel);
+        log.log("事务隔离级别-"+ platformEntryTransaction.getTransactionLevel(),logLevel);
+//        log.log("调用事务服务码-"+platformEntryTransaction.getServiceName(),logLevel);
+        log.log("事务名称-"+ platformEntryTransaction.getTransactionName(),logLevel);
+        log.log("事务版本创建时间戳-"+ platformEntryTransaction.getCreateTimestamp(),logLevel);
+        log.log("事务版本更新时间戳-"+ platformEntryTransaction.getUpdateTimestamp(),logLevel);
+        log.log("关联事务索引"+ platformEntryTransaction.getPreviousTransactionIndex(),logLevel);
     }
 }

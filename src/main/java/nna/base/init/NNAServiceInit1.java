@@ -29,14 +29,14 @@ public class NNAServiceInit1 {
 
     public static ArrayList<PlatformColumn> columns=new ArrayList<PlatformColumn>();
     public static ArrayList<PlatformRoleResource> roleResources=new ArrayList<PlatformRoleResource>();
-    public static ArrayList<PlatformServiceTransaction> serviceTrans=new ArrayList<PlatformServiceTransaction>();
+    public static ArrayList<PlatformEntryTransaction> serviceTrans=new ArrayList<PlatformEntryTransaction>();
     public static ArrayList<PlatformTransaction> trans=new ArrayList<PlatformTransaction>();
     public static ArrayList<PlatformUserRole> userRoles=new ArrayList<PlatformUserRole>();
     public static ArrayList<PlatformProxy> proxies=new ArrayList<PlatformProxy>();
 
     public static HashMap<String,ArrayList<PlatformColumn>> columnMap=new HashMap<String, ArrayList<PlatformColumn>>();
     public static HashMap<Integer,ArrayList<PlatformRoleResource>> roleResourceMap=new HashMap<Integer,ArrayList<PlatformRoleResource>>();
-    public static HashMap<String,ArrayList<PlatformServiceTransaction>> serviceTranMap=new HashMap<String, ArrayList<PlatformServiceTransaction>>();
+    public static HashMap<String,ArrayList<PlatformEntryTransaction>> serviceTranMap=new HashMap<String, ArrayList<PlatformEntryTransaction>>();
     public static HashMap<String,ArrayList<PlatformTransaction>> tranMap=new HashMap<String, ArrayList<PlatformTransaction>>();
     public static HashMap<Integer,ArrayList<PlatformUserRole>> userRoleMap=new HashMap<Integer, ArrayList<PlatformUserRole>>();
     public static HashMap<String,ArrayList<PlatformProxy>> proxyMap=new HashMap<String, ArrayList<PlatformProxy>>();

@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  * @create 2017-05-13 17:15
  **/
 
-public class PlatformServiceTransaction extends Clone {
+public class PlatformEntryTransaction extends Clone {
     private static final Long serialVersionUID=7L;
 
     private String transactions;
@@ -28,7 +28,7 @@ public class PlatformServiceTransaction extends Clone {
     private Integer failIndex;
     private String transactionDesc;
 
-    public PlatformServiceTransaction(){
+    public PlatformEntryTransaction(){
 
     }
 
