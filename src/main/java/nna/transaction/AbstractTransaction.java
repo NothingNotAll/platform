@@ -196,6 +196,7 @@ public class AbstractTransaction<V> implements Transaction<V> {
     }
 
     private void setTranPgl(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction currentSevTran, Connection con) {
+
     }
 
     private Connection getCon(MetaBeanWrapper metaBeanWrapper) {
