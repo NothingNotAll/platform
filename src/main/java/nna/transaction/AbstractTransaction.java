@@ -24,16 +24,14 @@ public class AbstractTransaction<V> implements Transaction<V> {
             isExeTranSuccess=processSevTran(metaBeanWrapper,tempSevTran,index);
             if(isExeTranSuccess){
                 nextTranIndex=tempSevTran.getSuccessIndex();
-                if(nextTranIndex==null){
-                    return null;
-                }
             }else {
                 nextTranIndex=tempSevTran.getFailIndex();
-                if(nextTranIndex==null){
-                    return null;
-                }
             }
-            index=nextTranIndex;
+            if(nextTranIndex==null){
+                return null;
+            }else{
+                index=nextTranIndex;
+            }
         }
         return null;
     }
@@ -65,6 +63,7 @@ public class AbstractTransaction<V> implements Transaction<V> {
         String[] columns;
         PlatformTransaction platformTransaction;
         boolean isExeSQLSuccess;
+        Integer nextSQLIndex;
         for(int index=0;index < exeSQLCount;index++){
             SQL=SQLS[index];
             cons=conList.get(index);
@@ -74,9 +73,14 @@ public class AbstractTransaction<V> implements Transaction<V> {
             platformTransaction=tranCfg[index];
             isExeSQLSuccess=execOneSql(metaBeanWrapper,con,sqlType,SQL,columns,cons,conValTypes);
             if(isExeSQLSuccess){
-                index=platformTransaction.getSuccessSequence();
+                nextSQLIndex=platformTransaction.getSuccessSequence();
             }else{
-                index=platformTransaction.getFailSequence();
+                nextSQLIndex=platformTransaction.getFailSequence();
+            }
+            if(nextSQLIndex==null){
+                return true;
+            }else{
+                index=nextSQLIndex;
             }
         }
         return true;
