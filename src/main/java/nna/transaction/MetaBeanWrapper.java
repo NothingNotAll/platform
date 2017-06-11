@@ -92,4 +92,8 @@ public class MetaBeanWrapper {
     public void setCurrentSQL(String currentSQL) {
         metaBean.setCurrentSQL(currentSQL);
     }
+
+    public void setCurrentServTranIndex(Integer currentServTranIndex) {
+        metaBean.setCurrentServTranIndex(currentServTranIndex);
+    }
 }

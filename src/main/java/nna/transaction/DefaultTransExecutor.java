@@ -23,6 +23,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         boolean isExeTranSuccess;
         Integer nextTranIndex;
         for(int index=0;index < sevTranCount;index++){
+            metaBeanWrapper.setCurrentServTranIndex(index);
             tempSevTran=serviceTrans[index];
             metaBeanWrapper.getTranStack().add(tempSevTran);
             try{

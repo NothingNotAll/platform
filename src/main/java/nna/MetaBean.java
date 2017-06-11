@@ -83,7 +83,10 @@ public class MetaBean extends Clone{
     private ArrayList<Connection> conStack;
     private ArrayList<PreparedStatement[]> pstStack;
     private ArrayList<PlatformEntryTransaction> tranStack;
+    private ArrayList<PlatformSql[]> platformSqlStack;
+    private ArrayList<String[]> SQLStack;
 
+    private Integer currentServTranIndex;
     private PlatformSql[] currentPlatformSqls;
     private String[] currentSQLS;
     private String currentSQL;
@@ -554,5 +557,29 @@ public class MetaBean extends Clone{
 
     public void setCurrentSQL(String currentSQL) {
         this.currentSQL = currentSQL;
+    }
+
+    public ArrayList<PlatformSql[]> getPlatformSqlStack() {
+        return platformSqlStack;
+    }
+
+    public void setPlatformSqlStack(ArrayList<PlatformSql[]> platformSqlStack) {
+        this.platformSqlStack = platformSqlStack;
+    }
+
+    public ArrayList<String[]> getSQLStack() {
+        return SQLStack;
+    }
+
+    public void setSQLStack(ArrayList<String[]> SQLStack) {
+        this.SQLStack = SQLStack;
+    }
+
+    public Integer getCurrentServTranIndex() {
+        return currentServTranIndex;
+    }
+
+    public void setCurrentServTranIndex(Integer currentServTranIndex) {
+        this.currentServTranIndex = currentServTranIndex;
     }
 }
