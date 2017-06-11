@@ -80,4 +80,16 @@ public class MetaBeanWrapper {
     public Connection getCurrentCon() {
         return metaBean.getCurrentCon();
     }
+
+    public void setCurrentSQLS(String[] currentSQLS) {
+        metaBean.setCurrentSQLS(currentSQLS);
+    }
+
+    public void setCurrentPlatformSqls(PlatformSql[] currentPlatformSqls) {
+        metaBean.setCurrentPlatformSqls(currentPlatformSqls);
+    }
+
+    public void setCurrentSQL(String currentSQL) {
+        metaBean.setCurrentSQL(currentSQL);
+    }
 }

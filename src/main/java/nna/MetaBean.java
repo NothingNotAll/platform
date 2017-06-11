@@ -84,6 +84,9 @@ public class MetaBean extends Clone{
     private ArrayList<PreparedStatement[]> pstStack;
     private ArrayList<PlatformEntryTransaction> tranStack;
 
+    private PlatformSql[] currentPlatformSqls;
+    private String[] currentSQLS;
+    private String currentSQL;
     private PreparedStatement[] currentPsts;
     private Connection currentCon;
     private Log log;
@@ -527,5 +530,29 @@ public class MetaBean extends Clone{
 
     public void setPlatformLog(PlatformLog platformLog) {
         this.platformLog = platformLog;
+    }
+
+    public PlatformSql[] getCurrentPlatformSqls() {
+        return currentPlatformSqls;
+    }
+
+    public void setCurrentPlatformSqls(PlatformSql[] currentPlatformSqls) {
+        this.currentPlatformSqls = currentPlatformSqls;
+    }
+
+    public String[] getCurrentSQLS() {
+        return currentSQLS;
+    }
+
+    public void setCurrentSQLS(String[] currentSQLS) {
+        this.currentSQLS = currentSQLS;
+    }
+
+    public String getCurrentSQL() {
+        return currentSQL;
+    }
+
+    public void setCurrentSQL(String currentSQL) {
+        this.currentSQL = currentSQL;
     }
 }

@@ -91,6 +91,8 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
             ArrayList<ArrayList<String[]>> colArray,
             Connection con,
             int currentIndex) throws SQLException {
+        metaBeanWrapper.setCurrentSQLS(SQLArray.toArray(new String[0]));
+        metaBeanWrapper.setCurrentPlatformSqls(platformSqls.toArray(new PlatformSql[0]));
         ArrayList<String[]> selCols=colArray.get(currentIndex);
         PlatformTransaction[] tranCfg=trans.get(currentIndex);
         String[] SQLS=SQLArray.get(currentIndex);
@@ -144,6 +146,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
             String[] cons,
             DBSQLConValType[] conValTypes
     ) throws SQLException {
+        metaBeanWrapper.setCurrentSQL(sql);
         HashMap<String,String[]> req=metaBeanWrapper.getReq();
         DBOperType dbOperType=platformSql.getOpertype();
         if(platformSql.isPage()){
