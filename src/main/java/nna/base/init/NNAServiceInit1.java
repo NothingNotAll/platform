@@ -50,18 +50,18 @@ public class NNAServiceInit1 {
         platformDBMap=buildIMap(psts[2],"getDbId",Marco.PLATFORM_DB);
         platformEntryMap=buildIMap(psts[3],"getEntryId",Marco.PLATFORM_ENTRY);
         platformLogMap=buildIMap(psts[4],"getLogId",Marco.PLATFORM_LOG);
-        platformResourceMap=buildIMap(psts[6],"getResourceId",Marco.PLATFORM_RESOURCE);
-        platformRoleMap=buildIMap(psts[7],"getRoleId",Marco.PLATFORM_ROLE);
-        platformServiceMap=buildSMap(psts[8],"getServiceName",Marco.PLATFORM_SERVICE);
-        platformSQLMap=buildSMap(psts[9],"getSqlId",Marco.PLATFORM_SQL);
-        platformUserMap=buildIMap(psts[10],"getUserId",Marco.PLATFORM_USER);
+        platformResourceMap=buildIMap(psts[5],"getResourceId",Marco.PLATFORM_RESOURCE);
+        platformRoleMap=buildIMap(psts[6],"getRoleId",Marco.PLATFORM_ROLE);
+        platformServiceMap=buildSMap(psts[7],"getServiceName",Marco.PLATFORM_SERVICE);
+        platformSQLMap=buildSMap(psts[8],"getSqlId",Marco.PLATFORM_SQL);
+        platformUserMap=buildIMap(psts[9],"getUserId",Marco.PLATFORM_USER);
 
-        getList(columns,psts[11],Marco.PLATFORM_COLUMN);
-        getList(roleResources,psts[12],Marco.PLATFORM_ROLE_RESOURCE);
-        getList(serviceTrans,psts[13],Marco.PLATFORM_SERVICE_TRANSACTION);
-        getList(trans,psts[14],Marco.PLATFORM_TRANSACTION);
-        getList(userRoles,psts[15],Marco.PLATFORM_USER_ROLE);
-        getList(proxies,psts[16],Marco.PLATFORM_PROXY);
+        getList(columns,psts[10],Marco.PLATFORM_COLUMN);
+        getList(roleResources,psts[11],Marco.PLATFORM_ROLE_RESOURCE);
+        getList(serviceTrans,psts[12],Marco.PLATFORM_SERVICE_TRANSACTION);
+        getList(trans,psts[13],Marco.PLATFORM_TRANSACTION);
+        getList(userRoles,psts[14],Marco.PLATFORM_USER_ROLE);
+        getList(proxies,psts[15],Marco.PLATFORM_PROXY);
 
         reduceSList(columns,"getColumnId",(Map)columnMap);
         reduceIList(roleResources,"getRoleId",(Map)roleResourceMap);
