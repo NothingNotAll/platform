@@ -16,7 +16,7 @@ public abstract class EndConfig<T> {
     protected String ip="127.0.0.1";
     protected int port;
     protected SocketOption<Object>[] socketOptions;
-    protected T attach=(T)this;
+    protected T attach;
     protected Object selectionKeyAttach;
     protected Method serviceMethod;
     protected Object serviceObject;
