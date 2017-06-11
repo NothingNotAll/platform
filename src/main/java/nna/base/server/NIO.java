@@ -97,7 +97,7 @@ public class NIO {
                             }
                             nioTask=new NIOTask();
                             temp.attach(nioTask);
-                            nioTask.submitEvent();
+                            nioTask.submitInitEvent();
                             channel.register(selector,SelectionKey.OP_READ,nioTask);
                             break;
                         case SelectionKey.OP_READ:
@@ -121,7 +121,7 @@ public class NIO {
                             }
                             nioTask=new NIOTask();
                             temp.attach(nioTask);
-                            nioTask.submitEvent();
+                            nioTask.submitInitEvent();
                             channel.register(selector,SelectionKey.OP_READ,nioTask);
                             break;
                     }
