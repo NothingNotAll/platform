@@ -27,11 +27,15 @@ public abstract class AbstractTask implements Runnable,Callable{
         this.taskStatus=TASK_STATUS_CREATE;
     }
 
+    public abstract void create();
+
     public abstract void init();
 
     public abstract void work();
 
     public abstract void destroy();
+
+    public abstract void otherWork();
 
     public int getIndex() {
         return index;

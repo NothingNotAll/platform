@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @create 2017-05-29 18:44
  **/
 
-public abstract class Worker<T extends AbstractTask> extends Clone implements Runnable{
+public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     private int loadNo;
     private LinkedBlockingQueue<T> workerQueue;
     private ConcurrentHashMap<Long,LinkedBlockingQueue<T>> threadsWorkerMap;
@@ -58,7 +58,19 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
         }
     }
 
-    public  abstract void submitTask(AbstractTask t);
+    public void submitTask(AbstractTask abstractTask) {
+        Long threadId=abstractTask.getThreadId();
+        LinkedBlockingQueue<T> linkedBlockingQueue=threadsWorkerMap.get(threadId);
+        linkedBlockingQueue.add((T)abstractTask);
+    }
+
+    public void submitInitTask(AbstractTask abstractTask){
+        Long threadId=abstractTask.getThreadId();
+        LinkedBlockingQueue<T> linkedBlockingQueue=new LinkedBlockingQueue<T>();
+        linkedBlockingQueue.add((T)abstractTask);
+        threadsWorkerMap.put(threadId,linkedBlockingQueue);
+    }
+
     //for GC optimize
     private AbstractTask t;
     private Iterator<T> iterator;
@@ -68,7 +80,7 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
             t=iterator.next();
             switch (t.getTaskStatus()){
                 case AbstractTask.TASK_STATUS_CREATE:
-
+                    t.create();
                     t.setTaskStatus(AbstractTask.TASK_STATUS_INIT);
                     break;
                 case AbstractTask.TASK_STATUS_INIT:
@@ -83,12 +95,10 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
                     t.destroy();
                     break;
                 default:
-                    otherWork();
+                    t.otherWork();
             }
         }
     }
-
-    protected abstract void otherWork();
 
     private void destroy() {
         count=0;
@@ -114,4 +124,5 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
     public void setWorkerCount(int workerCount) {
         this.workerCount = workerCount;
     }
+
 }

@@ -16,9 +16,7 @@ public class WorkerEntry {
         workerManager.submitEvent(abstractTask);
     }
 
-    public void submitWorkEvent(AbstractTask abstractTask){
-        workerManager.submitWorkEvent(abstractTask);
+    void submitInitEvent(AbstractTask abstractTask){
+        workerManager.submitInitEvent(abstractTask);
     }
-
-
 }

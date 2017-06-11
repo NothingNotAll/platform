@@ -46,11 +46,9 @@ public class WorkerManager {
         cachedService.submit(workerDispatcher);
     }
 
-     void submitWorkEvent(AbstractTask abstractTask){
+     void submitInitEvent(AbstractTask abstractTask){
         Worker worker=getBalanceWorker();
-        worker.submitTask(abstractTask);
-        WorkerDispatcher workerDispatcher=new WorkerDispatcher(worker,abstractTask);
-        cachedService.submit(workerDispatcher);
+        worker.submitInitTask(abstractTask);
     }
 
     private Worker getBalanceWorker() {
