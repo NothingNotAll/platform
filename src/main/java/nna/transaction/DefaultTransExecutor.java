@@ -93,7 +93,8 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         ArrayList<PlatformSql[]> platformSqls=metaBeanWrapper.getTranPlatformSql();
         ArrayList<ArrayList<String[]>> conArray=metaBeanWrapper.getCons();
         ArrayList<ArrayList<String[]>> colArray=metaBeanWrapper.getCols();
-        return executeSQLS(metaBeanWrapper,
+        return executeSQLS(
+                metaBeanWrapper,
                 SQLArray,
                 trans,
                 valTypeArray,
