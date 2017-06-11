@@ -95,13 +95,14 @@ public class NIO {
                             if(!socketChannel.isConnected()){
                                 socketChannel.finishConnect();
                             }
-                            nioTask=new NIOTask();
+                            nioTask=new NIOTask("OP_ACCEPT");
                             temp.attach(nioTask);
                             nioTask.submitInitEvent();
                             channel.register(selector,SelectionKey.OP_READ,nioTask);
                             break;
                         case SelectionKey.OP_READ:
                             nioTask=(NIOTask) temp.attachment();
+                            nioTask.setTaskName("OP_READ");
                             nioTask.submitEvent();
                             if(nioTask.getTaskStatus()!=NIOTask.TASK_STATUS_DESTROY){
                                 channel.register(selector,SelectionKey.OP_WRITE,nioTask);
@@ -110,6 +111,7 @@ public class NIO {
                         case SelectionKey.OP_WRITE:
                             nioTask=(NIOTask) temp.attachment();
                             nioTask.submitEvent();
+                            nioTask.setTaskName("OP_WRITE");
                             if(nioTask.getTaskStatus()!=NIOTask.TASK_STATUS_DESTROY){
                                 channel.register(selector,SelectionKey.OP_WRITE,nioTask);
                             }
@@ -119,7 +121,7 @@ public class NIO {
                             if(!socketChannel.isConnected()){
                                 socketChannel.finishConnect();
                             }
-                            nioTask=new NIOTask();
+                            nioTask=new NIOTask("OP_CONNECT");
                             temp.attach(nioTask);
                             nioTask.submitInitEvent();
                             channel.register(selector,SelectionKey.OP_READ,nioTask);
