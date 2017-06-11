@@ -112,7 +112,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
             sqlType=sqlTypes[index];
             columns=selCols.get(index);
             platformTransaction=tranCfg[index];
-            isExeSQLSuccess=execOneSql(
+            isExeSQLSuccess=executeOneSql(
                     metaBeanWrapper,
                     con,
                     sqlType,
@@ -134,7 +134,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
         return true;
     }
 
-    private boolean execOneSql(
+    private boolean executeOneSql(
             MetaBeanWrapper metaBeanWrapper,
             Connection con,
             PlatformSql platformSql,
