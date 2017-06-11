@@ -26,7 +26,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
             tempSevTran=serviceTrans[index];
             metaBeanWrapper.getTranStack().add(tempSevTran);
             try{
-                isExeTranSuccess=processSevTran(metaBeanWrapper,tempSevTran,index);
+                isExeTranSuccess=executeTempSevTran(metaBeanWrapper,tempSevTran,index);
             }catch (Exception e){
                 isExeTranSuccess=false;
             }finally {
@@ -53,7 +53,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         metaBeanWrapper.getCurrentCon().commit();
     }
 
-    private boolean processSevTran(
+    private boolean executeTempSevTran(
             MetaBeanWrapper metaBeanWrapper,
             PlatformEntryTransaction currentSevTran,
             int currentSevTranIndex
