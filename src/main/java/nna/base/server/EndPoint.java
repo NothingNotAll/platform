@@ -18,8 +18,8 @@ public abstract class EndPoint<T> {
     protected SocketOption<Object>[] socketOptions;
     protected T attach=(T)this;
     protected Object selectionKeyAttach;
-    protected Method serverMethod;
-    protected Object serverObject;
+    protected Method serviceMethod;
+    protected Object serviceObject;
 
     static {
         setJVMCfg();
@@ -66,19 +66,19 @@ public abstract class EndPoint<T> {
     }
 
     public Method getServerMethod() {
-        return serverMethod;
+        return serviceMethod;
     }
 
     public void setServerMethod(Method serverMethod) {
-        this.serverMethod = serverMethod;
+        this.serviceMethod = serverMethod;
     }
 
     public Object getServerObject() {
-        return serverObject;
+        return serviceObject;
     }
 
     public void setServerObject(Object serverObject) {
-        this.serverObject = serverObject;
+        this.serviceObject = serverObject;
     }
 
     public SocketOption<Object>[] getSocketOptions() {
