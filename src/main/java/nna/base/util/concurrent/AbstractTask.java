@@ -10,7 +10,7 @@ public abstract class AbstractTask{
     public static final int TASK_STATUS_CREATE=0;
     public static final int TASK_STATUS_INIT=1;
     public static final int TASK_STATUS_WORK=2;
-    public static final int TASK_STATUS_DESTROY=4;
+    public static final int TASK_STATUS_DESTROY=3;
 
     private static WorkerEntry workerEntry;
 
