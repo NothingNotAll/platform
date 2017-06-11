@@ -61,7 +61,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     public void submitTask(AbstractTask abstractTask) {
         Long threadId=abstractTask.getThreadId();
         LinkedBlockingQueue<T> linkedBlockingQueue=threadsWorkerMap.get(threadId);
-        linkedBlockingQueue.add((T)abstractTask);
+        linkedBlockingQueue.add((T)abstractTask);//there can be upgrade with 乐观锁；
     }
 
     public void submitInitTask(AbstractTask abstractTask){
