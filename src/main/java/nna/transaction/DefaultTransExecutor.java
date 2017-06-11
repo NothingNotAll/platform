@@ -16,6 +16,27 @@ import java.util.HashMap;
 
 public class DefaultTransExecutor<V> implements TransExecutor<V> {
 
+    /*
+    * the logic of exes of trans
+    * for(Transaction tran:Transactions){
+    *   exeTran(tran){
+    *       String[] SQLS=tran.getSQLS();
+    *       for(String SQL in SQLS){
+    *           exeSQL(SQL){
+    *               switch(type of SQL){
+    *                   case procedure:
+    *                   ;
+    *                   case select:
+    *                   ;
+    *                   case update:
+    *                   ;
+    *               }
+    *           };
+    *       }
+    *   };
+    * }
+    *
+    * */
     public V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException {
         PlatformEntryTransaction[] serviceTrans=metaBeanWrapper.getServiceTrans();
         PlatformEntryTransaction tempSevTran;
