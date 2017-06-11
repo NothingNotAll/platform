@@ -8,6 +8,15 @@ package nna.base.util.concurrent;
 public class WorkerEntry {
     private WorkerManager workerManager;
 
+    public WorkerEntry(){
+        int workCount=Runtime.getRuntime().availableProcessors()-1;
+        WorkerManager workerManager=new WorkerManager(workCount,new Worker());
+    }
+
+    public WorkerEntry(int workCount){
+        WorkerManager workerManager=new WorkerManager(workCount,new Worker());
+    }
+
     public WorkerEntry(int workerCount,Worker worker){
         workerManager=new WorkerManager(workerCount,worker);
     }

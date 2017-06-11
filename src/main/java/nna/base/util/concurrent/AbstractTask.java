@@ -12,6 +12,12 @@ public abstract class AbstractTask{
     public static final int TASK_STATUS_WORK=2;
     public static final int TASK_STATUS_DESTROY=4;
 
+    private static WorkerEntry workerEntry;
+
+    static{
+        workerEntry=new WorkerEntry();
+    }
+
     private int index;
     private Long threadId;
     private String threadName;
@@ -26,11 +32,11 @@ public abstract class AbstractTask{
         this.taskStatus=TASK_STATUS_CREATE;
     }
 
-    public void submitInitEvent(WorkerEntry workerEntry){
+    public void submitInitEvent(){
         workerEntry.submitInitEvent(this);
     }
 
-    public void submitEvent(WorkerEntry workerEntry){
+    public void submitEvent(){
         workerEntry.submitEvent(this);
     }
 
