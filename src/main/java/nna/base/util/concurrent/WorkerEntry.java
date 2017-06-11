@@ -10,7 +10,7 @@ public class WorkerEntry {
 
     public WorkerEntry(){
         int workCount=Runtime.getRuntime().availableProcessors()-1;
-        WorkerManager workerManager=new WorkerManager(workCount,new Worker());
+        workerManager=new WorkerManager(workCount,new Worker());
     }
 
     public WorkerEntry(int workCount){
