@@ -27,9 +27,9 @@ public abstract class EndPoint<T> {
 
     private static void setJVMCfg(){
         String name = ManagementFactory.getRuntimeMXBean().getName();
-        Server.setJvmName(name);
+        ServerConfig.setJvmName(name);
         String pid = name.split("@")[0];
-        Server.setPid(pid);
+        ServerConfig.setPid(pid);
     }
 
 
@@ -38,7 +38,7 @@ public abstract class EndPoint<T> {
     }
 
     public static void setJvmName(String jvmName) {
-        Server.jvmName = jvmName;
+        ServerConfig.jvmName = jvmName;
     }
 
     public String getIp() {
@@ -58,11 +58,11 @@ public abstract class EndPoint<T> {
     }
 
     public static String getPid() {
-        return Server.pid;
+        return ServerConfig.pid;
     }
 
     public static void setPid(String pid) {
-        Server.pid = pid;
+        ServerConfig.pid = pid;
     }
 
     public Method getServerMethod() {

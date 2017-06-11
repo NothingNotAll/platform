@@ -24,8 +24,8 @@ public class NIO {
     private ServerSocketChannel[] serverSocketChannels;
     private Selector selector= SelectorProvider.provider().openSelector();
 
-    public NIO(Server[] servers,int type) throws IOException {
-        int count=servers.length;
+    public NIO(ServerConfig[] serverConfigs, int type) throws IOException {
+        int count= serverConfigs.length;
         this.type=type;
         serverSocketChannels=new ServerSocketChannel[count];
     }
@@ -49,14 +49,14 @@ public class NIO {
                 case SERVER:
                     setServer(
                             serverSocketChannel,
-                            (Server) server,
+                            (ServerConfig) server,
                             inetSocketAddress
                     );
                     break;
                 case CLIENT:
                     setClient(
                             serverSocketChannel,
-                            (Client) server,
+                            (ClientConfig) server,
                             inetSocketAddress
                     );
                     break;
@@ -65,16 +65,16 @@ public class NIO {
         }
     }
 
-    private void setClient(ServerSocketChannel serverSocketChannel, Client server, InetSocketAddress inetSocketAddress) throws IOException {
+    private void setClient(ServerSocketChannel serverSocketChannel, ClientConfig server, InetSocketAddress inetSocketAddress) throws IOException {
         serverSocketChannel.register(selector,SelectionKey.OP_ACCEPT,server.getAttach());
         serverSocketChannel.bind(inetSocketAddress);
     }
 
     private void setServer(ServerSocketChannel serverSocketChannel,
-                           Server server,
+                           ServerConfig serverConfig,
                            SocketAddress inetSocketAddress) throws IOException {
-        serverSocketChannel.register(selector,SelectionKey.OP_CONNECT,server.getAttach());
-        serverSocketChannel.bind(inetSocketAddress,((Server)server).getBackLog());
+        serverSocketChannel.register(selector,SelectionKey.OP_CONNECT, serverConfig.getAttach());
+        serverSocketChannel.bind(inetSocketAddress,((ServerConfig) serverConfig).getBackLog());
     }
 
     public void listen(){
