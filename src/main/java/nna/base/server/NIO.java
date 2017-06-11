@@ -95,7 +95,7 @@ public class NIO {
                             if(!socketChannel.isConnected()){
                                 socketChannel.finishConnect();
                             }
-                            nioTask=new NIOTask("OP_ACCEPT");
+                            nioTask=new NIOTask("OP_ACCEPT",channel);
                             temp.attach(nioTask);
                             nioTask.submitInitEvent();
                             channel.register(selector,SelectionKey.OP_READ,nioTask);
@@ -121,7 +121,7 @@ public class NIO {
                             if(!socketChannel.isConnected()){
                                 socketChannel.finishConnect();
                             }
-                            nioTask=new NIOTask("OP_CONNECT");
+                            nioTask=new NIOTask("OP_CONNECT",channel);
                             temp.attach(nioTask);
                             nioTask.submitInitEvent();
                             channel.register(selector,SelectionKey.OP_READ,nioTask);
