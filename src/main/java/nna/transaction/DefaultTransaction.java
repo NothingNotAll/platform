@@ -62,14 +62,14 @@ public class DefaultTransaction<V> implements Transaction<V> {
 
     private boolean executeSQL(
             MetaBeanWrapper metaBeanWrapper,
-                               ArrayList<String[]> SQLArray,
-                               ArrayList<PlatformTransaction[]> trans,
-                               ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray,
-                               ArrayList<PlatformSql[]> platformSqls,
-                               ArrayList<ArrayList<String[]>> conArray,
-                               ArrayList<ArrayList<String[]>> colArray,
-                               Connection con,
-                               int currentIndex) throws SQLException {
+            ArrayList<String[]> SQLArray,
+            ArrayList<PlatformTransaction[]> trans,
+            ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray,
+            ArrayList<PlatformSql[]> platformSqls,
+            ArrayList<ArrayList<String[]>> conArray,
+            ArrayList<ArrayList<String[]>> colArray,
+            Connection con,
+            int currentIndex) throws SQLException {
         ArrayList<String[]> selCols=colArray.get(currentIndex);
         PlatformTransaction[] tranCfg=trans.get(currentIndex);
         String[] SQLS=SQLArray.get(currentIndex);
@@ -116,12 +116,12 @@ public class DefaultTransaction<V> implements Transaction<V> {
 
     private boolean execOneSql(
             MetaBeanWrapper metaBeanWrapper,
-                               Connection con,
-                               PlatformSql platformSql,
-                               String sql,
-                               String[] columns,
-                               String[] cons,
-                               DBSQLConValType[] conValTypes
+            Connection con,
+            PlatformSql platformSql,
+            String sql,
+            String[] columns,
+            String[] cons,
+            DBSQLConValType[] conValTypes
     ) throws SQLException {
         HashMap<String,String[]> req=metaBeanWrapper.getReq();
         DBOperType dbOperType=platformSql.getOpertype();
@@ -170,9 +170,9 @@ public class DefaultTransaction<V> implements Transaction<V> {
 
     private void executeSelect(
             PreparedStatement pst,
-                               HashMap<String, String[]> req,
-                               String[] columns, String[] cons,
-                               DBSQLConValType[] conValTypes
+            HashMap<String, String[]> req,
+            String[] columns, String[] cons,
+            DBSQLConValType[] conValTypes
     ) throws SQLException {
         String conNm;
         String conVal;
@@ -210,9 +210,9 @@ public class DefaultTransaction<V> implements Transaction<V> {
 
     private void executeUpdate(
             PreparedStatement pst,
-                               HashMap<String, String[]> req,
-                               String[] cons,
-                               DBSQLConValType[] conValTypes
+            HashMap<String, String[]> req,
+            String[] cons,
+            DBSQLConValType[] conValTypes
     ) throws SQLException {
         int updateCount=req.get(cons[0]).length;
         int conCount=cons.length;
@@ -233,9 +233,9 @@ public class DefaultTransaction<V> implements Transaction<V> {
 
     private void setCon(
             PreparedStatement pst,
-                        int index,
-                        String conVal,
-                        DBSQLConValType conValType
+            int index,
+            String conVal,
+            DBSQLConValType conValType
     ) throws SQLException {
         switch (conValType){
             case INTEGER:
