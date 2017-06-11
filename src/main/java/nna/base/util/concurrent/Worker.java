@@ -25,7 +25,7 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
     private int count;
     private volatile int workerCount;
     private LinkedList<T> ts=new LinkedList<T>();
-
+    private AbstractTask blockTask;
 
     public void run() {
         try{
@@ -34,8 +34,8 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
                 if(workerCount>0){
                     workerQueue.drainTo(tempWorker,workerCount);
                 }else{
-                    AbstractTask task=workerQueue.take();
-                    tempWorker.addLast((T)task);
+                    blockTask=workerQueue.take();
+                    tempWorker.addLast((T)blockTask);
                 }
                 Iterator<T> iterator=tempWorker.iterator();
                 consumer(iterator);
@@ -59,10 +59,11 @@ public abstract class Worker<T extends AbstractTask> extends Clone implements Ru
     }
 
     public  abstract void submitTask(AbstractTask t);
-
+    //for GC optimize
+    private AbstractTask t;
+    private Iterator<T> iterator;
     private void work(LinkedList<T> ts){
-        AbstractTask t;
-        Iterator<T> iterator=ts.iterator();
+        iterator=ts.iterator();
         while(iterator.hasNext()){
             t=iterator.next();
             switch (t.getTaskStatus()){
