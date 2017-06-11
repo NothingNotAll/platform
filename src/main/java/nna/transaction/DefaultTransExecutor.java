@@ -43,10 +43,11 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         int sevTranCount=serviceTrans.length;
         boolean isExeTranSuccess;
         Integer nextTranIndex;
+        ArrayList<PlatformEntryTransaction> tranStack=metaBeanWrapper.getTranStack();
         for(int index=0;index < sevTranCount;index++){
             metaBeanWrapper.setCurrentServTranIndex(index);
             tempSevTran=serviceTrans[index];
-            metaBeanWrapper.getTranStack().add(tempSevTran);
+            tranStack.add(tempSevTran);
             try{
                 isExeTranSuccess=executeTempSevTran(metaBeanWrapper,tempSevTran,index);
             }catch (Exception e){
