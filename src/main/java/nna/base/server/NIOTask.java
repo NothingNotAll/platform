@@ -9,8 +9,8 @@ import nna.base.util.concurrent.AbstractTask;
 
 public class NIOTask extends AbstractTask {
 
-    public NIOTask(){
-
+    public NIOTask(String taskName){
+        super(taskName);
     }
 
     public void create() {
