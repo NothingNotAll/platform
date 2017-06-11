@@ -165,28 +165,6 @@ public class TranUtil {
         }
     }
 
-    protected void setRspMap(int count,ResultSet rs,String[] column,HashMap<String,String[]> rspMap,String countNm) throws SQLException {
-        int index=0;
-        int colCount=column.length;
-        String rspColNm;
-        for(;index<colCount;index++){
-            rspColNm=column[index];
-            rspMap.put(rspColNm,new String[count]);
-        }
-        index=0;
-        while(rs.next()){
-            int temp=0;
-            String colNm;
-            for(int colIndex=1;colIndex<= colCount;colIndex++,temp++){
-                colNm=column[temp];
-                rspMap.get(colNm)[index]=rs.getString(colIndex);
-            }
-            index++;
-        }
-        rspMap.put(countNm,new String[]{String.valueOf(index)});
-        rs.close();
-    }
-
     public static String buildSQL(PlatformSql platformSql) throws SQLException {
         Log log= AppUtil.getLog();
         String sqlStr=null;
