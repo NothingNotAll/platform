@@ -126,7 +126,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
         HashMap<String,String[]> req=metaBeanWrapper.getReq();
         DBOperType dbOperType=platformSql.getOpertype();
         if(platformSql.isPage()){
-
+            //how to solve it
         }
         PreparedStatement pst;
         switch (dbOperType){
@@ -199,6 +199,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
                 selValCount=selVal.length;
                 selValTemp=new String[selValCount+1];
                 selValTemp[selValCount]=temp;
+                //zero Copy to achieve
                 System.arraycopy(selVal,0,selValTemp,0,selValCount);
                 req.put(nm,selValTemp);
             }
