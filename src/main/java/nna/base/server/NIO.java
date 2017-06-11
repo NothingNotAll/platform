@@ -74,7 +74,7 @@ public class NIO {
                            ServerConfig serverConfig,
                            SocketAddress inetSocketAddress) throws IOException {
         serverSocketChannel.register(selector,SelectionKey.OP_CONNECT, serverConfig.getAttach());
-        serverSocketChannel.bind(inetSocketAddress,((ServerConfig) serverConfig).getBackLog());
+        serverSocketChannel.bind(inetSocketAddress,serverConfig.getBackLog());
     }
 
     public void listen(){
