@@ -1,6 +1,5 @@
 package nna.base.server;
 
-import java.lang.management.ManagementFactory;
 
 /**
  * @author NNA-SHUAI
