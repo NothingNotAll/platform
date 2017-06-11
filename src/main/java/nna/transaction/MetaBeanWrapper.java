@@ -4,8 +4,10 @@ import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformEntryTransaction;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.bean.dbbean.PlatformTransaction;
+import nna.base.db.DBCon;
 import nna.enums.DBSQLConValType;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -59,4 +61,19 @@ public class MetaBeanWrapper {
         return metaBean.getRsp();
     }
 
+    public DBCon getDbCon() {
+        return metaBean.getDbCon();
+    }
+
+    public ArrayList<Connection> getConStack() {
+        return metaBean.getConStack();
+    }
+
+    public ArrayList<PlatformEntryTransaction> getTranStack() {
+        return metaBean.getTranStack();
+    }
+
+    public void setCurrentCon(Connection currentCon) {
+        metaBean.setCurrentCon(currentCon);
+    }
 }

@@ -1,10 +1,15 @@
 package nna.transaction;
 
+import nna.MetaBean;
+import nna.base.bean.dbbean.PlatformEntry;
 import nna.base.bean.dbbean.PlatformEntryTransaction;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.bean.dbbean.PlatformTransaction;
+import nna.base.db.DBCon;
 import nna.enums.DBOperType;
 import nna.enums.DBSQLConValType;
+import nna.enums.DBTranLvlType;
+import nna.enums.DBTranPpgType;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,6 +26,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
         Integer nextTranIndex;
         for(int index=0;index < sevTranCount;index++){
             tempSevTran=serviceTrans[index];
+            metaBeanWrapper.getTranStack().add(tempSevTran);
             isExeTranSuccess=processSevTran(metaBeanWrapper,tempSevTran,index);
             if(isExeTranSuccess){
                 nextTranIndex=tempSevTran.getSuccessIndex();
@@ -41,7 +47,10 @@ public class DefaultTransaction<V> implements Transaction<V> {
             PlatformEntryTransaction currentSevTran,
             int currentSevTranIndex
     ) throws SQLException {
-        Connection con=getCon(metaBeanWrapper);//得到执行此次事务的Connection
+        ArrayList<PlatformEntryTransaction> stack=metaBeanWrapper.getTranStack();
+        Connection con=getCon(metaBeanWrapper,stack,currentSevTran);//得到执行此次事务的Connection
+        metaBeanWrapper.getConStack().add(con);
+        metaBeanWrapper.setCurrentCon(con);
         setTranPgl(metaBeanWrapper,currentSevTran,con);//设置事务的隔离级别
         ArrayList<String[]> SQLArray=metaBeanWrapper.getSQLS();
         ArrayList<PlatformTransaction[]> trans=metaBeanWrapper.getTrans();
@@ -254,15 +263,69 @@ public class DefaultTransaction<V> implements Transaction<V> {
             MetaBeanWrapper metaBeanWrapper,
             PlatformEntryTransaction currentSevTran,
             Connection con
-    ) {
-
+    ) throws SQLException {
+        DBTranLvlType dbTranLvlType=currentSevTran.getTransactionLevel();
+        switch (dbTranLvlType){
+            case NONE:
+                con.setTransactionIsolation(Connection.TRANSACTION_NONE);
+                break;
+            case READ_COMMITTED:
+                con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+                break;
+            case REPEATABLE_READ:
+                con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+                break;
+            case READ_UNCOMMITTED:
+                con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+                break;
+            case SERIALIZABLE:
+                con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+                break;
+        }
     }
 
     private Connection getCon(
-            MetaBeanWrapper metaBeanWrapper
-    ) {
+            MetaBeanWrapper metaBeanWrapper,
+            ArrayList<PlatformEntryTransaction> tranStack,
+            PlatformEntryTransaction currentSevTran
+    ) throws SQLException {
         Connection con=null;
-
+        DBCon dbCon;
+        DBTranPpgType dbTranPpgType=currentSevTran.getTransactionPropagation();
+        Integer previousSevTran=currentSevTran.getPreviousTransactionIndex();
+        PlatformEntryTransaction previous;
+        if(previousSevTran!=null){
+            previous=tranStack.get(previousSevTran);
+        }
+        switch (dbTranPpgType){
+            case NONE:
+                dbCon=metaBeanWrapper.getDbCon();
+                return dbCon.getCon();
+            case PROPAGATION_NEVER:
+                dbCon=metaBeanWrapper.getDbCon();
+                return dbCon.getCon();
+            case PROPAGATION_NESTED:
+                ;
+                break;
+            case PROPAGATION_REQUIRED:
+                ;
+                break;
+            case PROPAGATION_SUPPORTS:
+                ;
+                break;
+            case PROPAGATION_MANDATORY:
+                ;
+                break;
+            case PROPAGATION_REQUIRES_NEW:
+                dbCon=metaBeanWrapper.getDbCon();
+                return dbCon.getCon();
+            case PROPAGATION_NOT_SUPPORTED:
+                ;
+                break;
+            case DEFAULT:
+                ;
+                break;
+        }
         return con;
     }
 }
