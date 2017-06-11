@@ -15,12 +15,12 @@ import java.util.Set;
  * @create 2017-06-11 22:04
  **/
 
-public class NIOServer {
+public class NIO {
     private EndPoint[] endPoints;
     private ServerSocketChannel[] serverSocketChannels;
     private Selector selector= SelectorProvider.provider().openSelector();
 
-    public NIOServer(Server[] servers) throws IOException {
+    public NIO(Server[] servers) throws IOException {
         int count=servers.length;
         serverSocketChannels=new ServerSocketChannel[count];
     }
