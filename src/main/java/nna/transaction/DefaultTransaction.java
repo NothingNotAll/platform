@@ -1,7 +1,5 @@
 package nna.transaction;
 
-import nna.MetaBean;
-import nna.base.bean.dbbean.PlatformEntry;
 import nna.base.bean.dbbean.PlatformEntryTransaction;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.bean.dbbean.PlatformTransaction;
