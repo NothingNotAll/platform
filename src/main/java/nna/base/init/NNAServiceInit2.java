@@ -87,10 +87,13 @@ public class NNAServiceInit2 {
         int index=0;
         PlatformUserRole platformUserRole;
         PlatformRole platformRole;
+        ArrayList<PlatformUserRole> urList;
+        Map.Entry<Integer,PlatformUser> entry;
+        int userId;
         while(iterator.hasNext()){
-            Map.Entry<Integer,PlatformUser> entry=iterator.next();
-            int userId=entry.getKey();
-            ArrayList<PlatformUserRole> urList=map.get(userId);
+            entry=iterator.next();
+            userId=entry.getKey();
+            urList=map.get(userId);
             count=urList.size();
             for(;index< count;index++){
                 platformUserRole=urList.get(index);
