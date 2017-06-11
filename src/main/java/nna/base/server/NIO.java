@@ -1,5 +1,6 @@
 package nna.base.server;
 
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -87,18 +88,25 @@ public class NIO {
                 while(iterator.hasNext()){
                     temp=iterator.next();
                     int selectionKey=temp.interestOps();
+                    NIOTask nioTask;
                     switch (selectionKey){
                         case SelectionKey.OP_ACCEPT:
-                            ;
+                            nioTask=new NIOTask();
+                            temp.attach(nioTask);
+                            nioTask.submitEvent();
                             break;
                         case SelectionKey.OP_READ:
-                            ;
+                            nioTask=(NIOTask) temp.attachment();
+                            nioTask.submitEvent();
                             break;
                         case SelectionKey.OP_WRITE:
-                            ;
+                            nioTask=(NIOTask) temp.attachment();
+                            nioTask.submitEvent();
                             break;
                         case SelectionKey.OP_CONNECT:
-                            ;
+                            nioTask=new NIOTask();
+                            temp.attach(nioTask);
+                            nioTask.submitEvent();
                             break;
                     }
                 }
