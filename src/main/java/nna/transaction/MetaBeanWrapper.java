@@ -76,4 +76,8 @@ public class MetaBeanWrapper {
     public void setCurrentCon(Connection currentCon) {
         metaBean.setCurrentCon(currentCon);
     }
+
+    public Connection getCurrentCon() {
+        return metaBean.getCurrentCon();
+    }
 }

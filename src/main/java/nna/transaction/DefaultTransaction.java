@@ -30,7 +30,9 @@ public class DefaultTransaction<V> implements Transaction<V> {
             }catch (Exception e){
                 isExeTranSuccess=false;
             }finally {
-                destroy(metaBeanWrapper,tempSevTran);
+                destroy(
+                        metaBeanWrapper,
+                        tempSevTran);
             }
             if(isExeTranSuccess){
                 nextTranIndex=tempSevTran.getSuccessIndex();
@@ -46,8 +48,11 @@ public class DefaultTransaction<V> implements Transaction<V> {
         return null;
     }
 
-    private void destroy(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction tempSevTran) {
-
+    private void destroy(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction tempSevTran) throws SQLException {
+        int index=metaBeanWrapper.getConStack().size();
+        metaBeanWrapper.getTranStack().remove(index-1);
+        metaBeanWrapper.getConStack().remove(index-1);
+        metaBeanWrapper.getCurrentCon().commit();
     }
 
     private boolean processSevTran(
