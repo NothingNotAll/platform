@@ -24,8 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static nna.base.init.Util.buildSQL;
 import static nna.base.util.ObjectFactory.getBean;
-import static nna.transaction.TranUtil.buildSQL;
 
 
 /**

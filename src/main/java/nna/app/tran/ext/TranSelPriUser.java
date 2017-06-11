@@ -4,7 +4,7 @@ import nna.Marco;
 import nna.base.bean.dbbean.PlatformResource;
 import nna.base.bean.dbbean.PlatformRole;
 import nna.base.bean.dbbean.PlatformUser;
-import nna.transaction.DefaultTransaction;
+import nna.transaction.DefaultTransExecutor;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -21,7 +21,7 @@ import static nna.base.util.ObjectFactory.getBean;
  * @create 2017-05-26 13:23
  **/
 
-public class TranSelPriUser extends DefaultTransaction<PlatformUser> {
+public class TranSelPriUser extends DefaultTransExecutor<PlatformUser> {
 
     public PlatformUser inTransaction(Connection connection, PreparedStatement[] sts) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
 //        setCurrentPstParameter(0);
