@@ -117,14 +117,17 @@ public class DefaultTransaction<V> implements Transaction<V> {
     private boolean execOneSql(
             MetaBeanWrapper metaBeanWrapper,
                                Connection con,
-                               PlatformSql sqlType,
+                               PlatformSql platformSql,
                                String sql,
                                String[] columns,
                                String[] cons,
                                DBSQLConValType[] conValTypes
     ) throws SQLException {
         HashMap<String,String[]> req=metaBeanWrapper.getReq();
-        DBOperType dbOperType=sqlType.getOpertype();
+        DBOperType dbOperType=platformSql.getOpertype();
+        if(platformSql.isPage()){
+
+        }
         PreparedStatement pst;
         switch (dbOperType){
             case PROCEDURE:

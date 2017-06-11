@@ -30,8 +30,9 @@ public class MetaBean extends Clone{
     //Global App Config Cache;
     private static Log pLog;
     private static ConcurrentHashMap<Long,MetaBean> metaMonitor=new ConcurrentHashMap<Long, MetaBean>();
-    private static HashSet<String> freeResource=new HashSet<String>();
-    private static HashSet<String> userIdSet=new HashSet<String>();
+    private static HashSet<PlatformResource> freeResource=new HashSet<PlatformResource>();
+    private static HashSet<String> freeCodeSet=new HashSet<String>();
+    private static HashSet<PlatformUser> userSet=new HashSet<PlatformUser>();
     private static HashMap<String,PlatformRole[]> allUserRole=new HashMap<String, PlatformRole[]>();
     private static HashMap<String,PlatformResource[]> allUserResource=new HashMap<String, PlatformResource[]>();
     private static List<MetaBean> confMetaCache;
@@ -90,14 +91,6 @@ public class MetaBean extends Clone{
     private int logLevel;
     private boolean isLogEncrypt;//encrypt
 
-    public static HashSet<String> getUserIdSet() {
-        return userIdSet;
-    }
-
-    public static void setUserIdSet(HashSet<String> userIdSet) {
-        MetaBean.userIdSet = userIdSet;
-    }
-
     public static HashMap<String, PlatformRole[]> getAllUserRole() {
         return allUserRole;
     }
@@ -154,6 +147,22 @@ public class MetaBean extends Clone{
         MetaBean.pLog = pLog;
     }
 
+    public static HashSet<PlatformUser> getUserSet() {
+        return userSet;
+    }
+
+    public static void setUserSet(HashSet<PlatformUser> userSet) {
+        MetaBean.userSet = userSet;
+    }
+
+    public static HashSet<String> getFreeCodeSet() {
+        return freeCodeSet;
+    }
+
+    public static void setFreeCodeSet(HashSet<String> freeCodeSet) {
+        MetaBean.freeCodeSet = freeCodeSet;
+    }
+
     @Override
     public MetaBean clone(){
         AtomicLong servAL=logNoGen;
@@ -176,11 +185,11 @@ public class MetaBean extends Clone{
         MetaBean.metaMonitor = metaMonitor;
     }
 
-    public static HashSet<String> getFreeResource() {
+    public static HashSet<PlatformResource> getFreeResource() {
         return freeResource;
     }
 
-    public static void setFreeResource(HashSet<String> freeResource) {
+    public static void setFreeResource(HashSet<PlatformResource> freeResource) {
         MetaBean.freeResource = freeResource;
     }
 
