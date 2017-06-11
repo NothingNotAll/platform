@@ -1,13 +1,12 @@
 package nna.base.util.concurrent;
 
-import java.util.concurrent.Callable;
 
 /**
  * @author NNA-SHUAI
  * @create 2017-05-29 18:50
  **/
 
-public abstract class AbstractTask implements Runnable,Callable{
+public abstract class AbstractTask{
     public static final int TASK_STATUS_CREATE=0;
     public static final int TASK_STATUS_INIT=1;
     public static final int TASK_STATUS_WORK=2;
