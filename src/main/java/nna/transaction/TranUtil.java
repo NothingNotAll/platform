@@ -1,15 +1,9 @@
 package nna.transaction;
 
 import nna.Marco;
-import nna.base.bean.dbbean.PlatformSql;
-import nna.base.init.NNAServiceInit0;
-import nna.base.log.Log;
 import nna.base.protocol.dispatch.AppUtil;
-import nna.base.util.BuildSQL;
-import nna.enums.DBSQLConValType;
 
 import java.sql.*;
-import java.util.HashMap;
 
 /**
  * @author NNA-SHUAI
@@ -17,28 +11,6 @@ import java.util.HashMap;
  **/
 
 public class TranUtil {
-
-    public static String arrayToString(String[] strs,String spit){
-        int size=strs.length;
-        StringBuilder stringBuilder=new StringBuilder("");
-        for(int index=0;index < size;index++){
-            if(stringBuilder.equals("")){
-                stringBuilder.append(strs[index]);
-            }else{
-                stringBuilder.append(","+strs[index]);
-            }
-        }
-        return stringBuilder.toString();
-    }
-
-    public static ResultSet[] initRS(PreparedStatement[] psts) throws SQLException {
-        int count=psts.length;
-        ResultSet[] rs=new ResultSet[count];
-        for(int index=0;index<count;index++){
-            rs[index]=psts[index].executeQuery();
-        }
-        return rs;
-    }
 
     public static Integer[] getPageParam(Integer totalLines,
                                             Integer currentPage,
@@ -131,36 +103,6 @@ public class TranUtil {
                 }
             }catch (Exception e){
                 e.printStackTrace();
-            }
-        }
-    }
-
-    public ResultSet setPstParaAndExePst(PreparedStatement pst, String[] conNms, DBSQLConValType[] dbsqlConValTypes, HashMap<String,String[]> conMap) throws SQLException {
-        setPstParameter(pst,conNms,dbsqlConValTypes,conMap,0);
-        return pst.executeQuery();
-    }
-
-    public void setPstParameter(PreparedStatement pst,String[] conNms,DBSQLConValType[] dbsqlConValTypes,HashMap<String,String[]> conMap,int valIndex) throws SQLException {
-        int parameterCount=conNms.length;
-        String tempNm;
-        DBSQLConValType tempValType;
-        String[] conVal;
-        String conValue;
-        for(int index=0;index < parameterCount;index++){
-            tempNm=conNms[index];
-            conVal=conMap.get(tempNm);
-            conValue=conVal[valIndex];
-            tempValType=dbsqlConValTypes[index];
-            switch (tempValType){
-                case INTEGER:
-                    pst.setInt(index,Integer.valueOf(conValue));
-                    break;
-                case BOOLEAN:
-                    pst.setBoolean(index,Boolean.valueOf(conValue));;
-                    break;
-                case STRING:
-                    pst.setString(index,conValue);;
-                    break;
             }
         }
     }
