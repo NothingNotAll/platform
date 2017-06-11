@@ -9,7 +9,7 @@ import java.net.SocketOption;
  * @create 2017-06-11 23:19
  **/
 
-public abstract class EndPoint<T> {
+public abstract class EndConfig<T> {
 
     protected static String pid;
     protected static String jvmName;

@@ -19,7 +19,7 @@ import java.util.Set;
 public class NIO {
     public static final int SERVER=0;
     public static final int CLIENT=1;
-    private EndPoint[] endPoints;
+    private EndConfig[] endConfigs;
     private int type;
     private ServerSocketChannel[] serverSocketChannels;
     private Selector selector= SelectorProvider.provider().openSelector();
@@ -31,10 +31,10 @@ public class NIO {
     }
 
     public void buildInstance() throws IOException {
-        int serverCount=endPoints.length;
-        EndPoint server;
+        int serverCount= endConfigs.length;
+        EndConfig server;
         for(int index=0;index < serverCount;index++){
-            server=endPoints[index];
+            server= endConfigs[index];
             ServerSocketChannel serverSocketChannel=ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);
             InetSocketAddress inetSocketAddress=new InetSocketAddress(server.getIp(),server.getPort());
