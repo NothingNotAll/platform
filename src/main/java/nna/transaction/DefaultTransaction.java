@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class DefaultTransaction<V> implements Transaction<V> {
 
-    public V execTransaction(MetaBeanWrapper metaBeanWrapper) throws SQLException {
+    public V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException {
         PlatformEntryTransaction[] serviceTrans=metaBeanWrapper.getServiceTrans();
         PlatformEntryTransaction tempSevTran;
         int sevTranCount=serviceTrans.length;

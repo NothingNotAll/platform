@@ -30,5 +30,5 @@ import java.sql.SQLException;
 	 * transaction means a group of sql that completes a complex of business;
 	 * u must conf the transaction in the db with the help of web conf view or meta file;
 	 * */
-	V execTransaction(MetaBeanWrapper metaBeanWrapper) throws SQLException;
+	V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException;
 }
