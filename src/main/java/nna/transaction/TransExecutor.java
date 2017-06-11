@@ -5,7 +5,7 @@ import java.sql.SQLException;
 /*
  * provided as the database operations helper interface for the application
  * if implements the interface, u must specify the result of sql's executing;
- * application layer can not implement the interface immediately but extends the DefaultTransaction class .
+ * application layer can not implement the interface immediately but extends the DefaultTransExecutor class .
  *
  * For the performance of app :
  * the IO Time consuming in the Connection.preparedStatment
@@ -25,7 +25,7 @@ import java.sql.SQLException;
  * just do config work.
  *
  * */
- public interface Transaction<V>{
+ public interface TransExecutor<V>{
 	/*
 	 * transaction means a group of sql that completes a complex of business;
 	 * u must conf the transaction in the db with the help of web conf view or meta file;

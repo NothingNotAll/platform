@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * For DefaultTransaction Meta Info
+ * For DefaultTransExecutor Meta Info
  *
  * @author NNA-SHUAI
  * @create 2017-06-07 17:33

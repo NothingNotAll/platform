@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class DefaultTransaction<V> implements Transaction<V> {
+public class DefaultTransExecutor<V> implements TransExecutor<V> {
 
     public V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException {
         PlatformEntryTransaction[] serviceTrans=metaBeanWrapper.getServiceTrans();
