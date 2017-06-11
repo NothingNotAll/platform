@@ -69,7 +69,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
         ArrayList<PlatformSql[]> platformSqls=metaBeanWrapper.getTranPlatformSql();
         ArrayList<ArrayList<String[]>> conArray=metaBeanWrapper.getCons();
         ArrayList<ArrayList<String[]>> colArray=metaBeanWrapper.getCols();
-        return executeSQL(metaBeanWrapper,
+        return executeSQLS(metaBeanWrapper,
                 SQLArray,
                 trans,
                 valTypeArray,
@@ -80,7 +80,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
                 currentSevTranIndex);
     }
 
-    private boolean executeSQL(
+    private boolean executeSQLS(
             MetaBeanWrapper metaBeanWrapper,
             ArrayList<String[]> SQLArray,
             ArrayList<PlatformTransaction[]> trans,
