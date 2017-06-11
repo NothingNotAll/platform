@@ -51,6 +51,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         metaBeanWrapper.getTranStack().remove(index-1);
         metaBeanWrapper.getConStack().remove(index-1);
         metaBeanWrapper.getCurrentCon().commit();
+        metaBeanWrapper.setCurrentCon(null);
     }
 
     private boolean executeTempSevTran(
