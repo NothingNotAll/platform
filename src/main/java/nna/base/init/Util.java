@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * @create 2017-06-11 20:18
  **/
 
-public class Util {
+ class Util {
 
 
     public static String buildSQL(PlatformSql platformSql) throws SQLException {
