@@ -1,6 +1,8 @@
 package nna.base.util.concurrent;
 
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author NNA-SHUAI
  * @create 2017-05-29 18:50
@@ -15,6 +17,7 @@ public abstract class AbstractTask{
     private static WorkerEntry workerEntry;
 
     private int index;
+    private AtomicInteger atomicInteger=new AtomicInteger();
     private String taskName;
     private Long threadId;
     private String threadName;
@@ -39,10 +42,12 @@ public abstract class AbstractTask{
     }
 
     public void submitInitEvent(){
+        index=0;
         workerEntry.submitInitEvent(this);
     }
 
     public void submitEvent(){
+        this.index=atomicInteger.getAndIncrement();
         workerEntry.submitEvent(this);
     }
 
