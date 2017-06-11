@@ -25,7 +25,13 @@ public class DefaultTransaction<V> implements Transaction<V> {
         for(int index=0;index < sevTranCount;index++){
             tempSevTran=serviceTrans[index];
             metaBeanWrapper.getTranStack().add(tempSevTran);
-            isExeTranSuccess=processSevTran(metaBeanWrapper,tempSevTran,index);
+            try{
+                isExeTranSuccess=processSevTran(metaBeanWrapper,tempSevTran,index);
+            }catch (Exception e){
+                isExeTranSuccess=false;
+            }finally {
+                destroy(metaBeanWrapper,tempSevTran);
+            }
             if(isExeTranSuccess){
                 nextTranIndex=tempSevTran.getSuccessIndex();
             }else {
@@ -38,6 +44,10 @@ public class DefaultTransaction<V> implements Transaction<V> {
             }
         }
         return null;
+    }
+
+    private void destroy(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction tempSevTran) {
+
     }
 
     private boolean processSevTran(
