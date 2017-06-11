@@ -60,8 +60,6 @@ public class NNAServiceInit2 {
     private void buildPlatformUserResource() {
         Iterator<Map.Entry<String,PlatformRole[]>> iterator=MetaBean.getAllUserRole().entrySet().iterator();
 
-
-
     }
 
     private void buildMetaBeanList() {
