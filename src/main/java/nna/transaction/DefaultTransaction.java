@@ -30,9 +30,7 @@ public class DefaultTransaction<V> implements Transaction<V> {
             }catch (Exception e){
                 isExeTranSuccess=false;
             }finally {
-                destroy(
-                        metaBeanWrapper,
-                        tempSevTran);
+                destroy(metaBeanWrapper,tempSevTran);
             }
             if(isExeTranSuccess){
                 nextTranIndex=tempSevTran.getSuccessIndex();
