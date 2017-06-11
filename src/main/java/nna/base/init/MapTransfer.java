@@ -73,7 +73,7 @@ import static nna.base.util.ObjectFactory.getBean;
         while(rs.next()){
             Clone clone= getBean(rs,serializableId);
             method=ObjectUtil.loadMethodFromObjectAndMethodName(clone,getMethodName);
-            map.put((String)method.invoke(clone),clone);
+            map.put(method.invoke(clone).toString(),clone);
         }
         rs.close();
         pst.close();
@@ -111,7 +111,7 @@ import static nna.base.util.ObjectFactory.getBean;
         while(iterator.hasNext()){
             T t=(T)iterator.next();
             Method method=ObjectUtil.loadMethodFromObjectAndMethodName(t,getMethodName);
-            String key=(String)method.invoke(t);
+            String key=method.invoke(t).toString();
             List temp=map.get(key);
             put(temp,t,key,map);
         }
