@@ -2,6 +2,7 @@ package nna.base.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketOption;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -16,16 +17,20 @@ import java.util.Set;
  **/
 
 public class NIO {
+    public static final int SERVER=0;
+    public static final int CLIENT=1;
     private EndPoint[] endPoints;
+    private int type;
     private ServerSocketChannel[] serverSocketChannels;
     private Selector selector= SelectorProvider.provider().openSelector();
 
-    public NIO(Server[] servers) throws IOException {
+    public NIO(Server[] servers,int type) throws IOException {
         int count=servers.length;
+        this.type=type;
         serverSocketChannels=new ServerSocketChannel[count];
     }
 
-    public void buildServers() throws IOException {
+    public void buildInstance() throws IOException {
         int serverCount=endPoints.length;
         EndPoint server;
         for(int index=0;index < serverCount;index++){
@@ -40,10 +45,36 @@ public class NIO {
                 temp=options[index];
                 serverSocketChannel.setOption(temp,temp);
             }
-            serverSocketChannel.bind(inetSocketAddress,((Server)server).getBackLog());
+            switch (type){
+                case SERVER:
+                    setServer(
+                            serverSocketChannel,
+                            (Server) server,
+                            inetSocketAddress
+                    );
+                    break;
+                case CLIENT:
+                    setClient(
+                            serverSocketChannel,
+                            (Client) server,
+                            inetSocketAddress
+                    );
+                    break;
+            }
             serverSocketChannels[index]=serverSocketChannel;
-            serverSocketChannel.register(selector,SelectionKey.OP_CONNECT,server.getAttach());
         }
+    }
+
+    private void setClient(ServerSocketChannel serverSocketChannel, Client server, InetSocketAddress inetSocketAddress) throws IOException {
+        serverSocketChannel.register(selector,SelectionKey.OP_ACCEPT,server.getAttach());
+        serverSocketChannel.bind(inetSocketAddress);
+    }
+
+    private void setServer(ServerSocketChannel serverSocketChannel,
+                           Server server,
+                           SocketAddress inetSocketAddress) throws IOException {
+        serverSocketChannel.register(selector,SelectionKey.OP_CONNECT,server.getAttach());
+        serverSocketChannel.bind(inetSocketAddress,((Server)server).getBackLog());
     }
 
     public void listen(){
