@@ -1,8 +1,8 @@
 package nna.base.util.concurrent;
 
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 public class WorkerManager {
     private ExecutorService cachedService= Executors.newCachedThreadPool();
     private ExecutorService fixedLogWorkerService;
-    private LinkedList<Worker> balancedWorkerList=new LinkedList<Worker>();
+    private ArrayList<Worker> balancedWorkerList=new ArrayList<Worker>();
 
     public WorkerManager(int workerCount,Worker worker){
         init(workerCount,worker);
@@ -34,27 +34,32 @@ public class WorkerManager {
     }
 
     void addWorker(Worker worker){
-        balancedWorkerList.addLast(worker);
+
     }
 
     void deleteWorker(){
 
     }
      void submitEvent(AbstractTask abstractTask){
-        Worker worker=getBalanceWorker();
+        int workId=abstractTask.getWorkId();
+        Worker worker=balancedWorkerList.get(workId);
         WorkerDispatcher workerDispatcher=new WorkerDispatcher(worker,abstractTask);
         cachedService.submit(workerDispatcher);
     }
 
      void submitInitEvent(AbstractTask abstractTask){
-        Worker worker=getBalanceWorker();
-        worker.submitInitTask(abstractTask);
+        WorkerEntry entry=getBalanceWorker();
+        abstractTask.setWorkId(entry.workerId);
+        entry.worker.submitInitTask(abstractTask);
     }
 
-    private Worker getBalanceWorker() {
+    private WorkerEntry getBalanceWorker() {
+        WorkerEntry workerEntry=new WorkerEntry();
         Iterator<Worker> iterator=balancedWorkerList.iterator();
-        Worker worker=null;
-        Worker minWorker = null;
+        Worker worker;
+        Worker minWorker=null;
+        int index=0;
+        int minIndex=0;
         int count;
         int minCount=Integer.MAX_VALUE;
         while(iterator.hasNext()){
@@ -62,9 +67,18 @@ public class WorkerManager {
             count=worker.getWorkerCount();
             if(minCount<count){
                 minWorker=worker;
+                minIndex=index;
             }
+            index++;
         }
-        return minWorker==null?worker:minWorker;
+        workerEntry.workerId=minIndex;
+        workerEntry.worker=minWorker;
+        return workerEntry;
+    }
+
+    private class WorkerEntry{
+         Worker worker;
+         int workerId;
     }
 
 }

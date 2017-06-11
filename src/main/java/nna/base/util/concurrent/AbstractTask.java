@@ -26,6 +26,14 @@ public abstract class AbstractTask{
         this.taskStatus=TASK_STATUS_CREATE;
     }
 
+    public void submitInitEvent(WorkerEntry workerEntry){
+        workerEntry.submitInitEvent(this);
+    }
+
+    public void submitEvent(WorkerEntry workerEntry){
+        workerEntry.submitEvent(this);
+    }
+
     public abstract void create();
 
     public abstract void init();
