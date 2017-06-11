@@ -14,10 +14,6 @@ public abstract class AbstractTask{
 
     private static WorkerEntry workerEntry;
 
-    static{
-        workerEntry=new WorkerEntry();
-    }
-
     private int index;
     private Long threadId;
     private String threadName;
@@ -30,6 +26,14 @@ public abstract class AbstractTask{
         threadId=thread.getId();
         threadName=thread.getName();
         this.taskStatus=TASK_STATUS_CREATE;
+    }
+
+    static {
+        initWorkEntry();
+    }
+
+    protected static void initWorkEntry(){
+        workerEntry=new WorkerEntry();
     }
 
     public void submitInitEvent(){
