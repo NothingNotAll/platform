@@ -16,7 +16,7 @@ import java.util.Set;
  **/
 
 public class NIOServer {
-    private Server[] servers;
+    private EndPoint[] endPoints;
     private ServerSocketChannel[] serverSocketChannels;
     private Selector selector= SelectorProvider.provider().openSelector();
 
@@ -26,14 +26,13 @@ public class NIOServer {
     }
 
     public void buildServers() throws IOException {
-        int serverCount=servers.length;
-        Server server;
+        int serverCount=endPoints.length;
+        EndPoint server;
         for(int index=0;index < serverCount;index++){
-            server=servers[index];
+            server=endPoints[index];
             ServerSocketChannel serverSocketChannel=ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);
             InetSocketAddress inetSocketAddress=new InetSocketAddress(server.getIp(),server.getPort());
-            serverSocketChannel.bind(inetSocketAddress,server.getBackLog());
             SocketOption[] options=server.getSocketOptions();
             int count=options.length;
             SocketOption temp;
@@ -41,6 +40,7 @@ public class NIOServer {
                 temp=options[index];
                 serverSocketChannel.setOption(temp,temp);
             }
+            serverSocketChannel.bind(inetSocketAddress,((Server)server).getBackLog());
             serverSocketChannels[index]=serverSocketChannel;
             serverSocketChannel.register(selector,SelectionKey.OP_CONNECT,server.getAttach());
         }
