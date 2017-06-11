@@ -15,13 +15,15 @@ public abstract class AbstractTask{
     private static WorkerEntry workerEntry;
 
     private int index;
+    private String taskName;
     private Long threadId;
     private String threadName;
     private Thread thread;
     private volatile int taskStatus;
     private int workId;//所属工作组
 
-    public AbstractTask(){
+    public AbstractTask(String taskName){
+        this.taskName=taskName;
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
@@ -100,5 +102,13 @@ public abstract class AbstractTask{
 
     public void setWorkId(int workId) {
         this.workId = workId;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 }
