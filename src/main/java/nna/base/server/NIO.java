@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketOption;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Iterator;
 import java.util.Set;
@@ -89,24 +87,42 @@ public class NIO {
                     temp=iterator.next();
                     int selectionKey=temp.interestOps();
                     NIOTask nioTask;
+                    SelectableChannel channel=temp.channel();
+                    SocketChannel socketChannel;
                     switch (selectionKey){
                         case SelectionKey.OP_ACCEPT:
+                            socketChannel=(SocketChannel) channel;
+                            if(!socketChannel.isConnected()){
+                                socketChannel.finishConnect();
+                            }
                             nioTask=new NIOTask();
                             temp.attach(nioTask);
                             nioTask.submitEvent();
+                            channel.register(selector,SelectionKey.OP_READ,nioTask);
                             break;
                         case SelectionKey.OP_READ:
                             nioTask=(NIOTask) temp.attachment();
                             nioTask.submitEvent();
+                            if(nioTask.getTaskStatus()!=NIOTask.TASK_STATUS_DESTROY){
+                                channel.register(selector,SelectionKey.OP_WRITE,nioTask);
+                            }
                             break;
                         case SelectionKey.OP_WRITE:
                             nioTask=(NIOTask) temp.attachment();
                             nioTask.submitEvent();
+                            if(nioTask.getTaskStatus()!=NIOTask.TASK_STATUS_DESTROY){
+                                channel.register(selector,SelectionKey.OP_WRITE,nioTask);
+                            }
                             break;
                         case SelectionKey.OP_CONNECT:
+                            socketChannel=(SocketChannel) channel;
+                            if(!socketChannel.isConnected()){
+                                socketChannel.finishConnect();
+                            }
                             nioTask=new NIOTask();
                             temp.attach(nioTask);
                             nioTask.submitEvent();
+                            channel.register(selector,SelectionKey.OP_READ,nioTask);
                             break;
                     }
                 }
