@@ -86,9 +86,6 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         while(iterator.hasNext()){
             t=iterator.next();
             switch (t.getTaskStatus()){
-                case AbstractTask.TASK_STATUS_CREATE:
-                    t.create();
-                    break;
                 case AbstractTask.TASK_STATUS_INIT:
                     t.init();
                     break;

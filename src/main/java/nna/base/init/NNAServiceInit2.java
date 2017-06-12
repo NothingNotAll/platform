@@ -47,6 +47,17 @@ public class NNAServiceInit2 {
     }
 
     private void buildMetaBean(MetaBean temp,PlatformEntry entry) {
+        temp.setPlatformEntry(entry);
+        temp.setPublic(entry.getEntryFree());
+        Integer controllerId=entry.getEntryControllerId();
+        Integer appId=entry.getEntryAppId();
+        Integer dbId=entry.getEntryDBId();
+        Integer logId=entry.getEntryLogId();
+        String reqId=entry.getEntryReqId();
+        String rspId=entry.getEntryRspId();
+        String serviceId=entry.getEntryServiceId();
+        Integer tempSize=entry.getEntryTempSize();
+        String tranName=entry.getEntryTransactions();
 
     }
 

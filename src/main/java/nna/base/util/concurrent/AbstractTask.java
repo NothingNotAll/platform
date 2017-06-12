@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public abstract class AbstractTask{
-    public static final int TASK_STATUS_CREATE=0;
     public static final int TASK_STATUS_INIT=1;
     public static final int TASK_STATUS_WORK=2;
     public static final int TASK_STATUS_DESTROY=3;
@@ -31,7 +30,7 @@ public abstract class AbstractTask{
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.taskStatus=TASK_STATUS_CREATE;
+        this.taskStatus=TASK_STATUS_INIT;
         index=taskNo.getAndDecrement();
     }
 
@@ -51,15 +50,13 @@ public abstract class AbstractTask{
         workerEntry.submitEvent(this);
     }
 
-    public abstract void create();
-
     public abstract void init();
 
     public abstract void work();
 
-    public abstract void destroy() throws IOException;
-
     public abstract void otherWork();
+
+    public abstract void destroy() throws IOException;
 
     public Long getIndex() {
         return index;

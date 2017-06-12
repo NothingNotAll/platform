@@ -12,10 +12,11 @@ public class PlatformEntry extends Clone {
     private static final Long serialVersionUID=18L;
 
     private int entryId;
+    private Boolean entryFree;
     private String entryCode;
     private int entryAppId;
     private int entryControllerId;
-    private int entryServiceId;
+    private String entryServiceId;
     private int entryDBId;
     private int entryLogId;
     private int entryTempSize;
@@ -77,11 +78,11 @@ public class PlatformEntry extends Clone {
         this.entryTimeout = entryTimeout;
     }
 
-    public int getEntryServiceId() {
+    public String getEntryServiceId() {
         return entryServiceId;
     }
 
-    public void setEntryServiceId(int entryServiceId) {
+    public void setEntryServiceId(String entryServiceId) {
         this.entryServiceId = entryServiceId;
     }
 
@@ -131,5 +132,13 @@ public class PlatformEntry extends Clone {
 
     public void setEntryRspId(String entryRspId) {
         this.entryRspId = entryRspId;
+    }
+
+    public Boolean getEntryFree() {
+        return entryFree;
+    }
+
+    public void setEntryFree(Boolean entryFree) {
+        this.entryFree = entryFree;
     }
 }
