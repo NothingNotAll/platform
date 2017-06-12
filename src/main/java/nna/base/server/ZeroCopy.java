@@ -71,10 +71,6 @@ public class ZeroCopy {
         bytes=newBytes;
     }
 
-    private int getCanWriteCount(){
-        return capacity-writeCount;
-    }
-
     public byte[] toBytes(){
         byte[] byteArray=new byte[writeCount];
         int size=0;
