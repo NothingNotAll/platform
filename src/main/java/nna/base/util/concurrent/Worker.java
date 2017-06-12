@@ -25,7 +25,6 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
 
     //for gc performance and monitor
     private LinkedList<T> tempWorker=new LinkedList<T>();
-    private AbstractTask task;
     private LinkedBlockingQueue<T> queue=null;
     private int count;
     private volatile int workerCount;
@@ -53,6 +52,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         }
     }
 
+    private AbstractTask task;
     private void consumer(Iterator<T> iterator) {
         while(iterator.hasNext()){
             task=iterator.next();
