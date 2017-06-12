@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public class NNAServiceInit2 {
-    static SimpleDateFormat yyMMdd=new SimpleDateFormat("yyyy-MM-dd$HH$mm$ss$SSS");
+    static SimpleDateFormat yyMMdd=new SimpleDateFormat("yyyy-MM-dd$HH-mm-ss-SSS");
     public static void main(String[] args){
         System.out.println(yyMMdd.format(System.currentTimeMillis()));
     }
