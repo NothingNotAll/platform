@@ -6,12 +6,12 @@ package nna.base.util.concurrent;
  * @create 2017-05-30 16:16
  **/
 
- class WorkerDispatcher implements Runnable {
+ class TaskDispatcher implements Runnable {
 
     private Worker worker;
     private AbstractTask abstractTask;
 
-     WorkerDispatcher(Worker worker,AbstractTask abstractTask){
+     TaskDispatcher(Worker worker, AbstractTask abstractTask){
         this.worker=worker;
         this.abstractTask=abstractTask;
     }

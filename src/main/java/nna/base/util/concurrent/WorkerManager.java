@@ -43,8 +43,8 @@ public class WorkerManager {
      void submitEvent(AbstractTask abstractTask){
         int workId=abstractTask.getWorkId();
         Worker worker=balancedWorkerList.get(workId);
-        WorkerDispatcher workerDispatcher=new WorkerDispatcher(worker,abstractTask);
-        cachedService.submit(workerDispatcher);
+        TaskDispatcher taskDispatcher =new TaskDispatcher(worker,abstractTask);
+        cachedService.submit(taskDispatcher);
     }
 
      void submitInitEvent(AbstractTask abstractTask){
