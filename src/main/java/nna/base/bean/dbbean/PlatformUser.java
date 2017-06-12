@@ -1,7 +1,6 @@
 package nna.base.bean.dbbean;
 
 import nna.base.bean.Clone;
-import nna.enums.UserRole;
 
 import java.sql.Timestamp;
 
