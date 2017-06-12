@@ -45,7 +45,7 @@ public class List<T extends AbstractTask> {
     public void insert(T t,int index){
         checkArrayOutOfIndex(index);
         update(t,index);
-        t.setIndex(index);
+        t.setIndex(Long.valueOf(index));
     }
 
     private int nextIndex(){
