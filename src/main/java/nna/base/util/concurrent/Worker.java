@@ -67,8 +67,9 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     public void submitInitTask(AbstractTask abstractTask){
         Long workIndex=abstractTask.getIndex();
         LinkedBlockingQueue<T> linkedBlockingQueue=new LinkedBlockingQueue<T>();
+        threadsWorkerMap.putIfAbsent(workIndex,linkedBlockingQueue);
+        linkedBlockingQueue=threadsWorkerMap.get(workIndex);
         linkedBlockingQueue.add((T)abstractTask);
-        threadsWorkerMap.put(workIndex,linkedBlockingQueue);
     }
 
     //for GC optimize
