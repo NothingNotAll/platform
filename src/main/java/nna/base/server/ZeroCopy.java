@@ -12,16 +12,14 @@ public class ZeroCopy {
     private int blockCount;
     private int arrayCount;
     private int capacity;
-    private int writeCount;
-    private int currentBlockIndex;
-    private int currentArrayIndex;
+    private int writeCount=0;
+    private int currentBlockIndex=0;
+    private int currentArrayIndex=0;
 
     public ZeroCopy(int blockCount,int arrayCount){
         this.blockCount=blockCount;
         this.arrayCount=arrayCount;
         capacity=blockCount*arrayCount;
-        currentBlockIndex=0;
-        currentArrayIndex=0;
         bytes=new byte[blockCount][arrayCount];
     }
 
@@ -35,8 +33,25 @@ public class ZeroCopy {
         if(canWriteCount < needCount){
             grow(needCount,canWriteCount);
         }
-
-        writeCount+=needCount;
+        int size=0;
+        for(;currentArrayIndex < arrayCount;currentArrayIndex++){
+            bytes[currentBlockIndex][currentArrayIndex]=writes[size++];
+            if(size==needCount){
+                writeCount+=needCount;
+                return;
+            }
+        }
+        currentBlockIndex++;
+        for(;currentBlockIndex<blockCount;currentBlockIndex++){
+            for(int index=0;index < arrayCount;index++){
+                bytes[currentBlockIndex][index]=writes[size++];
+                if(size==needCount){
+                    currentArrayIndex=index;
+                    writeCount+=needCount;
+                    return;
+                }
+            }
+        }
     }
 
     private void grow(int needCount,int canWriteCount) {
