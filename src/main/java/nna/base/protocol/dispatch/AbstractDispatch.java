@@ -9,9 +9,7 @@ import nna.base.log.Log;
 import nna.base.log.LogEntry;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
