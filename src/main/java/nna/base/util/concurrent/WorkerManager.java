@@ -29,7 +29,6 @@ public class WorkerManager {
             logWorker.setLoadNo(index);
             balancedWorkerList.add(logWorker);
             fixedLogWorkerService.submit(logWorker);
-            balancedWorkerList.add(logWorker);
         }
     }
 
