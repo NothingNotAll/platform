@@ -74,7 +74,7 @@ public class ZeroCopy {
     public byte[] toBytes(){
         byte[] byteArray=new byte[writeCount];
         int size=0;
-        int arraySize=0;
+        int arraySize;
         for(int index=0;index <= currentBlockIndex;index++){
             if(index==currentArrayIndex){
                 arraySize=arrayCount-1;
