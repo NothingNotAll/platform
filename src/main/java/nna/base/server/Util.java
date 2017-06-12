@@ -19,14 +19,12 @@ public class Util {
 
     public static byte[] readBytes(ReadableByteChannel channel,int readLength) throws IOException {
         ByteBuffer byteBuffer=ByteBuffer.allocate(readLength);
-        int tempSize=0;
         int readCount;
-        while(tempSize < readLength){
+        while(true){
             readCount=channel.read(byteBuffer);
             if(readCount==-1){
                 break;
             }
-            tempSize+=readCount;
         }
         return byteBuffer.array();
     }
