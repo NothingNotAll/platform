@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @create 2017-05-22 1:52
  **/
 
-public abstract class AbstractDispatch {
+ abstract class AbstractDispatch {
 
     static {
         try {
