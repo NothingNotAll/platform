@@ -11,6 +11,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  **/
 
 public class LogWorker implements Runnable{
+    public static void main(String[] args){
+        ConcurrentHashMap<String,LinkedList> map=new ConcurrentHashMap<String, LinkedList>();
+        for(int index=0;index < Integer.MAX_VALUE;index++){
+            map.putIfAbsent(String.valueOf(index),new LinkedList());
+            System.out.println(index);
+        }
+    }
     private Integer no;//the index in the work group queue;
     //for init of log and the notifier of log's write event
     private LinkedBlockingQueue<LogTask> logIdQueue=new LinkedBlockingQueue<LogTask>();
