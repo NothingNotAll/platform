@@ -18,6 +18,11 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     private LinkedBlockingQueue<T> workerQueue;
     private ConcurrentHashMap<Long,LinkedBlockingQueue<T>> threadsWorkerMap;
 
+    public Worker(){
+        workerQueue=new LinkedBlockingQueue<T>();
+        threadsWorkerMap=new ConcurrentHashMap<Long, LinkedBlockingQueue<T>>();
+    }
+
     //for gc performance and monitor
     private LinkedList<T> tempWorker=new LinkedList<T>();
     private AbstractTask task;
