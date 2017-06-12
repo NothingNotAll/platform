@@ -1,5 +1,6 @@
 package nna.base.protocol.http;
 
+import nna.Marco;
 import nna.base.protocol.dispatch.AbstractDispatch;
 
 import javax.servlet.*;
@@ -15,7 +16,7 @@ import java.util.Map;
 /**
  * Servlet Filter implementation class Http
  */
-public class Http extends AbstractDispatch<HttpServletRequest, HttpServletResponse> implements Filter {
+public class Http extends AbstractDispatch implements Filter {
     /**
      * Default constructor. 
      */
@@ -34,7 +35,11 @@ public class Http extends AbstractDispatch<HttpServletRequest, HttpServletRespon
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		try {
-			dispatch((HttpServletRequest) request,(HttpServletResponse)response);
+			Map<String,String[]> map=request.getParameterMap();
+			HashMap<String,String[]> newMap=new HashMap<String, String[]>(map.size()+2);
+			newMap.put(Marco.HEAD_ENTRY_CODE,new String[]{((HttpServletRequest)request).getRequestURI()});
+            newMap.put(Marco.HEAD_ENTRY_SESSION_NM,new String[]{((HttpServletRequest) request).getSession().getId()});
+			dispatch(newMap);
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -48,13 +53,4 @@ public class Http extends AbstractDispatch<HttpServletRequest, HttpServletRespon
 
 	}
 
-    public OutputStream getOutPutStream(HttpServletResponse response) throws IOException {
-        return response.getOutputStream();
-    }
-    public Map<String,String[]> getReqColMap(HttpServletRequest request) {
-	    return request.getParameterMap();
-    }
-    public String[] getPlatformEntryId(HttpServletRequest request) {
-		return new String[]{request.getRequestURI(),request.getSession().getId()};
-	}
 }
