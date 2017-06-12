@@ -92,8 +92,9 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
                     threadsWorkerMap.remove(t.getIndex());
                     t.destroy();
                     break;
-                default:
+                case AbstractTask.TASK_STATUS_OTHER:
                     t.otherWork();
+                    break;
             }
         }
     }
