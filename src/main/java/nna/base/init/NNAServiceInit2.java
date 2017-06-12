@@ -28,6 +28,7 @@ public class NNAServiceInit2 {
     public void build() throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException, NoSuchMethodException, ClassNotFoundException, IOException {
         buildStaticAttribute();
         buildNonStaticAttribute();
+        System.out.println("init success!");
     }
 
     private void buildNonStaticAttribute() {
@@ -63,6 +64,7 @@ public class NNAServiceInit2 {
     }
 
     private void buildMetaBeanList() {
+        MetaBean.setConfMetaCache(new List<MetaBean>(NNAServiceInit1.platformEntryMap.size()));
         Iterator<Map.Entry<Integer,PlatformEntry>> iterator=NNAServiceInit1.platformEntryMap.entrySet().iterator();
         List<MetaBean> list=MetaBean.getConfMetaCache();
         ConcurrentHashMap<String,Integer> map=MetaBean.getSrvEnNmToId();
@@ -89,11 +91,10 @@ public class NNAServiceInit2 {
         PlatformRole platformRole;
         ArrayList<PlatformUserRole> urList;
         Map.Entry<Integer,PlatformUser> entry;
-        int userId;
+        Integer userId;
         while(iterator.hasNext()){
             entry=iterator.next();
             userId=entry.getKey();
-            System.out.println(userId);
             urList=map.get(userId);
             count=urList.size();
             for(;index< count;index++){
