@@ -74,8 +74,6 @@ public class LogUtil {
         log.log("应用配置:",logLevel);
         log.log("应用中文名称："+platformApp.getAppCh(),logLevel);
         log.log("应用描述："+platformApp.getAppDesc(),logLevel);
-        log.log("应用拦截类："+platformApp.getAppDispatchClass(),logLevel);
-        log.log("应用拦截方法："+platformApp.getAppDispatchMethod(),logLevel);
         log.log("应用英文名称："+platformApp.getAppEn(),logLevel);
         log.log("应用编码："+platformApp.getAppEncode(),logLevel);
         log.log("应用唯一标识："+String.valueOf(platformApp.getAppId()),logLevel);

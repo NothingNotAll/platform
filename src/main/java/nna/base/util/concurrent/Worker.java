@@ -2,6 +2,7 @@ package nna.base.util.concurrent;
 
 import nna.base.bean.Clone;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,7 +97,11 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
                     break;
                 case AbstractTask.TASK_STATUS_DESTROY:
                     threadsWorkerMap.remove(t.getIndex());
-                    t.destroy();
+                    try {
+                        t.destroy();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 default:
                     t.otherWork();

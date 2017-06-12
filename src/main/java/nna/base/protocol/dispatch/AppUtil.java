@@ -25,11 +25,11 @@ public class AppUtil {
     }
 
     public static void putRspColumn(String rspColumnKey,String[] rspColumnValue){
-        StoreData.getConfig().getReq().put(rspColumnKey,rspColumnValue);
+        StoreData.getConfig().getInnerColumns().put(rspColumnKey,rspColumnValue);
     }
 
     public static String[] getRequest(String name){
-        return StoreData.getConfig().getReq().get(name);
+        return StoreData.getConfig().getInnerColumns().get(name);
     }
 
     public static Object getTemp(String name){

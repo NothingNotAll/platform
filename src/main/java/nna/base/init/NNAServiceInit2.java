@@ -93,6 +93,7 @@ public class NNAServiceInit2 {
         while(iterator.hasNext()){
             entry=iterator.next();
             userId=entry.getKey();
+            System.out.println(userId);
             urList=map.get(userId);
             count=urList.size();
             for(;index< count;index++){
