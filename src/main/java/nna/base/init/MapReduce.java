@@ -21,9 +21,9 @@ import static nna.base.util.orm.ObjectFactory.getBean;
 
 
 
- class MapTransfer<T>{
+ class MapReduce<T>{
 
-     MapTransfer(){}
+     MapReduce(){}
 
      HashMap<Integer,T> getIMap(HashMap<Integer,Clone> iMap){
         HashMap<Integer,T> map=new HashMap<Integer, T>(iMap.size());

@@ -92,8 +92,8 @@ public class NNAServiceInit1 {
             String getMethodName,
             Map<String,ArrayList> map
     ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        MapTransfer mapTransfer=new MapTransfer();
-        mapTransfer.reduceSList(list,getMethodName,map);
+        MapReduce mapReduce =new MapReduce();
+        mapReduce.reduceSList(list,getMethodName,map);
     }
 
     public void reduceIList(
@@ -101,32 +101,32 @@ public class NNAServiceInit1 {
             String getMethodName,
             Map<Integer,ArrayList> map
     ) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        MapTransfer mapTransfer=new MapTransfer();
-        mapTransfer.reduceIList(list,getMethodName,map);
+        MapReduce mapReduce =new MapReduce();
+        mapReduce.reduceIList(list,getMethodName,map);
     }
 
     public HashMap buildIMap(PreparedStatement pst,
                              String methodName,
                              Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
-        MapTransfer mapTransfer=new MapTransfer();
-        HashMap<Integer,Clone> map=MapTransfer.getIMap(pst,methodName,serializableId);
-        return mapTransfer.getIMap(map);
+        MapReduce mapReduce =new MapReduce();
+        HashMap<Integer,Clone> map= MapReduce.getIMap(pst,methodName,serializableId);
+        return mapReduce.getIMap(map);
     }
     public HashMap buildSMap(PreparedStatement pst,
                              String methodName,
                              Integer serializableId) throws IllegalAccessException, InstantiationException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
-        MapTransfer mapTransfer=new MapTransfer();
-        HashMap<String,Clone> map=MapTransfer.getSMap(pst,methodName,serializableId);
-        return mapTransfer.getSMap(map);
+        MapReduce mapReduce =new MapReduce();
+        HashMap<String,Clone> map= MapReduce.getSMap(pst,methodName,serializableId);
+        return mapReduce.getSMap(map);
     }
 
     public void getList(List tList,
                         PreparedStatement pst,
                         int serializableId
     ) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        MapTransfer mapTransfer=new MapTransfer();
+        MapReduce mapReduce =new MapReduce();
         ArrayList<Clone> arrayList=new ArrayList<Clone>();
-        MapTransfer.getList(arrayList,pst,serializableId);
-        mapTransfer.getList(arrayList,tList);
+        MapReduce.getList(arrayList,pst,serializableId);
+        mapReduce.getList(arrayList,tList);
     }
 }
