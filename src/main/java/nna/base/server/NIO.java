@@ -72,7 +72,7 @@ public class NIO {
     private void setServer(ServerSocketChannel serverSocketChannel,
                            ServerConfig serverConfig,
                            SocketAddress inetSocketAddress) throws IOException {
-        serverSocketChannel.register(selector,SelectionKey.OP_CONNECT, serverConfig.getAttach());
+        serverSocketChannel.register(selector,SelectionKey.OP_CONNECT, serverConfig);
         serverSocketChannel.bind(inetSocketAddress,serverConfig.getBackLog());
     }
 
