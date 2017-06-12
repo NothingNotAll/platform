@@ -35,11 +35,6 @@ import java.util.concurrent.atomic.AtomicLong;
     private static SimpleDateFormat yyyyMMdd=new SimpleDateFormat("yyyyMMdd");
     private static SimpleDateFormat HHmmssSSS=new SimpleDateFormat("HH-mm-ss-SSS");
 
-
-    /*
-    *
-    * */
-
     protected void dispatch(Map<String,String[]> map) throws InvocationTargetException, IllegalAccessException, IOException {
         MetaBean confMeta=null;
         try{
@@ -75,7 +70,6 @@ import java.util.concurrent.atomic.AtomicLong;
     private boolean isUploadSource(String entryOID) {
         return false;
     }
-
 
     private static void initUserLog(MetaBean confMeta){
         String serviceName=confMeta.getPlatformService().getServiceName();
