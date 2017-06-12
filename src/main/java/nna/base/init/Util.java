@@ -16,7 +16,7 @@ import java.sql.SQLException;
  class Util {
 
 
-    public static String buildSQL(PlatformSql platformSql) throws SQLException {
+     static String buildSQL(PlatformSql platformSql) throws SQLException {
         Log log= AppUtil.getLog();
         String sqlStr=null;
         String tableName=platformSql.getTableName();
