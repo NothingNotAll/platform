@@ -32,11 +32,29 @@ public class ZeroCopy {
     public void writeBytes(byte[] writes){
         int needCount=writes.length;
         int canWriteCount=capacity-writeCount;
-        if(canWriteCount>=needCount){
-
-        }else{
-
+        if(canWriteCount < needCount){
+            grow(needCount,canWriteCount);
         }
+
+        writeCount+=needCount;
+    }
+
+    private void grow(int needCount,int canWriteCount) {
+        int growCount=needCount-canWriteCount;
+        int growBlockCount=growCount/arrayCount;
+        int tempCurrentIndex=growCount%arrayCount;
+        growBlockCount=tempCurrentIndex==0?growBlockCount:growBlockCount+1;
+        int tempBlockCount=blockCount;
+        blockCount+=growBlockCount;
+        byte[][] newBytes=new byte[blockCount][arrayCount];
+        for(int index=0;index<tempBlockCount;index++){
+            newBytes[index]=bytes[index];
+        }
+        for(int index=tempBlockCount;index < blockCount;index++){
+            newBytes[index]=new byte[arrayCount];
+        }
+        capacity+=growBlockCount*arrayCount;
+        bytes=newBytes;
     }
 
     private int getCanWriteCount(){
