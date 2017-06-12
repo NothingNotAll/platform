@@ -64,8 +64,8 @@ public class ZeroCopy {
         for(int index=0;index<tempBlockCount;index++){
             newBytes[index]=bytes[index];
         }
-        for(int index=tempBlockCount;index < blockCount;index++){
-            newBytes[index]=new byte[arrayCount];
+        for(;tempBlockCount < blockCount;tempBlockCount++){
+            newBytes[tempBlockCount]=new byte[arrayCount];
         }
         capacity+=growBlockCount*arrayCount;
         bytes=newBytes;
