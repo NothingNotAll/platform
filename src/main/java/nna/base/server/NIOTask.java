@@ -28,7 +28,7 @@ public class NIOTask extends AbstractTask {
         this.serviceType=serviceType;
     }
 
-    public void create() {
+    public void init() {
         switch (serviceType){
             case SERVICE_IN:
                 setTaskStatus(WRITE);
@@ -38,10 +38,6 @@ public class NIOTask extends AbstractTask {
                 break;
         }
         submitEvent();
-    }
-
-    public void init() {
-
     }
 
     public void work() {
