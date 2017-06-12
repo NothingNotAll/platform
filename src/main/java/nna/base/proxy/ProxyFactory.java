@@ -2,7 +2,7 @@ package nna.base.proxy;
 
 import net.sf.cglib.proxy.Enhancer;
 import nna.base.bean.dbbean.PlatformProxy;
-import nna.base.util.ObjectUtil;
+import nna.base.util.orm.ObjectUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;

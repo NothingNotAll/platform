@@ -14,8 +14,8 @@ import nna.base.log.Log;
 import nna.base.log.LogEntry;
 import nna.base.util.BuildSQL;
 import nna.base.util.List;
-import nna.base.util.ObjectFactory;
-import nna.base.util.ObjectUtil;
+import nna.base.util.orm.ObjectFactory;
+import nna.base.util.orm.ObjectUtil;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static nna.base.init.Util.buildSQL;
-import static nna.base.util.ObjectFactory.getBean;
+import static nna.base.util.orm.ObjectFactory.getBean;
 
 
 /**

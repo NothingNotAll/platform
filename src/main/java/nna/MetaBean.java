@@ -5,7 +5,7 @@ import nna.base.bean.dbbean.*;
 import nna.base.db.DBCon;
 import nna.base.log.Log;
 import nna.base.util.List;
-import nna.base.util.ObjectFactory;
+import nna.base.util.orm.ObjectFactory;
 import nna.base.util.view.Template;
 import nna.enums.DBSQLConValType;
 

@@ -1,4 +1,4 @@
-package nna.base.util;
+package nna.base.util.orm;
 
 import nna.Marco;
 import nna.base.bean.Clone;

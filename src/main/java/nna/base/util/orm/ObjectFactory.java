@@ -1,8 +1,9 @@
-package nna.base.util;
+package nna.base.util.orm;
 
 import nna.Marco;
 import nna.MetaBean;
 import nna.base.bean.Clone;
+import nna.base.util.*;
 import nna.enums.*;
 
 import java.lang.reflect.Field;
@@ -22,7 +23,7 @@ import java.util.*;
  **/
 
  public class ObjectFactory{
-    private static List<Object> objectOfListContainer;//init it from the config file or from the db config;
+    private static nna.base.util.List<Object> objectOfListContainer;//init it from the config file or from the db config;
     private static HashMap<String,Object> objectOfMapContainer;//init it from the config file or from the db config;
 
     private Clone clone;
@@ -46,11 +47,11 @@ import java.util.*;
         ObjectFactory.objectOfMapContainer = objectOfMapContainer;
     }
 
-    public static List<Object> getObjectOfListContainer() {
+    public static nna.base.util.List<Object> getObjectOfListContainer() {
         return objectOfListContainer;
     }
 
-    public static void setObjectOfListContainer(List<Object> objectOfListContainer) {
+    public static void setObjectOfListContainer(nna.base.util.List<Object> objectOfListContainer) {
         ObjectFactory.objectOfListContainer = objectOfListContainer;
     }
 
@@ -295,7 +296,7 @@ import java.util.*;
             ClassNotFoundException,
             InvocationTargetException {
 //        Long start=System.currentTimeMillis();
-        List<ObjectFactory> cache= MetaBean.getObjectFactoryCache();
+        nna.base.util.List<ObjectFactory> cache= MetaBean.getObjectFactoryCache();
         ObjectFactory objectFactory = cache.get(serialVersionUID);
         Clone object=objectFactory.getClone();
         object=object.clone();
@@ -325,7 +326,7 @@ import java.util.*;
     }
 
     public static boolean saveBean(PreparedStatement pst, int serialVersionUID) throws SQLException {
-        List<ObjectFactory> container=MetaBean.getObjectFactoryCache();
+        nna.base.util.List<ObjectFactory> container=MetaBean.getObjectFactoryCache();
         ObjectFactory objectFactory = container.get(serialVersionUID);
         int length=objectFactory.getFieldsCount();
         Clone object=objectFactory.getClone();

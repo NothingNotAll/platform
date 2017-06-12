@@ -1,7 +1,7 @@
 package nna.base.init;
 
 import nna.base.bean.Clone;
-import nna.base.util.ObjectUtil;
+import nna.base.util.orm.ObjectUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static nna.base.util.ObjectFactory.getBean;
+import static nna.base.util.orm.ObjectFactory.getBean;
 
 
 /**
