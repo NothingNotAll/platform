@@ -21,6 +21,7 @@ import java.sql.SQLException;
         String sqlStr=null;
         String tableName=platformSql.getTableName();
 
+        //SQL with primary key columns
         if(platformSql.getSqlId().startsWith("del_pri")||platformSql.getSqlId().startsWith("upd_pri")||platformSql.getSqlId().startsWith("sel_pri")){
             platformSql.setDbCondition(BuildSQL.getTablePrimaryKey(NNAServiceInit0.init(),tableName));
         }
