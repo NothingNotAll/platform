@@ -30,4 +30,10 @@ public class Util {
         }
         return byteBuffer.array();
     }
+
+    public static byte[] readBytes(ReadableByteChannel channel){
+        byte[] bytes=null;
+
+        return bytes;
+    }
 }
