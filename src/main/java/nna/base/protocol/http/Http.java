@@ -37,6 +37,7 @@ public class Http extends AbstractDispatch implements Filter {
 		try {
 			Map<String,String[]> map=request.getParameterMap();
 			HashMap<String,String[]> newMap=new HashMap<String, String[]>(map.size()+2);
+			newMap.putAll(map);
 			newMap.put(Marco.HEAD_ENTRY_CODE,new String[]{((HttpServletRequest)request).getRequestURI()});
             newMap.put(Marco.HEAD_ENTRY_SESSION_NM,new String[]{((HttpServletRequest) request).getSession().getId()});
 			dispatch(newMap);
