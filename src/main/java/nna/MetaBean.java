@@ -42,7 +42,7 @@ public class MetaBean extends Clone{
     private static ConcurrentHashMap<Long,MetaBean> metaMonitor=new ConcurrentHashMap<Long, MetaBean>();
     private static ConcurrentHashMap<String,PlatformSession> sessions=new ConcurrentHashMap<String, PlatformSession>();
 
-    private boolean isPublic=true;
+    private boolean isPublic=false;
     private PlatformEntry platformEntry;
     private PlatformController platformController;
     private PlatformApp platformApp;
