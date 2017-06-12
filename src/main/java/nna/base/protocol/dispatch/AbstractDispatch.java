@@ -1,5 +1,6 @@
 package nna.base.protocol.dispatch;
 
+import nna.Marco;
 import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformLog;
 import nna.base.bean.dbbean.PlatformSession;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @create 2017-05-22 1:52
  **/
 
-public abstract class AbstractDispatch<R,S> {
+public class AbstractDispatch {
 
     static {
         try {
@@ -35,27 +36,20 @@ public abstract class AbstractDispatch<R,S> {
     private static SimpleDateFormat HHmmssSSS=new SimpleDateFormat("HH-mm-ss-SSS");
 
 
-    public abstract OutputStream getOutPutStream(S response) throws IOException;
-    public abstract Map<String,String[]> getReqColMap(R request);
     /*
-        str[0] entryOID
-        str[1] sessionId
     *
     * */
-    public abstract String[] getPlatformEntryId(R request);
 
-
-    protected void dispatch(R request,S response) throws InvocationTargetException, IllegalAccessException, IOException {
+    protected void dispatch(Map<String,String[]> map) throws InvocationTargetException, IllegalAccessException, IOException {
         MetaBean confMeta=null;
         try{
-            Integer oid=getConfMetaOID(request);
+            String entryCode=map.get(Marco.HEAD_ENTRY_CODE)[0];
+            Integer oid=MetaBean.getSrvEnNmToId().get(entryCode);
             confMeta= MetaBean.getConfMetaCache().get(oid).clone();
-            confMeta.setOutReq(getReqColMap(request));
+            confMeta.setOutReq(map);
             ConfMetaSetFactory.setConfMeta(confMeta);
             initUserLog(confMeta);
-            Method dispatchMethod=confMeta.getAppServiceMethod();
-            Object dispatchObject=confMeta.getAppServiceObject();
-            dispatchMethod.invoke(dispatchObject,ConfMetaSetFactory.getMetaBeanWrapper());
+            Dispatch.dispatch(ConfMetaSetFactory.getMetaBeanWrapper());
             String renderPage=confMeta.getRenderPage();
         }catch (Exception e){
             e.printStackTrace();
@@ -72,14 +66,6 @@ public abstract class AbstractDispatch<R,S> {
         MetaBean.getMetaMonitor().remove(id);
         LogEntry.submitCloseEvent(confMeta.getLog());
         ConfMetaSetFactory.setConfMeta(null);//for prevent memory leak
-    }
-
-    private Integer getConfMetaOID(R request) {
-        String[] rs=getPlatformEntryId(request);
-        String entryOID=rs[0];
-        System.out.println(entryOID);
-        String sessionId=rs[1];
-        return null;
     }
 
     private boolean isDownLoadSource(String entryOID) {

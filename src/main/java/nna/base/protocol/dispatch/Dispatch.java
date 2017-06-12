@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Dispatch {
+ class Dispatch {
 
-	public void dispatch(MetaBeanWrapper metaBean) throws Exception{
+	 static void dispatch(MetaBeanWrapper metaBean) throws Exception{
         Log log= metaBean.getLog();
         PlatformApp platformApp=metaBean.getPlatformApp();
         log.log("开始校验应用状态",Log.INFO);
@@ -39,7 +39,7 @@ public class Dispatch {
         log.log("应用编码："+appEncode,Log.INFO);
 	}
 
-    private void checkApp(PlatformApp platformApp, Log log) throws Exception {
+    private static void checkApp(PlatformApp platformApp, Log log) throws Exception {
 	    LogUtil.log(platformApp,log,Log.INFO);
 	    if(!platformApp.isAppStatus()){
 	        throw new Exception("应用已被禁用");
