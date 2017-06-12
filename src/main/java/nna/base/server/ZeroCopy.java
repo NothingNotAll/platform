@@ -1,6 +1,5 @@
 package nna.base.server;
 
-import java.util.ArrayList;
 
 /**
  * @author NNA-SHUAI
