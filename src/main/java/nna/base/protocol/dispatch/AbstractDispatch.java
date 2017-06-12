@@ -41,7 +41,7 @@ public abstract class AbstractDispatch {
             String entryCode=map.get(Marco.HEAD_ENTRY_CODE)[0];
             Integer oid=MetaBean.getSrvEnNmToId().get(entryCode);
             confMeta= MetaBean.getConfMetaCache().get(oid).clone();
-            confMeta.setOutReq(map);
+            confMeta.setOutColumns(map);
             ConfMetaSetFactory.setConfMeta(confMeta);
             initUserLog(confMeta);
             Dispatch.dispatch(ConfMetaSetFactory.getMetaBeanWrapper());

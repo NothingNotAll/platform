@@ -19,8 +19,6 @@ public class PlatformApp extends Clone {
     private String appCh;
     private boolean appStatus;
     private boolean appIsdistribute;
-    private String appDispatchClass;
-    private String appDispatchMethod;
     private Timestamp appCreateTimestamp;
     private String appEncode;
     private String appUploadpath;
@@ -60,22 +58,6 @@ public class PlatformApp extends Clone {
 
     public void setAppCh(String appCh) {
         this.appCh = appCh;
-    }
-
-    public String getAppDispatchClass() {
-        return appDispatchClass;
-    }
-
-    public void setAppDispatchClass(String appDispatchClass) {
-        this.appDispatchClass = appDispatchClass;
-    }
-
-    public String getAppDispatchMethod() {
-        return appDispatchMethod;
-    }
-
-    public void setAppDispatchMethod(String appDispatchMethod) {
-        this.appDispatchMethod = appDispatchMethod;
     }
 
     public String getAppDesc() {

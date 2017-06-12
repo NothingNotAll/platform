@@ -113,4 +113,6 @@ public interface Marco {
     String TRAN_SEL_USER_INFO="selUserInfo";
     String TRAN_NAME="TRANSACTION_NAME";
     String ARRAY_COUNT="count";
+    String HEAD_ENTRY_CODE = "";
+    String HEAD_ENTRY_SESSION_NM = "";
 }

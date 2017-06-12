@@ -40,6 +40,7 @@ public class MetaBean extends Clone{
     private static ConcurrentHashMap<String,Integer> srvEnNmToId=new ConcurrentHashMap<String, Integer>();
     private static ConcurrentHashMap<String,PlatformSession> sessions=new ConcurrentHashMap<String, PlatformSession>();
 
+    private boolean isPublic=true;
     private PlatformEntry platformEntry;
     private PlatformController platformController;
     private PlatformApp platformApp;
@@ -49,8 +50,6 @@ public class MetaBean extends Clone{
     private PlatformSession platformSession;
 
     private DBCon dbCon;
-    private Method appServiceMethod;
-    private Object appServiceObject;
     private Method serviceMethod;
     private Object serviceObject;
     private Method renderMethod;
@@ -75,9 +74,8 @@ public class MetaBean extends Clone{
 
     private PlatformColumn[] reqColConfig;
     private PlatformColumn[] rspColConfig;
-    private Map<String,String[]> outReq;
-    private HashMap<String,String[]> req;
-    private HashMap<String,String[]> rsp;
+    private Map<String,String[]> outColumns;
+    private HashMap<String,String[]> innerColumns;
     private HashMap<String,Object> temp;
 
     private ArrayList<Connection> conStack;
@@ -174,7 +172,7 @@ public class MetaBean extends Clone{
         AtomicLong servAL=logNoGen;
         MetaBean metaBean=(MetaBean) super.clone();
         metaBean.setLogNoGen(servAL);
-        metaBean.setOutReq(null);
+        metaBean.setOutColumns(null);
 
         //for monitor
         Thread thread=Thread.currentThread();
@@ -197,14 +195,6 @@ public class MetaBean extends Clone{
 
     public static void setFreeResource(HashSet<PlatformResource> freeResource) {
         MetaBean.freeResource = freeResource;
-    }
-
-    public Map<String, String[]> getOutReq() {
-        return outReq;
-    }
-
-    public void setOutReq(Map<String, String[]> outReq) {
-        this.outReq = outReq;
     }
 
     public PlatformColumn[] getReqColConfig() {
@@ -237,22 +227,6 @@ public class MetaBean extends Clone{
 
     public void setConStack(ArrayList<Connection> conStack) {
         this.conStack = conStack;
-    }
-
-    public void setRsp(HashMap<String, String[]> rsp) {
-        this.rsp = rsp;
-    }
-
-    public void setReq(HashMap<String, String[]> req) {
-        this.req = req;
-    }
-
-    public HashMap<String, String[]> getReq() {
-        return req;
-    }
-
-    public HashMap<String, String[]> getRsp() {
-        return rsp;
     }
 
     public ArrayList<Connection> getConStack() {
@@ -487,22 +461,6 @@ public class MetaBean extends Clone{
         this.logNoGen = logNoGen;
     }
 
-    public Method getAppServiceMethod() {
-        return appServiceMethod;
-    }
-
-    public void setAppServiceMethod(Method appServiceMethod) {
-        this.appServiceMethod = appServiceMethod;
-    }
-
-    public Object getAppServiceObject() {
-        return appServiceObject;
-    }
-
-    public void setAppServiceObject(Object appServiceObject) {
-        this.appServiceObject = appServiceObject;
-    }
-
     public PlatformUser getCurrentUser() {
         return currentUser;
     }
@@ -581,5 +539,29 @@ public class MetaBean extends Clone{
 
     public void setCurrentServTranIndex(Integer currentServTranIndex) {
         this.currentServTranIndex = currentServTranIndex;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public Map<String, String[]> getOutColumns() {
+        return outColumns;
+    }
+
+    public void setOutColumns(Map<String, String[]> outColumns) {
+        this.outColumns = outColumns;
+    }
+
+    public HashMap<String, String[]> getInnerColumns() {
+        return innerColumns;
+    }
+
+    public void setInnerColumns(HashMap<String, String[]> innerColumns) {
+        this.innerColumns = innerColumns;
     }
 }

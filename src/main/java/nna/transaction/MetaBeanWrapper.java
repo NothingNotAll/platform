@@ -54,11 +54,7 @@ public class MetaBeanWrapper {
     }
 
     public HashMap<String, String[]> getReq() {
-        return metaBean.getReq();
-    }
-
-    public HashMap<String, String[]> getRsp() {
-        return metaBean.getRsp();
+        return metaBean.getInnerColumns();
     }
 
     public DBCon getDbCon() {

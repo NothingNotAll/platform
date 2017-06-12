@@ -32,7 +32,7 @@ import java.util.Map;
         metaBean.getServiceMethod().invoke(metaBean.getServiceObject());
         PlatformColumn[] rspColumns=metaBean.getRspColConfig();
         log.log("开始校验出参字段",Log.INFO);
-        HashMap<String,String[]> rspMap=metaBean.getRsp();
+        Map<String,String[]> rspMap=metaBean.getReq();
         rspMap.putAll(reqMap);
         checkRsp(rspMap,rspColumns,log);
         String appEncode=platformApp.getAppEncode();
@@ -63,7 +63,7 @@ import java.util.Map;
     }
 
 
-    private static void checkRsp(HashMap<String, String[]> map, PlatformColumn[] columns, Log log) throws Exception {
+    private static void checkRsp(Map<String, String[]> map, PlatformColumn[] columns, Log log) throws Exception {
         int size=columns.length;
         PlatformColumn temp;
         HashMap<String,Integer> arraySizeMap=new HashMap<String, Integer>(size);
@@ -77,7 +77,7 @@ import java.util.Map;
             }
         }
     }
-    private static void checkRspNonArray(HashMap<String, String[]> map, PlatformColumn temp, Log log) throws Exception {
+    private static void checkRspNonArray(Map<String, String[]> map, PlatformColumn temp, Log log) throws Exception {
 	    String innerName=temp.getColumnInnerName();
 	    String outsideName=temp.getColumnOutsideName();
 	    String[] values=map.get(innerName);
@@ -106,7 +106,7 @@ import java.util.Map;
         map.put(outsideName,values);
     }
 
-    private static void checkRspArray(HashMap<String,Integer> arraySizeMap,HashMap<String, String[]> map, PlatformColumn temp, Log log) throws Exception {
+    private static void checkRspArray(Map<String,Integer> arraySizeMap,Map<String, String[]> map, PlatformColumn temp, Log log) throws Exception {
         String innerName=temp.getColumnInnerName();
         String outsideName=temp.getColumnOutsideName();
         int index=innerName.lastIndexOf("/");

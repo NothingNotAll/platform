@@ -44,11 +44,11 @@ public class MetaBeanWrapper {
     }
 
     public Map<String,String[]> getOutReq() {
-        return metaBean.getOutReq();
+        return metaBean.getOutColumns();
     }
 
     public Map<String,String[]> getReq() {
-        return metaBean.getReq();
+        return metaBean.getInnerColumns();
     }
 
     public Method getServiceMethod() {
@@ -63,7 +63,4 @@ public class MetaBeanWrapper {
         return metaBean.getRspColConfig();
     }
 
-    public HashMap<String,String[]> getRsp() {
-        return metaBean.getRsp();
-    }
 }
