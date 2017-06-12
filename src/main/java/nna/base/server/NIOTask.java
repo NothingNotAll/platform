@@ -37,6 +37,7 @@ public class NIOTask extends AbstractTask {
                 setTaskStatus(READ);
                 break;
         }
+        submitEvent();
     }
 
     public void init() {
