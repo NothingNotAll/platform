@@ -85,8 +85,10 @@ public class LogWorker implements Runnable{
     }
 
     private void submitWriteEvent(Log log,String logBuffer){
-        LogTaskList logTaskList=logTaskMap.get(log.getThreadId());
+        LogTaskList logTaskList=logTaskMap.get(log.getWorkNo());
         logTaskList.enQueue(log,logBuffer);
+        LogTask logTask=new LogTask(log,null,LogTask.LOG_CLOSE);
+        logIdQueue.offer(logTask);
     }
 
     private void submitCloseEvent(Log log){
