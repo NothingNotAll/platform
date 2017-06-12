@@ -30,7 +30,13 @@ public class ZeroCopy {
     }
 
     public void writeBytes(byte[] writes){
+        int needCount=writes.length;
+        int canWriteCount=capacity-writeCount;
+        if(canWriteCount>=needCount){
 
+        }else{
+
+        }
     }
 
     private int getCanWriteCount(){
