@@ -98,7 +98,7 @@ public class NIO {
                             nioTask=new NIOTask("OP_ACCEPT",channel);
                             temp.attach(nioTask);
                             nioTask.submitInitEvent();
-                            channel.register(selector,SelectionKey.OP_READ,nioTask);
+                            channel.register(selector,SelectionKey.OP_WRITE,nioTask);
                             break;
                         case SelectionKey.OP_READ:
                             nioTask=(NIOTask) temp.attachment();
@@ -113,7 +113,7 @@ public class NIO {
                             nioTask.submitEvent();
                             nioTask.setTaskName("OP_WRITE");
                             if(nioTask.getTaskStatus()!=NIOTask.TASK_STATUS_DESTROY){
-                                channel.register(selector,SelectionKey.OP_WRITE,nioTask);
+                                channel.register(selector,SelectionKey.OP_READ,nioTask);
                             }
                             break;
                         case SelectionKey.OP_CONNECT:
