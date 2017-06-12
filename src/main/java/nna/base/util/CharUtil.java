@@ -1,8 +1,6 @@
 package nna.base.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Map;
 
 public class CharUtil {
 
@@ -12,6 +10,12 @@ public class CharUtil {
         for(int index=0;index < length;index++){
             stringBuilder.append(strings[index]);
         }
+        return stringBuilder.toString();
+    }
+
+    public static String getJsonStr(Map<String,String[]> map){
+        StringBuilder stringBuilder=new StringBuilder("");
+
         return stringBuilder.toString();
     }
 

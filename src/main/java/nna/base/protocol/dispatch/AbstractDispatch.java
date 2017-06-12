@@ -7,6 +7,7 @@ import nna.base.bean.dbbean.PlatformSession;
 import nna.base.init.NNAServiceStart;
 import nna.base.log.Log;
 import nna.base.log.LogEntry;
+import nna.base.util.CharUtil;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -33,8 +34,9 @@ public abstract class AbstractDispatch {
     private static SimpleDateFormat yyyyMMdd=new SimpleDateFormat("yyyyMMdd");
     private static SimpleDateFormat HHmmssSSS=new SimpleDateFormat("HH-mm-ss-SSS");
 
-    protected void dispatch(Map<String,String[]> map) throws InvocationTargetException, IllegalAccessException, IOException {
+    protected String dispatch(Map<String,String[]> map) throws InvocationTargetException, IllegalAccessException, IOException {
         MetaBean confMeta=null;
+        String responseStr = null;
         try{
             String entryCode=map.get(Marco.HEAD_ENTRY_CODE)[0];
             Integer oid=MetaBean.getSrvEnNmToId().get(entryCode);
@@ -44,6 +46,12 @@ public abstract class AbstractDispatch {
             initUserLog(confMeta);
             Dispatch.dispatch(ConfMetaSetFactory.getMetaBeanWrapper());
             String renderPage=confMeta.getRenderPage();
+            Map columns=confMeta.getInnerColumns();
+            if(renderPage!=null){
+                responseStr=confMeta.getRenderMethod().invoke(confMeta.getRenderObject(),columns).toString();
+            }else{
+                responseStr= CharUtil.getJsonStr(columns);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }catch (Throwable throwable){
@@ -51,6 +59,7 @@ public abstract class AbstractDispatch {
         }finally {
             destroy(confMeta);
         }
+        return responseStr;
     }
 
     private void destroy(MetaBean confMeta) {
