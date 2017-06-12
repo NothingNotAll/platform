@@ -50,14 +50,31 @@ public class NNAServiceInit2 {
         temp.setPlatformEntry(entry);
         temp.setPublic(entry.getEntryFree());
         Integer controllerId=entry.getEntryControllerId();
+        PlatformController platformController=NNAServiceInit1.controllerMap.get(controllerId);
+
         Integer appId=entry.getEntryAppId();
+        PlatformApp platformApp=NNAServiceInit1.appMap.get(appId);
+        temp.setPlatformApp(platformApp);
+
         Integer dbId=entry.getEntryDBId();
+        PlatformDB platformDB=NNAServiceInit1.platformDBMap.get(dbId);
+
         Integer logId=entry.getEntryLogId();
+        PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(logId);
+
         String reqId=entry.getEntryReqId();
+        ArrayList<PlatformColumn> reqColumns=NNAServiceInit1.columnMap.get(reqId);
+
         String rspId=entry.getEntryRspId();
+        ArrayList<PlatformColumn> rspColumns=NNAServiceInit1.columnMap.get(reqId);
+
         String serviceId=entry.getEntryServiceId();
+        PlatformService platformService=NNAServiceInit1.platformServiceMap.get(serviceId);
+
         Integer tempSize=entry.getEntryTempSize();
+
         String tranName=entry.getEntryTransactions();
+        ArrayList<PlatformEntryTransaction> trans=NNAServiceInit1.serviceTranMap.get(tranName);
 
     }
 
