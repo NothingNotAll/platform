@@ -84,6 +84,7 @@ public class NIO {
                 Iterator<SelectionKey> iterator=set.iterator();
                 SelectionKey temp;
                 while(iterator.hasNext()){
+                    iterator.remove();
                     temp=iterator.next();
                     int selectionKey=temp.interestOps();
                     NIOTask nioTask = null;
