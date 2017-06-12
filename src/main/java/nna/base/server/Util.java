@@ -31,9 +31,18 @@ public class Util {
         return byteBuffer.array();
     }
 
-    public static byte[] readBytes(ReadableByteChannel channel){
-        byte[] bytes=null;
-
-        return bytes;
+    public static byte[] readBytes(ReadableByteChannel channel) throws IOException {
+        ZeroCopy zeroCopy=new ZeroCopy();
+        ByteBuffer byteBuffer=ByteBuffer.allocate(10);
+        int readSize;
+        while(true){
+            readSize=channel.read(byteBuffer);
+            if(readSize==-1){
+                return zeroCopy.toBytes();
+            }else{
+                zeroCopy.writeBytes(byteBuffer.array());
+                byteBuffer.clear();
+            }
+        }
     }
 }
