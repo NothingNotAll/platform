@@ -2,6 +2,7 @@ package nna.base.server;
 
 import nna.base.util.concurrent.AbstractTask;
 
+import java.io.IOException;
 import java.nio.channels.Channel;
 
 /**
@@ -10,16 +11,32 @@ import java.nio.channels.Channel;
  **/
 
 public class NIOTask extends AbstractTask {
+    public static final int SERVICE_IN=0;//接入其它渠道的服务
+    public static final int SERVICE_OUT=1;//接出本平台的服务；
 
+    public static final int READ=4;
+    public static final int WRITE=5;
+
+    private int serviceType;
     private Channel channel;
 
-    public NIOTask(String taskName,Channel channel){
+    public NIOTask(String taskName,
+                   Channel channel,
+                   int serviceType){
         super(taskName);
         this.channel=channel;
+        this.serviceType=serviceType;
     }
 
     public void create() {
-
+        switch (serviceType){
+            case SERVICE_IN:
+                setTaskStatus(WRITE);
+                break;
+            case SERVICE_OUT:
+                setTaskStatus(READ);
+                break;
+        }
     }
 
     public void init() {
@@ -30,13 +47,49 @@ public class NIOTask extends AbstractTask {
 
     }
 
-    public void destroy() {
-
+    public void destroy() throws IOException {
+        channel.close();
     }
 
     public void otherWork() {
-
+        switch (getTaskStatus()){
+            case READ:
+                doReadWork();
+                break;
+            case WRITE:
+                doWriteWork();
+                break;
+        }
+        submitEvent();
     }
+
+    private void doReadWork() {
+        switch (serviceType){
+            case SERVICE_IN:
+
+                setTaskStatus(TASK_STATUS_DESTROY);
+                break;
+            case SERVICE_OUT:
+
+                setTaskStatus(WRITE);
+                break;
+        }
+    }
+
+    private void  doWriteWork(){
+        switch (serviceType){
+            case SERVICE_IN:
+
+                setTaskStatus(READ);
+                break;
+            case SERVICE_OUT:
+
+                setTaskStatus(TASK_STATUS_DESTROY);
+                break;
+        }
+    }
+
+
 
     public Channel getChannel() {
         return channel;
@@ -44,5 +97,13 @@ public class NIOTask extends AbstractTask {
 
     public void setChannel(Channel channel) {
         this.channel = channel;
+    }
+
+    public int getServiceType() {
+        return serviceType;
+    }
+
+    public void setServiceType(int serviceType) {
+        this.serviceType = serviceType;
     }
 }

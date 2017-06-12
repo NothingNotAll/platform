@@ -1,6 +1,7 @@
 package nna.base.util.concurrent;
 
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -57,7 +58,7 @@ public abstract class AbstractTask{
 
     public abstract void work();
 
-    public abstract void destroy();
+    public abstract void destroy() throws IOException;
 
     public abstract void otherWork();
 
