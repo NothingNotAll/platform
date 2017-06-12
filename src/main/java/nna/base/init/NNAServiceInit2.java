@@ -60,7 +60,29 @@ public class NNAServiceInit2 {
 
     private void buildPlatformUserResource() {
         Iterator<Map.Entry<String,PlatformRole[]>> iterator=MetaBean.getAllUserRole().entrySet().iterator();
-
+        Map.Entry<String,PlatformRole[]> entry;
+        String userId;
+        PlatformRole[] roles;
+        HashSet<String> resourceSet=new HashSet<String>();
+        ArrayList<PlatformResource> resources=new ArrayList<PlatformResource>();
+        while(iterator.hasNext()){
+            entry=iterator.next();
+            userId=entry.getKey();
+            roles=entry.getValue();
+            for(PlatformRole platformRole:roles){//获得用户所有角色
+                //获得每个角色拥有的访问资源集合
+                ArrayList<PlatformRoleResource> temp=NNAServiceInit1.roleResourceMap.get(Integer.valueOf(platformRole.getRoleId()));
+                for(PlatformRoleResource platformRoleResource:temp){
+                    //将资源纳入用户map中
+                    if(!resourceSet.contains(Integer.valueOf(platformRoleResource.getResourceId()))){
+                        resources.add(NNAServiceInit1.platformResourceMap.get(Integer.valueOf(platformRoleResource.getResourceId())));
+                    }
+                }
+            }
+            MetaBean.getAllUserResource().put(userId,resources.toArray(new PlatformResource[0]));
+            resources.clear();
+            resourceSet.clear();
+        }
     }
 
     private void buildMetaBeanList() {

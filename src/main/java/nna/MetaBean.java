@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MetaBean extends Clone{
     //Global App Config Cache;
     private static Log pLog;
-    private static ConcurrentHashMap<Long,MetaBean> metaMonitor=new ConcurrentHashMap<Long, MetaBean>();
     private static HashSet<PlatformResource> freeResource=new HashSet<PlatformResource>();
     private static HashSet<String> freeCodeSet=new HashSet<String>();
     private static HashSet<PlatformUser> userSet=new HashSet<PlatformUser>();
@@ -38,6 +37,9 @@ public class MetaBean extends Clone{
     private static List<MetaBean> confMetaCache;
     private static List<ObjectFactory> objectFactoryCache;
     private static ConcurrentHashMap<String,Integer> srvEnNmToId=new ConcurrentHashMap<String, Integer>();
+
+    //used in the request process
+    private static ConcurrentHashMap<Long,MetaBean> metaMonitor=new ConcurrentHashMap<Long, MetaBean>();
     private static ConcurrentHashMap<String,PlatformSession> sessions=new ConcurrentHashMap<String, PlatformSession>();
 
     private boolean isPublic=true;
