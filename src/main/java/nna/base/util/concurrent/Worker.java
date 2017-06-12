@@ -51,7 +51,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     private void consumer(Iterator<T> iterator) {
         while(iterator.hasNext()){
             task=iterator.next();
-            queue=threadsWorkerMap.get(task.getThreadId());
+            queue=threadsWorkerMap.get(task.getIndex());
             count=queue.size();
             queue.drainTo(ts,count);
             work(ts);
@@ -65,10 +65,10 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     }
 
     public void submitInitTask(AbstractTask abstractTask){
-        Long threadId=abstractTask.getThreadId();
+        Long workIndex=abstractTask.getIndex();
         LinkedBlockingQueue<T> linkedBlockingQueue=new LinkedBlockingQueue<T>();
         linkedBlockingQueue.add((T)abstractTask);
-        threadsWorkerMap.put(threadId,linkedBlockingQueue);
+        threadsWorkerMap.put(workIndex,linkedBlockingQueue);
     }
 
     //for GC optimize
@@ -89,6 +89,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
                     t.work();
                     break;
                 case AbstractTask.TASK_STATUS_DESTROY:
+                    threadsWorkerMap.remove(t.getIndex());
                     t.destroy();
                     break;
                 default:

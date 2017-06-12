@@ -60,7 +60,7 @@ public class LogWorker implements Runnable{
         iterator=linkedList.iterator();
         while(iterator.hasNext()){
             logTask=iterator.next();
-            threadId=logTask.log.getThreadId();
+            threadId=logTask.log.getWorkNo();
             logTaskList=logTaskMap.get(threadId);
             writeLog(logTaskList);
         }
@@ -145,14 +145,14 @@ public class LogWorker implements Runnable{
             switch (type){
                 case LOG_INIT://初始化
                     log.init();
-                    logTaskMap.put(log.getThreadId(),new LogTaskList());
+                    logTaskMap.put(log.getWorkNo(),new LogTaskList());
                     break;
                 case LOG_WRITE://写日志
                     log.write(logBuffer);
                     break;
                 case LOG_CLOSE://关闭日志
                     log.close();
-                    logTaskMap.remove(log.getThreadId());
+                    logTaskMap.remove(log.getWorkNo());
                     logIdQueue.remove(this);
                     break;
                 case LOG_WRITE_NOTIFY:

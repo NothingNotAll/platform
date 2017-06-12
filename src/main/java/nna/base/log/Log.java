@@ -19,7 +19,9 @@ public class Log {
     public static final int INFO=0;
     public static final int TRACE=1;
     public static final int DEBUG=2;
+    private static AtomicLong workSeq=new AtomicLong();
 
+    private Long workNo;
     private String logDir;
     private AtomicLong logSeqGen;
     private String logName;
@@ -57,6 +59,7 @@ public class Log {
         Thread thread=Thread.currentThread();
         threadName=Thread.currentThread().getName();
         threadId=thread.getId();
+        workNo=workSeq.getAndIncrement();
     }
 
     public void init(){
@@ -272,5 +275,13 @@ public class Log {
 
     public void setLogWorkerNo(Integer logWorkerNo) {
         this.logWorkerNo = logWorkerNo;
+    }
+
+    public Long getWorkNo() {
+        return workNo;
+    }
+
+    public void setWorkNo(Long workNo) {
+        this.workNo = workNo;
     }
 }
