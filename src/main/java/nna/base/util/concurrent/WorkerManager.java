@@ -22,7 +22,8 @@ import java.util.concurrent.Executors;
         }
         init=true;
         if(workCount==null){
-            workCount=Runtime.getRuntime().availableProcessors()-1;
+            int coreCount=Runtime.getRuntime().availableProcessors()-1;
+            workCount=coreCount<=1?1:coreCount-1;
         }
         workerManager=new WorkerManager(workCount,new Worker());
         return workerManager;
