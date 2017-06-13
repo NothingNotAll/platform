@@ -34,6 +34,7 @@ public abstract class AbstractTask{
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
+        setTaskStatus(0);
         init(initObjectAttach);
         isInit=true;
     }
