@@ -28,9 +28,6 @@ public class NIOTask extends AbstractTask {
         this.serviceType=serviceType;
     }
 
-
-
-
     public Channel getChannel() {
         return channel;
     }
