@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public class Worker<T extends AbstractTask> extends Clone implements Runnable{
+    private static final Long serialVersionUID=-1L;
 
     private static AtomicLong taskNo=new AtomicLong(0L);
 
