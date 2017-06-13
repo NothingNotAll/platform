@@ -22,7 +22,7 @@ public class Util {
         int readCount;
         while(true){
             readCount=channel.read(byteBuffer);
-            if(readCount==-1){
+            if(readCount==-1||readCount==0){
                 break;
             }
         }
@@ -35,7 +35,7 @@ public class Util {
         int readSize;
         while(true){
             readSize=channel.read(byteBuffer);
-            if(readSize==-1){
+            if(readSize==-1||readSize==0){
                 return zeroCopy.toBytes();
             }else{
                 zeroCopy.writeBytes(byteBuffer.array());
