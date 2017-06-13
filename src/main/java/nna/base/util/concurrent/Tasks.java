@@ -95,4 +95,11 @@ import java.util.concurrent.atomic.AtomicInteger;
         this.list = list;
     }
 
+    public Integer getBeenWorkedCount() {
+        return beenWorkedCount;
+    }
+
+    public void setBeenWorkedCount(Integer beenWorkedCount) {
+        this.beenWorkedCount = beenWorkedCount;
+    }
 }
