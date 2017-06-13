@@ -13,8 +13,10 @@ package nna.base.util.concurrent;
 
     public void run() {
         if(isMapDispatch){
+            //性能瓶頸點
             worker.getWorkMap().putIfAbsent(temp.getList()[0].getIndex(),temp);
         }
+        //性能瓶頸點
         worker.getWorkQueue().add(temp);
     }
 
