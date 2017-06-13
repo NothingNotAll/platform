@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractTask{
 
-    public static final int TASK_STATUS_WORK=2;
-    public static final int TASK_STATUS_DESTROY=3;
+    public static final int TASK_STATUS_WORK=1;
+    public static final int TASK_STATUS_DESTROY=2;
 
     private int workCount;
     private Long index;//任务队列索引
