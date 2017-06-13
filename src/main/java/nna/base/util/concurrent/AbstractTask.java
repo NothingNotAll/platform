@@ -30,12 +30,13 @@ public abstract class AbstractTask{
         WorkerEntry.init(null);
     }
 
-    public AbstractTask(String taskName){
+    public AbstractTask(String taskName,Object initObjectAttach){
         this.taskName=taskName;
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.taskStatus=TASK_STATUS_INIT;
+        init(initObjectAttach);
+        isInit=true;
     }
 
     protected void submitInitEvent(Object object,boolean keepWorkSeq){
