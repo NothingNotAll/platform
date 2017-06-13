@@ -22,6 +22,6 @@ package nna.base.util.concurrent;
     }
 
     private void dispatch() {
-        worker.submitTask(abstractTask,object);
+        worker.submitEvent(abstractTask,object);
     }
 }

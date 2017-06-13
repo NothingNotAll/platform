@@ -47,8 +47,8 @@ public abstract class AbstractTask{
 
     }
 
-    public void submitInitEvent(Object object){
-        workerEntry.submitInitEvent(this,object);
+    public void submitInitEvent(Object object,boolean keepWorkSeq){
+        workerEntry.submitInitEvent(this,object,keepWorkSeq);
     }
 
     public void submitEvent(Object object){

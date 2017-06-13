@@ -46,16 +46,16 @@ public class WorkerManager {
         cachedService.submit(taskDispatcher);
     }
 
-     void submitInitEvent(AbstractTask abstractTask,Object object){
+     void submitInitEvent(AbstractTask abstractTask,Object object,boolean keepWorkSequence){
         WorkerEntry entry=getBalanceWorker();
         abstractTask.setWorkId(entry.workerId);
-        entry.worker.submitInitTask(abstractTask,object);
+        entry.worker.submitInitEvent(abstractTask,object,keepWorkSequence);
     }
 
-    void submitUnifyEvent(AbstractTask abstractTask,Object object){
+    void submitUnifyEvent(AbstractTask abstractTask,Object object,boolean keepWorkSequence){
         Integer workId=abstractTask.getWorkId();
         if(workId==null){
-            submitInitEvent(abstractTask,object);
+            submitInitEvent(abstractTask,object,keepWorkSequence);
         }else {
             submitEvent(abstractTask,object);
         }
@@ -72,7 +72,7 @@ public class WorkerManager {
         int minCount=Integer.MAX_VALUE;
         while(iterator.hasNext()){
             worker=iterator.next();
-            count=worker.getWorkerCount();
+            count=worker.getTempWorkCount();
             if(minCount<count){
                 minWorker=worker;
                 minIndex=index;

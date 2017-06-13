@@ -1,5 +1,6 @@
 package nna.base.util.concurrent;
 
+
 import nna.base.bean.Clone;
 
 import java.io.IOException;
@@ -7,145 +8,189 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * multi producer thread and multi consumer design;
  * @author NNA-SHUAI
- * @create 2017-05-29 18:44
+ * @create 2017-06-13 10:12
  **/
 
 public class Worker<T extends AbstractTask> extends Clone implements Runnable{
-    private class TaskWrapper{
-        private T t;
-        private Object object;
 
-        private TaskWrapper(
-                T t,
-                Object object
+    private AtomicLong taskNo=new AtomicLong(0L);
+    private Integer loadNo;
+
+    public void submitEvent(T t,Object object) {
+        Long taskSeq=t.getIndex();
+        Tasks temp=workMap.get(taskSeq);
+        int seq=temp.sequenceGen.getAndIncrement();
+        temp.list[seq]=t;//一定可以保证有序，当前只有业务线程来处理
+        temp.objects[seq]=object;
+
+        workQueue.add(temp);
+    }
+
+    public void submitInitEvent(T t,Object object,boolean keepWorkSeq) {
+        Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
+        tasks.initObject=object;
+        Long taskSeq=taskNo.getAndDecrement();
+        t.setIndex(taskSeq);
+
+        workMap.putIfAbsent(taskSeq,tasks);
+        workQueue.add(tasks);
+    }
+
+    public Integer getLoadNo() {
+        return loadNo;
+    }
+
+    public void setLoadNo(Integer loadNo) {
+        this.loadNo = loadNo;
+    }
+
+    private class Tasks{
+        private volatile AbstractTask[] list;//for 有序的 task
+        private volatile Object[] objects;
+        private volatile Object initObject;
+        private volatile Integer currentWorkIndex;
+        private Integer workCount;
+        private Integer beenWorkedCount;
+        private AtomicInteger sequenceGen=new AtomicInteger();
+        private boolean keepTaskSeq;
+
+        private Tasks(
+                int taskCount,
+                boolean keepTaskSeq
         ){
-            this.t=t;
-            this.object=object;
+            currentWorkIndex=-1;
+            workCount=taskCount;
+            this.keepTaskSeq=keepTaskSeq;
+            list=new AbstractTask[taskCount];
+            objects=new Object[taskCount];
+        }
+
+        private void insert(AbstractTask abstractTask,Object object){
+            Integer no=sequenceGen.getAndIncrement();
+            list[no]=abstractTask;
+            objects[no]=object;
         }
     }
-    private int loadNo;
-    private LinkedBlockingQueue<TaskWrapper> workerQueue;
-    private ConcurrentHashMap<Long,LinkedBlockingQueue<TaskWrapper>> threadsWorkerMap;
+    /*
+    * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
+    * */
+    private ConcurrentHashMap<Long,Tasks> workMap=new ConcurrentHashMap<Long, Tasks>();
+    private LinkedBlockingQueue<Tasks> workQueue=new LinkedBlockingQueue<Tasks>();
 
-    public Worker(){
-        workerQueue=new LinkedBlockingQueue<TaskWrapper>();
-        threadsWorkerMap=new ConcurrentHashMap<Long, LinkedBlockingQueue<TaskWrapper>>();
-    }
-
-    //for gc performance and monitor
-    private LinkedList<TaskWrapper> tempWorker=new LinkedList<TaskWrapper>();
-    private LinkedBlockingQueue<TaskWrapper> queue=null;
-    private int count;
-    private volatile int workerCount;
-    private LinkedList<TaskWrapper> ts=new LinkedList<TaskWrapper>();
-    private TaskWrapper blockTask;
-
+    private int tempWorkCount;
+    private Tasks blockTasks;
+    private LinkedList<Tasks> tempWorkList=new LinkedList<Tasks>();
+    private Iterator<Tasks> iterator;
+    private Tasks currentTasks;
     public void run() {
         try{
             while(true){
-                workerCount=workerQueue.size();
-                if(workerCount>0){
-                    workerQueue.drainTo(tempWorker,workerCount);
+                tempWorkCount=workQueue.size();
+                if(tempWorkCount > 0){
+                    workQueue.drainTo(tempWorkList,tempWorkCount);
                 }else{
-                    blockTask=workerQueue.take();
-                    tempWorker.addLast(blockTask);
+                    blockTasks=workQueue.take();
+                    tempWorkList.add(blockTasks);
                 }
-                Iterator<TaskWrapper> iterator=tempWorker.iterator();
-                consumer(iterator);
+                try{
+                    consumer(tempWorkList);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 destroy();
             }
         }catch (Exception e){
             e.printStackTrace();
-        }finally {
-
-        }
-    }
-
-    private TaskWrapper task;
-    private void consumer(Iterator<TaskWrapper> iterator) {
-        while(iterator.hasNext()){
-            task=iterator.next();
-            queue=threadsWorkerMap.get(task.t.getIndex());
-            count=queue.size();
-            queue.drainTo(ts,count);
-            work(ts);
-        }
-    }
-
-    public void submitTask(AbstractTask abstractTask,Object object) {
-        Long workNo=abstractTask.getIndex();
-        LinkedBlockingQueue<TaskWrapper> linkedBlockingQueue=threadsWorkerMap.get(workNo);
-        linkedBlockingQueue.add(new TaskWrapper((T)abstractTask,object));//there can be upgrade with 乐观锁；
-    }
-
-    public void submitInitTask(AbstractTask abstractTask,Object object){
-        Long workIndex=abstractTask.getIndex();
-        LinkedBlockingQueue<TaskWrapper> linkedBlockingQueue=new LinkedBlockingQueue<TaskWrapper>();
-        threadsWorkerMap.putIfAbsent(workIndex,linkedBlockingQueue);
-        linkedBlockingQueue=threadsWorkerMap.get(workIndex);
-        linkedBlockingQueue.add(new TaskWrapper((T)abstractTask,object));
-    }
-
-    //for GC optimize
-    private TaskWrapper t;
-    private AbstractTask abstractTask;
-    private Object object;
-    private Iterator<TaskWrapper> iterator;
-    private void work(LinkedList<TaskWrapper> ts){
-        iterator=ts.iterator();
-        while(iterator.hasNext()){
-            t=iterator.next();
-            abstractTask=t.t;
-            object=t.object;
-            switch (abstractTask.getTaskStatus()){
-                case AbstractTask.TASK_STATUS_INIT:
-                    abstractTask.init(object);
-                    break;
-                case AbstractTask.TASK_STATUS_WORK:
-                    abstractTask.work(object);
-                    break;
-                case AbstractTask.TASK_STATUS_DESTROY:
-                    threadsWorkerMap.remove(abstractTask.getIndex());
-                    try {
-                        abstractTask.destroy(object);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                default:
-                    abstractTask.otherWork(object);
-                    break;
-            }
         }
     }
 
     private void destroy() {
-        count=0;
-        tempWorker=new LinkedList<TaskWrapper>();
-        ts=new LinkedList<TaskWrapper>();
-        task=null;
-        queue=null;
-        workerCount=0;
+        tempWorkList.clear();
+        blockTasks=null;
+        tempWorkCount=0;
+        iterator=null;
+        currentTasks=null;
+        iteratorIndex=0;
+        tempTasks=null;
+        currentTask=null;
+        temp=null;
+        os=null;
     }
 
-    public int getLoadNo() {
-        return loadNo;
+    private void consumer(LinkedList<Tasks> tempWorkList) throws IOException {
+        iterator=tempWorkList.iterator();
+        while(iterator.hasNext()){
+            currentTasks=iterator.next();
+            work(currentTasks);
+        }
+    }
+    private AbstractTask[] tempTasks;
+    private AbstractTask currentTask;
+    private int iteratorIndex=0;
+    private int workCount;
+    private Object[] os;
+    private Object temp;
+    private int taskStatus;
+    private void work(Tasks currentTasks) throws IOException {
+        os=currentTasks.objects;
+        workCount=currentTasks.workCount;
+        tempTasks=currentTasks.list;
+        iteratorIndex=currentTasks.currentWorkIndex;
+        for(;iteratorIndex<workCount;iteratorIndex++){
+            currentTask=tempTasks[iteratorIndex];
+            if(currentTasks==null){
+                break;
+            }
+            temp=os[iteratorIndex];
+            workCurrentTask(currentTask,temp);
+            tempTasks[iteratorIndex]=null;
+            os[iteratorIndex]=null;
+            currentTasks.beenWorkedCount=currentTasks.beenWorkedCount++;
+        }
+        currentTasks.currentWorkIndex=iteratorIndex;
+        if (!currentTasks.keepTaskSeq){
+            for(;iteratorIndex<workCount;iteratorIndex++){
+                currentTask=tempTasks[iteratorIndex];
+                if(currentTasks!=null){
+                    temp=os[iteratorIndex];
+                    workCurrentTask(currentTask,temp);
+                    tempTasks[iteratorIndex]=null;
+                    os[iteratorIndex]=null;
+                    currentTasks.beenWorkedCount=currentTasks.beenWorkedCount++;;
+                }
+            }
+        }
+    }
+    private void workCurrentTask(AbstractTask currentTasks,Object object) throws IOException {
+        taskStatus=currentTasks.getTaskStatus();
+        switch (taskStatus){
+            case AbstractTask.TASK_STATUS_DESTROY:
+                currentTasks.destroy(object);
+                workMap.remove(currentTasks.getIndex());
+                break;
+            case AbstractTask.TASK_STATUS_INIT:
+                currentTasks.init(object);
+                break;
+            case AbstractTask.TASK_STATUS_WORK:
+                currentTasks.work(object);
+                break;
+            default:
+                currentTasks.otherWork(object);
+        }
     }
 
-    public void setLoadNo(int loadNo) {
-        this.loadNo = loadNo;
+
+    public int getTempWorkCount() {
+        return tempWorkCount;
     }
 
-    public int getWorkerCount() {
-        return workerCount;
-    }
-
-    public void setWorkerCount(int workerCount) {
-        this.workerCount = workerCount;
+    public void setTempWorkCount(int tempWorkCount) {
+        this.tempWorkCount = tempWorkCount;
     }
 
 }
