@@ -85,8 +85,8 @@ public class WorkerManager {
     }
 
     private class WorkerEntry{
-         Worker worker;
-         int workerId;
+         private Worker worker;
+         private int workerId;
     }
 
 }
