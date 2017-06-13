@@ -1,10 +1,12 @@
 package nna.base.util.concurrent;
 
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author NNA-SHUAI
@@ -14,13 +16,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class NewWorker implements Runnable{
 
     private class Tasks{
-        private AbstractTask[] list;//for 有序的 task
+        private volatile AbstractTask[] list;//for 有序的 task
+        private volatile Object[] objects;
         private volatile Integer currentWorkIndex;
         private Integer workCount;
         private Integer beenWorkedCount;
+        private AtomicInteger sequenceGen=new AtomicInteger();
         private boolean keepTaskSeq;
 
-        public Tasks(
+        private Tasks(
                 int taskCount,
                 boolean keepTaskSeq
         ){
@@ -28,6 +32,12 @@ public class NewWorker implements Runnable{
             workCount=taskCount;
             this.keepTaskSeq=keepTaskSeq;
             list=new AbstractTask[taskCount];
+        }
+
+        private void insert(AbstractTask abstractTask,Object object){
+            Integer no=sequenceGen.getAndIncrement();
+            list[no]=abstractTask;
+            objects[no]=object;
         }
     }
     /*
@@ -51,7 +61,11 @@ public class NewWorker implements Runnable{
                     blockTasks=workQueue.take();
                     tempWorkList.add(blockTasks);
                 }
-                consumer(tempWorkList);
+                try{
+                    consumer(tempWorkList);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 destroy();
             }
         }catch (Exception e){
@@ -66,44 +80,71 @@ public class NewWorker implements Runnable{
         iterator=null;
         currentTasks=null;
         iteratorIndex=0;
-        index=-1;
         tempTasks=null;
         currentTask=null;
+        temp=null;
+        os=null;
     }
 
-    private void consumer(LinkedList<Tasks> tempWorkList) {
+    private void consumer(LinkedList<Tasks> tempWorkList) throws IOException {
         iterator=tempWorkList.iterator();
         while(iterator.hasNext()){
             currentTasks=iterator.next();
             work(currentTasks);
         }
     }
-    private int index;
     private AbstractTask[] tempTasks;
     private AbstractTask currentTask;
     private int iteratorIndex=0;
-    private void work(Tasks currentTasks) {
+    private int workCount;
+    private Object[] os;
+    private Object temp;
+    private int taskStatus;
+    private void work(Tasks currentTasks) throws IOException {
+        os=currentTasks.objects;
+        workCount=currentTasks.workCount;
         tempTasks=currentTasks.list;
-        if (currentTasks.keepTaskSeq){
-            index=currentTasks.currentWorkIndex+1;
-            currentTask=tempTasks[index];
-            if(currentTask!=null){
-                workCurrentTask(currentTask);
-                tempTasks[index]=null;
-                currentTasks.currentWorkIndex=index;
+        iteratorIndex=currentTasks.currentWorkIndex;
+        for(;iteratorIndex<workCount;iteratorIndex++){
+            currentTask=tempTasks[iteratorIndex];
+            if(currentTasks==null){
+                break;
             }
-        }else {
-            for(;iteratorIndex<currentTasks.workCount;iteratorIndex++){
+            temp=os[iteratorIndex];
+            workCurrentTask(currentTask,temp);
+            tempTasks[iteratorIndex]=null;
+            os[iteratorIndex]=null;
+            currentTasks.beenWorkedCount=currentTasks.beenWorkedCount++;
+        }
+        currentTasks.currentWorkIndex=iteratorIndex;
+        if (!currentTasks.keepTaskSeq){
+            for(;iteratorIndex<workCount;iteratorIndex++){
                 currentTask=tempTasks[iteratorIndex];
-                workCurrentTask(currentTask);
-                tempTasks[iteratorIndex]=null;
-                currentTasks.currentWorkIndex=iteratorIndex;
+                if(currentTasks!=null){
+                    temp=os[iteratorIndex];
+                    workCurrentTask(currentTask,temp);
+                    tempTasks[iteratorIndex]=null;
+                    os[iteratorIndex]=null;
+                    currentTasks.beenWorkedCount=currentTasks.beenWorkedCount++;;
+                }
             }
         }
     }
-
-    private void workCurrentTask(AbstractTask currentTasks) {
-
+    private void workCurrentTask(AbstractTask currentTasks,Object object) throws IOException {
+        taskStatus=currentTasks.getTaskStatus();
+        switch (taskStatus){
+            case AbstractTask.TASK_STATUS_DESTROY:
+                currentTasks.destroy(object);
+                break;
+            case AbstractTask.TASK_STATUS_INIT:
+                currentTasks.init(object);
+                break;
+            case AbstractTask.TASK_STATUS_WORK:
+                currentTasks.work(object);
+                break;
+            default:
+                currentTasks.otherWork(object);
+        }
     }
 
 }
