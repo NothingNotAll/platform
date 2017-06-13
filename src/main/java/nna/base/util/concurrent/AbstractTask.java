@@ -17,13 +17,14 @@ public abstract class AbstractTask{
     private static WorkerEntry workerEntry;
     private static AtomicLong taskNo=new AtomicLong();
 
-    private Long index;
+    private int workCount;
+    private Long index;//任务队列索引
     private String taskName;
     private Long threadId;
     private String threadName;
     private Thread thread;
     private volatile int taskStatus;
-    private Integer workId;//所属工作组
+    private Integer workId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
 
     public AbstractTask(String taskName){
         this.taskName=taskName;
@@ -114,4 +115,11 @@ public abstract class AbstractTask{
         this.taskName = taskName;
     }
 
+    public int getWorkCount() {
+        return workCount;
+    }
+
+    public void setWorkCount(int workCount) {
+        this.workCount = workCount;
+    }
 }

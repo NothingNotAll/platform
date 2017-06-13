@@ -7,13 +7,31 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
  * @create 2017-06-13 10:12
  **/
 
-public class NewWorker implements Runnable{
+public class NewWorker<T extends AbstractTask> implements Runnable{
+
+    private AtomicLong taskNo=new AtomicLong(0L);
+
+    public void submitEvent(T t) {
+        Long taskSeq=t.getIndex();
+        Tasks temp=workMap.get(taskSeq);
+        temp.list[temp.sequenceGen.getAndIncrement()]=t;//一定可以保证有序，当前只有业务线程来处理
+        workQueue.add(temp);
+    }
+
+    public void submitInitEvent(T t,boolean keepWorkSeq) {
+        Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
+        Long taskSeq=taskNo.getAndDecrement();
+        t.setIndex(taskSeq);
+        workMap.putIfAbsent(taskSeq,tasks);
+        workQueue.add(tasks);
+    }
 
     private class Tasks{
         private volatile AbstractTask[] list;//for 有序的 task
@@ -135,6 +153,7 @@ public class NewWorker implements Runnable{
         switch (taskStatus){
             case AbstractTask.TASK_STATUS_DESTROY:
                 currentTasks.destroy(object);
+                workMap.remove(currentTasks.getIndex());
                 break;
             case AbstractTask.TASK_STATUS_INIT:
                 currentTasks.init(object);
