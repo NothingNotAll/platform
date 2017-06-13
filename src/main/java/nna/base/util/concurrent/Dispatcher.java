@@ -12,10 +12,10 @@ package nna.base.util.concurrent;
     private boolean isMapDispatch;
 
     public void run() {
-        worker.getWorkQueue().add(temp);
         if(isMapDispatch){
             worker.getWorkMap().putIfAbsent(temp.getList()[0].getIndex(),temp);
         }
+        worker.getWorkQueue().add(temp);
     }
 
     public Dispatcher(Tasks tasks,

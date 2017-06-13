@@ -3,17 +3,13 @@ package nna.base.init;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
-import nna.base.log.LogEntry;
-import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.util.List;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
@@ -21,9 +17,8 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public class NNAServiceInit2 {
-    static SimpleDateFormat yyMMdd=new SimpleDateFormat("yyyy-MM-dd$HH-mm-ss-SSS");
     public static void main(String[] args){
-        System.out.println(yyMMdd.format(System.currentTimeMillis()));
+        System.out.println(Log.yyMMdd.format(System.currentTimeMillis()));
     }
 
     public void build() throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException, NoSuchMethodException, ClassNotFoundException, IOException {
@@ -187,17 +182,15 @@ public class NNAServiceInit2 {
 
     private void buildPLog() {
         PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(0);
-        Log pLog=LogEntry.submitInitEvent(
-                "/LOG/NNA/"+yyMMdd.format(System.currentTimeMillis())+platformLog.getLogDir(),
-                new AtomicLong(),
-                "nna.log",
+        Log pLog=Log.getLog(
+                "/LOG/NNA/"+platformLog.getLogDir(),
+                "nna",
                 platformLog.getLogLevel(),
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
                 platformLog.getLogEncode()
         );
         MetaBean.setpLog(pLog);
-        LogEntry.submitCloseEvent(ConfMetaSetFactory.getConfMeta().getLog());
     }
 
 

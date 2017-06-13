@@ -37,7 +37,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     Tasks submitInitEvent(T t,Object object,boolean keepWorkSeq) {
         Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
         tasks.addTask(t,object);
-        Long taskSeq=taskNo.getAndDecrement();
+        Long taskSeq=taskNo.getAndIncrement();//性能瓶頸點
         t.setIndex(taskSeq);
         return tasks;
     }

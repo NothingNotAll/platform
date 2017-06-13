@@ -11,8 +11,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractTask{
 
+    public static final int TASK_STATUS_INIT = 0;
     public static final int TASK_STATUS_WORK=1;
     public static final int TASK_STATUS_DESTROY=2;
+
 
     private int workCount;
     private Long index;//任务队列索引
@@ -34,9 +36,7 @@ public abstract class AbstractTask{
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        setTaskStatus(0);
-        init(initObjectAttach);
-        isInit=true;
+        setTaskStatus(TASK_STATUS_INIT);
     }
 
     protected void submitInitEvent(Object object,boolean keepWorkSeq){
@@ -47,13 +47,13 @@ public abstract class AbstractTask{
         WorkerEntry.submitEvent(this,object);
     }
 
-    public abstract Object init(Object object);
+    protected abstract Object init(Object object);
 
-    public abstract Object work(Object object);
+    protected abstract Object work(Object object);
 
-    public abstract Object otherWork(Object object);
+    protected abstract Object otherWork(Object object);
 
-    public abstract Object destroy(Object object) throws IOException;
+    protected abstract Object destroy(Object object) throws IOException;
 
     public Long getIndex() {
         return index;

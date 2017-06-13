@@ -22,12 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
      private AtomicInteger sequenceGen=new AtomicInteger();
      boolean keepTaskSeq;
 
-     Tasks(
-            int taskCount,
-            boolean keepTaskSeq
-    ){
-         enQueueIndex=0;
+     Tasks(int taskCount,boolean keepTaskSeq){
+        enQueueIndex=0;
         workCount=taskCount;
+        workIndex=0;
+        beenWorkedCount=0;
         this.keepTaskSeq=keepTaskSeq;
         list=new AbstractTask[taskCount];
         objects=new Object[taskCount];
@@ -37,10 +36,12 @@ import java.util.concurrent.atomic.AtomicInteger;
     void works(ConcurrentHashMap<Long,Tasks> workMap) throws IOException {
         AbstractTask abstractTask;
         Object attach;
-        for(;workIndex < enQueueIndex;workIndex++){
+        int temp=enQueueIndex;
+        for(;workIndex < temp;workIndex++){
             abstractTask=list[workIndex];
             attach=objects[workIndex];
             work(abstractTask,attach,workMap);
+            setNull(workIndex);
         }
         int tempIndex=workIndex;
         if(!keepTaskSeq){
@@ -49,9 +50,15 @@ import java.util.concurrent.atomic.AtomicInteger;
                 if(abstractTask!=null){
                     attach=objects[tempIndex];
                     work(abstractTask,attach,workMap);
+                    setNull(tempIndex);
                 }
             }
         }
+    }
+
+    private void setNull(Integer workIndex) {
+        list[workIndex]=null;
+        objects[workIndex]=null;
     }
 
     private void work(AbstractTask abstractTask,Object attach,ConcurrentHashMap<Long,Tasks> workMap) throws IOException {
@@ -63,6 +70,9 @@ import java.util.concurrent.atomic.AtomicInteger;
                 break;
             case AbstractTask.TASK_STATUS_WORK:
                 abstractTask.work(attach);
+                break;
+            case AbstractTask.TASK_STATUS_INIT:
+                abstractTask.init(attach);
                 break;
             default:
                 abstractTask.otherWork(attach);

@@ -15,7 +15,7 @@ import java.util.Map;
  class Dispatch {
 
 	 static void dispatch(MetaBeanWrapper metaBean) throws Exception{
-        Log log= metaBean.getLog();
+         Log log= metaBean.getLog();
         PlatformApp platformApp=metaBean.getPlatformApp();
         log.log("开始校验应用状态",Log.INFO);
         checkApp(platformApp,log);

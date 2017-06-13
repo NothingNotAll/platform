@@ -93,7 +93,6 @@ public class MetaBean extends Clone{
     private PreparedStatement[] currentPsts;
     private Connection currentCon;
     private Log log;
-    private AtomicLong logNoGen;
     private int logLevel;
     private boolean isLogEncrypt;//encrypt
 
@@ -171,9 +170,7 @@ public class MetaBean extends Clone{
 
     @Override
     public MetaBean clone(){
-        AtomicLong servAL=logNoGen;
         MetaBean metaBean=(MetaBean) super.clone();
-        metaBean.setLogNoGen(servAL);
         metaBean.setOutColumns(null);
 
         //for monitor
@@ -453,14 +450,6 @@ public class MetaBean extends Clone{
 
     public void setCurrentSessionId(String currentSessionId) {
         this.currentSessionId = currentSessionId;
-    }
-
-    public AtomicLong getLogNoGen() {
-        return logNoGen;
-    }
-
-    public void setLogNoGen(AtomicLong logNoGen) {
-        this.logNoGen = logNoGen;
     }
 
     public PlatformUser getCurrentUser() {

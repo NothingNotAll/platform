@@ -6,14 +6,12 @@ import nna.base.bean.dbbean.PlatformLog;
 import nna.base.bean.dbbean.PlatformSession;
 import nna.base.init.NNAServiceStart;
 import nna.base.log.Log;
-import nna.base.log.LogEntry;
 import nna.base.util.CharUtil;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
@@ -32,7 +30,6 @@ public abstract class AbstractDispatch {
     }
 
     private static SimpleDateFormat yyyyMMdd=new SimpleDateFormat("yyyyMMdd");
-    private static SimpleDateFormat HHmmssSSS=new SimpleDateFormat("HH-mm-ss-SSS");
 
     protected String dispatch(Map<String,String[]> map) throws InvocationTargetException, IllegalAccessException, IOException {
         MetaBean confMeta=null;
@@ -66,7 +63,7 @@ public abstract class AbstractDispatch {
         Thread thread=Thread.currentThread();
         Long id=thread.getId();
         MetaBean.getMetaMonitor().remove(id);
-        LogEntry.submitCloseEvent(confMeta.getLog());
+        confMeta.getLog().close();
         ConfMetaSetFactory.setConfMeta(null);//for prevent memory leak
     }
 
@@ -87,9 +84,9 @@ public abstract class AbstractDispatch {
                 combLog.getLogDir()+yyyyMMdd.format(System.currentTimeMillis())
                         +"/"+ String.valueOf(userId==-1?"nosession":userId)
                         +"/"+confMeta.getPlatformApp().getAppEn()
-                        +"/"+ confMeta.getPlatformEntry().getEntryCode()
-                        +"/"+ serviceName+"-"+HHmmssSSS.format(System.currentTimeMillis())+"-";
-        Log log=getLog(confMeta.getLogNoGen(),combLog.getLogLevel()
+                        +"/"+ confMeta.getPlatformEntry().getEntryCode()+"/";
+        Log log=getLog(
+                combLog.getLogLevel()
                 ,logDir,
                 combLog,
                 serviceName);
@@ -97,15 +94,13 @@ public abstract class AbstractDispatch {
     }
 
     private static Log getLog(
-            AtomicLong no,
             int logLevel,
                               String logDir,
                               PlatformLog platformLog,
                               String serviceName) {
-        return LogEntry.submitInitEvent(
+        return Log.getLog(
                 logDir,
-                no,
-                serviceName+".log",
+                serviceName,
                 logLevel,
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),

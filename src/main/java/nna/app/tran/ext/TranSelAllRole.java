@@ -2,9 +2,9 @@ package nna.app.tran.ext;
 
 import nna.Marco;
 import nna.base.bean.dbbean.PlatformRole;
+import nna.base.log.Log;
 import nna.base.protocol.dispatch.AppUtil;
 import nna.base.protocol.dispatch.ConfMetaSetFactory;
-import nna.base.log.Log;
 import nna.base.util.LogUtil;
 import nna.transaction.DefaultTransExecutor;
 

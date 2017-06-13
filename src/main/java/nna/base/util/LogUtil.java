@@ -14,7 +14,7 @@ public class LogUtil {
     private LogUtil(){}
 
 
-    public static void log(PlatformColumn[] columns,Log log,int logLevel){
+    public static void log(PlatformColumn[] columns, Log log, int logLevel){
         if (columns==null)
             return;
         int count=columns.length;
@@ -34,7 +34,7 @@ public class LogUtil {
         }
     }
 
-    public static void log(PlatformEntry platformEntry,Log log,int logLevel){
+    public static void log(PlatformEntry platformEntry, Log log, int logLevel){
         if (platformEntry==null)
             return;
         log.log(platformEntry.getEntryCode(),logLevel);
@@ -43,7 +43,7 @@ public class LogUtil {
         log.log(String.valueOf(platformEntry.getEntryId()),logLevel);
     }
 
-    public static void log(PlatformDB platformDB,Log log ,int logLevel){
+    public static void log(PlatformDB platformDB, Log log , int logLevel){
         log.log("数据库唯一标识："+String.valueOf(platformDB.getDbId()),logLevel);
         log.log("数据库JDBC URL:"+platformDB.getDbUrl(),logLevel);
         log.log("数据库账户："+platformDB.getDbAccount(),logLevel);
@@ -70,7 +70,7 @@ public class LogUtil {
         log.log("角色名称："+platformRole.getRoleName(),logLevel);
     }
 
-    public static void log(PlatformApp platformApp,Log log,int logLevel){
+    public static void log(PlatformApp platformApp, Log log, int logLevel){
         log.log("应用配置:",logLevel);
         log.log("应用中文名称："+platformApp.getAppCh(),logLevel);
         log.log("应用描述："+platformApp.getAppDesc(),logLevel);
@@ -88,7 +88,7 @@ public class LogUtil {
 
     }
 
-    public static void log(PlatformColumn platformColumn, Log log,int logLevel){
+    public static void log(PlatformColumn platformColumn, Log log, int logLevel){
         log.log("字段描述："+platformColumn.getColumnDesc(),logLevel);
         log.log("字段id："+platformColumn.getColumnId(),logLevel);
         log.log("字段顺序："+platformColumn.getColumnNo(),logLevel);
@@ -100,7 +100,7 @@ public class LogUtil {
         log.log("是否必输"+platformColumn.isColumnIsmust(),logLevel);
     }
 
-    public static void log(PlatformService service, Log log,int logLevel){
+    public static void log(PlatformService service, Log log, int logLevel){
         log.log("服务描述："+service.getServiceDesc(),logLevel);
         log.log("服务名称："+service.getServiceName(),logLevel);
         log.log("服务类名称："+service.getServiceClass(),logLevel);
@@ -109,7 +109,7 @@ public class LogUtil {
         log.log("服务版本更新时间戳："+service.getUpdateTimestamp(),logLevel);
     }
 
-    public static void log(PlatformController platformController, Log log,int logLevel) {
+    public static void log(PlatformController platformController, Log log, int logLevel) {
         log.log("控制器描述："+platformController.getControllerDesc(),logLevel);
         log.log("控制器ID："+platformController.getId(),logLevel);
         log.log("视图名称："+platformController.getRenderPage(),logLevel);

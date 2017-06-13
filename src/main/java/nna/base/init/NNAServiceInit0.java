@@ -9,20 +9,17 @@ package nna.base.init;
 import nna.Marco;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
-import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.log.Log;
-import nna.base.log.LogEntry;
+import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.util.BuildSQL;
 import nna.base.util.List;
 import nna.base.util.orm.ObjectFactory;
 import nna.base.util.orm.ObjectUtil;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static nna.base.init.Util.buildSQL;
 import static nna.base.util.orm.ObjectFactory.getBean;
@@ -114,17 +111,9 @@ public class NNAServiceInit0 {
     private static Log getPlatformLog(PlatformLog platformLog) {
         SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
         String logPath="/log/"+format.format(System.currentTimeMillis())+platformLog.getLogDir();
-        File logDir=new File(logPath);
-        String logName="log_0.log";
-        if(!logDir.exists()){
-            logDir.mkdirs();
-        }else{
-            int logSize=logDir.list().length+1;
-            logName="log_"+logSize+".log";
-        }
-        return LogEntry.submitInitEvent(
+        String logName="log";
+        return Log.getLog(
                 logPath,
-                new AtomicLong(),
                 logName,
                 platformLog.getLogLevel(),
                 platformLog.getLogBufferThreshold(),

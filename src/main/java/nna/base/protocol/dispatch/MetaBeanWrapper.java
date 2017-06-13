@@ -8,7 +8,6 @@ import nna.base.bean.dbbean.PlatformService;
 import nna.base.log.Log;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

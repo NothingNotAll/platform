@@ -17,7 +17,7 @@ import java.sql.SQLException;
 
 
      static String buildSQL(PlatformSql platformSql) throws SQLException {
-        Log log= AppUtil.getLog();
+         Log log= AppUtil.getLog();
         String sqlStr=null;
         String tableName=platformSql.getTableName();
 

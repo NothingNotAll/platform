@@ -1,5 +1,6 @@
 package nna.base.db;
 
+
 import nna.base.log.Log;
 
 import java.sql.Connection;

@@ -63,26 +63,47 @@ import java.util.concurrent.Executors;
     }
 
     void submitInitEvent(AbstractTask t,Object object,boolean keepWorkSeq) {
-        Worker worker=getBalanceWorker();
+        Entry entry=getBalanceWorker();
+        Worker worker=entry.worker;
+        int workId=entry.entryId;
+        t.setWorkId(workId);
         Tasks tasks=worker.submitInitEvent(t,object,keepWorkSeq);
         Dispatcher mapDispatcher=new Dispatcher(tasks, worker,true);
         cachedService.submit(mapDispatcher);
     }
 
-    private Worker getBalanceWorker() {
+    private Entry getBalanceWorker() {
         Iterator<Worker> iterator=balancedWorkerList.iterator();
         Worker worker;
         Worker minWorker=null;
         int count;
-        int minCount=Integer.MAX_VALUE;
+        Integer minCount=null;
+        int index=0;
         while(iterator.hasNext()){
             worker=iterator.next();
             count=worker.getTempWorkCount();
-            if(minCount<count){
+            if(minCount==null){
                 minWorker=worker;
+                minCount=count;
+            }else{
+                if(minCount>count){
+                    minWorker=worker;
+                }
             }
+            if(minCount==0){
+                break;
+            }
+            index++;
         }
-        return minWorker;
+        return new Entry(minWorker,index);
     }
 
+    private class Entry{
+        private Integer entryId;
+        private Worker worker;
+        private Entry(Worker minWorker,int index){
+            this.entryId=index;
+            this.worker=minWorker;
+        }
+    }
 }
