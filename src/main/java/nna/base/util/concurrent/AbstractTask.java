@@ -23,7 +23,7 @@ public abstract class AbstractTask{
     private String threadName;
     private Thread thread;
     private volatile int taskStatus;
-    private int workId;//所属工作组
+    private Integer workId;//所属工作组
 
     public AbstractTask(String taskName){
         this.taskName=taskName;
@@ -98,11 +98,11 @@ public abstract class AbstractTask{
         this.taskStatus = taskStatus;
     }
 
-    public int getWorkId() {
+    public Integer getWorkId() {
         return workId;
     }
 
-    public void setWorkId(int workId) {
+    public void setWorkId(Integer workId) {
         this.workId = workId;
     }
 

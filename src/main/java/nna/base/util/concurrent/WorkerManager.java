@@ -52,6 +52,15 @@ public class WorkerManager {
         entry.worker.submitInitTask(abstractTask,object);
     }
 
+    void submitUnifyEvent(AbstractTask abstractTask,Object object){
+        Integer workId=abstractTask.getWorkId();
+        if(workId==null){
+            submitInitEvent(abstractTask,object);
+        }else {
+            submitEvent(abstractTask,object);
+        }
+    }
+
     private WorkerEntry getBalanceWorker() {
         WorkerEntry workerEntry=new WorkerEntry();
         Iterator<Worker> iterator=balancedWorkerList.iterator();
