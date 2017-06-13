@@ -14,7 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  class Tasks{
 
     private volatile AbstractTask[] list;//for 有序的 task
-     private volatile Object[] objects;//limit : a large of waste memory with null slot except that task is been worked with short time
+     private volatile Object[] objects;//oom-limit : a large of
+    // waste memory with null slot except that task is been worked with short time
      private volatile Integer enQueueIndex;
      private volatile Integer workIndex;
      private Integer workCount;
