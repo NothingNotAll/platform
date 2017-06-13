@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -19,71 +18,33 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public class Worker<T extends AbstractTask> extends Clone implements Runnable{
-    private ExecutorService cachedService= Executors.newCachedThreadPool();
-    private static final WorkerManager workerManager=WorkerManager.initWorkerManager(null);
 
-    private AtomicLong taskNo=new AtomicLong(0L);
+    private static AtomicLong taskNo=new AtomicLong(0L);
+
     private Integer loadNo;
 
-    public void submitEvent(T t,Object object) {
+    /*
+        * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
+        * */
+    private ConcurrentHashMap<Long,Tasks> workMap=new ConcurrentHashMap<Long, Tasks>();
+    private LinkedBlockingQueue<Tasks> workQueue=new LinkedBlockingQueue<Tasks>();
+
+    Tasks submitEvent(T t,Object object) {
         Long taskSeq=t.getIndex();
         Tasks temp=workMap.get(taskSeq);
         int seq=temp.sequenceGen.getAndIncrement();
         temp.list[seq]=t;//一定可以保证有序，当前只有业务线程来处理
         temp.objects[seq]=object;
-        Dispatcher dispatcher=new Dispatcher(temp,false);
-        cachedService.submit(dispatcher);
+        return temp;
     }
 
-    public void submitInitEvent(T t,Object object,boolean keepWorkSeq) {
+    Tasks submitInitEvent(T t,Object object,boolean keepWorkSeq) {
         Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
         tasks.initObject=object;
         Long taskSeq=taskNo.getAndDecrement();
         t.setIndex(taskSeq);
-        Dispatcher mapDispatcher=new Dispatcher(tasks,true);
-        cachedService.submit(mapDispatcher);
+        return tasks;
     }
-
-    public Integer getLoadNo() {
-        return loadNo;
-    }
-
-    public void setLoadNo(Integer loadNo) {
-        this.loadNo = loadNo;
-    }
-
-    private class Tasks{
-        private volatile AbstractTask[] list;//for 有序的 task
-        private volatile Object[] objects;
-        private volatile Object initObject;
-        private volatile Integer currentWorkIndex;
-        private Integer workCount;
-        private Integer beenWorkedCount;
-        private AtomicInteger sequenceGen=new AtomicInteger();
-        private boolean keepTaskSeq;
-
-        private Tasks(
-                int taskCount,
-                boolean keepTaskSeq
-        ){
-            currentWorkIndex=-1;
-            workCount=taskCount;
-            this.keepTaskSeq=keepTaskSeq;
-            list=new AbstractTask[taskCount];
-            objects=new Object[taskCount];
-        }
-
-        private void insert(AbstractTask abstractTask,Object object){
-            Integer no=sequenceGen.getAndIncrement();
-            list[no]=abstractTask;
-            objects[no]=object;
-        }
-    }
-    /*
-    * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
-    * */
-    private ConcurrentHashMap<Long,Tasks> workMap=new ConcurrentHashMap<Long, Tasks>();
-    private LinkedBlockingQueue<Tasks> workQueue=new LinkedBlockingQueue<Tasks>();
 
     private int tempWorkCount;
     private Tasks blockTasks;
@@ -199,20 +160,27 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         this.tempWorkCount = tempWorkCount;
     }
 
-    private class Dispatcher implements Runnable{
-        private Tasks temp;
-        private boolean isMapDispatch;
-        public void run() {
-            workQueue.add(temp);
-            if(isMapDispatch){
-                workMap.putIfAbsent(temp.list[0].getIndex(),temp);
-            }
-        }
-
-        public Dispatcher(Tasks tasks,boolean isMapDispatch){
-            this.temp=tasks;
-            this.isMapDispatch=isMapDispatch;
-        }
+    public Integer getLoadNo() {
+        return loadNo;
     }
 
+    public void setLoadNo(Integer loadNo) {
+        this.loadNo = loadNo;
+    }
+
+    public ConcurrentHashMap<Long, Tasks> getWorkMap() {
+        return workMap;
+    }
+
+    public void setWorkMap(ConcurrentHashMap<Long, Tasks> workMap) {
+        this.workMap = workMap;
+    }
+
+    public LinkedBlockingQueue<Tasks> getWorkQueue() {
+        return workQueue;
+    }
+
+    public void setWorkQueue(LinkedBlockingQueue<Tasks> workQueue) {
+        this.workQueue = workQueue;
+    }
 }

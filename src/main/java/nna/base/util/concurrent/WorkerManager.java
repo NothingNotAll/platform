@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
     private static WorkerManager workerManager;
     private static volatile boolean init=false;
     private static volatile boolean initPending=false;
+    private static ExecutorService cachedService= Executors.newCachedThreadPool();
 
     public synchronized static WorkerManager initWorkerManager(Integer workCount){
         if(init){
@@ -50,33 +51,33 @@ import java.util.concurrent.Executors;
         }
     }
 
-     void addWorker(Worker worker){
+    void addWorker(Worker worker){
 
     }
 
-     void deleteWorker(){
+    void deleteWorker(){
 
     }
 
-    Worker getWorker(AbstractTask abstractTask){
-         Integer workId=abstractTask.getWorkId();
-         if(workId==null){
-             WorkerEntry workerEntry= getBalanceWorker();
-             WorkerEntry entry=getBalanceWorker();
-             abstractTask.setWorkId(entry.workerId);
-             return workerEntry.worker;
-         }else{
-             return balancedWorkerList.get(workId.intValue());
-         }
+    void submitEvent(AbstractTask t,Object object) {
+        Integer workId=t.getWorkId();
+        Worker worker=balancedWorkerList.get(workId.intValue());
+        Tasks tasks=worker.submitEvent(t,object);
+        Dispatcher dispatcher=new Dispatcher(tasks,worker, false);
+        cachedService.submit(dispatcher);
     }
 
-    private WorkerEntry getBalanceWorker() {
-        WorkerEntry workerEntry=new WorkerEntry();
+    void submitInitEvent(AbstractTask t,Object object,boolean keepWorkSeq) {
+        Worker worker=getBalanceWorker();
+        Tasks tasks=worker.submitInitEvent(t,object,keepWorkSeq);
+        Dispatcher mapDispatcher=new Dispatcher(tasks, worker,true);
+        cachedService.submit(mapDispatcher);
+    }
+
+    private Worker getBalanceWorker() {
         Iterator<Worker> iterator=balancedWorkerList.iterator();
         Worker worker;
         Worker minWorker=null;
-        int index=0;
-        int minIndex=0;
         int count;
         int minCount=Integer.MAX_VALUE;
         while(iterator.hasNext()){
@@ -84,18 +85,9 @@ import java.util.concurrent.Executors;
             count=worker.getTempWorkCount();
             if(minCount<count){
                 minWorker=worker;
-                minIndex=index;
             }
-            index++;
         }
-        workerEntry.workerId=minIndex;
-        workerEntry.worker=minWorker;
-        return workerEntry;
-    }
-
-    private class WorkerEntry{
-         private Worker worker;
-         private int workerId;
+        return minWorker;
     }
 
 }
