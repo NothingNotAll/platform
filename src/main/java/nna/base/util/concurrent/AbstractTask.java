@@ -50,13 +50,13 @@ public abstract class AbstractTask{
         workerEntry.submitEvent(this,object);
     }
 
-    public abstract void init(Object object);
+    public abstract Object init(Object object);
 
-    public abstract void work(Object object);
+    public abstract Object work(Object object);
 
-    public abstract void otherWork(Object object);
+    public abstract Object otherWork(Object object);
 
-    public abstract void destroy(Object object) throws IOException;
+    public abstract Object destroy(Object object) throws IOException;
 
     public Long getIndex() {
         return index;

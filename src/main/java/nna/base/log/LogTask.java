@@ -90,19 +90,19 @@ public class LogTask extends AbstractTask {
         return isInit&&logStrBuilder.toString().getBytes().length >= flushLimit;
     }
 
-    public void init(Object object) {
-
+    public Object init(Object object) {
+        return null;
     }
 
-    public void work(Object object) {
-
+    public Object work(Object object) {
+        return null;
     }
 
-    public void otherWork(Object object) {
-
+    public Object otherWork(Object object) {
+        return null;
     }
 
-    public void destroy(Object object) throws IOException {
-
+    public Object destroy(Object object) throws IOException {
+        return null;
     }
 }
