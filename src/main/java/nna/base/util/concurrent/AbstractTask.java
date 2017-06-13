@@ -10,11 +10,10 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public abstract class AbstractTask{
+
     public static final int TASK_STATUS_INIT=1;
     public static final int TASK_STATUS_WORK=2;
     public static final int TASK_STATUS_DESTROY=3;
-
-    private static AtomicLong taskNo=new AtomicLong();
 
     private int workCount;
     private Long index;//任务队列索引
@@ -26,17 +25,25 @@ public abstract class AbstractTask{
     private Integer workId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
     private volatile boolean isInit=false;
 
+    static{
+        System.out.println("init Worker Manager!");
+        WorkerEntry.init(null);
+    }
+
     public AbstractTask(String taskName){
         this.taskName=taskName;
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
         this.taskStatus=TASK_STATUS_INIT;
-        index=taskNo.getAndDecrement();
     }
 
-    protected void submitInitEvent(boolean keepWorkSeq){
+    protected void submitInitEvent(Object object,boolean keepWorkSeq){
+        WorkerEntry.submitInitEvent(this,object,keepWorkSeq);
+    }
 
+    protected void submitEvent(Object object){
+        WorkerEntry.submitEvent(this,object);
     }
 
     public abstract Object init(Object object);

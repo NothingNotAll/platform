@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
     private static volatile boolean init=false;
     private static ExecutorService cachedService= Executors.newCachedThreadPool();
 
-    public synchronized static WorkerManager initWorkerManager(Integer workCount){
+    synchronized static WorkerManager initWorkerManager(Integer workCount){
         if(init){
             return workerManager;
         }

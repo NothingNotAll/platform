@@ -2,30 +2,21 @@ package nna.base.util.concurrent;
 
 /**
  * @author NNA-SHUAI
- * @create 2017-05-30 16:40
+ * @create 2017-06-13 14:05
  **/
 
 public class WorkerEntry {
-    private WorkerManager workerManager;
+    public static WorkerManager workerManager;
 
-    public WorkerEntry(){
-        int workCount=Runtime.getRuntime().availableProcessors()-1;
-        workerManager=new WorkerManager(workCount,new Worker());
+    static void init(Integer workCount){
+        workerManager=WorkerManager.initWorkerManager(workCount);
     }
 
-    public WorkerEntry(int workCount){
-        WorkerManager workerManager=new WorkerManager(workCount,new Worker());
+    static void submitEvent(AbstractTask t,Object object) {
+        workerManager.submitEvent(t,object);
     }
 
-    public WorkerEntry(int workerCount,Worker worker){
-        workerManager=new WorkerManager(workerCount,worker);
-    }
-
-    public void submitEvent(AbstractTask abstractTask,Object object){
-        workerManager.submitEvent(abstractTask,object);
-    }
-
-    void submitInitEvent(AbstractTask abstractTask,Object object,boolean keepWorkSequence){
-        workerManager.submitInitEvent(abstractTask,object,keepWorkSequence);
+    static void submitInitEvent(AbstractTask t,Object object,boolean keepWorkSeq) {
+        workerManager.submitInitEvent(t,object,keepWorkSeq);
     }
 }
