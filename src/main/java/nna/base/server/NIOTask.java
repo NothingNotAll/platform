@@ -28,63 +28,6 @@ public class NIOTask extends AbstractTask {
         this.serviceType=serviceType;
     }
 
-    public void init() {
-        switch (serviceType){
-            case SERVICE_IN:
-                setTaskStatus(WRITE);
-                break;
-            case SERVICE_OUT:
-                setTaskStatus(READ);
-                break;
-        }
-        submitEvent();
-    }
-
-    public void work() {
-
-    }
-
-    public void destroy() throws IOException {
-        channel.close();
-    }
-
-    public void otherWork() {
-        switch (getTaskStatus()){
-            case READ:
-                doReadWork();
-                break;
-            case WRITE:
-                doWriteWork();
-                break;
-        }
-        submitEvent();
-    }
-
-    private void doReadWork() {
-        switch (serviceType){
-            case SERVICE_IN:
-
-                setTaskStatus(TASK_STATUS_DESTROY);
-                break;
-            case SERVICE_OUT:
-
-                setTaskStatus(WRITE);
-                break;
-        }
-    }
-
-    private void  doWriteWork(){
-        switch (serviceType){
-            case SERVICE_IN:
-
-                setTaskStatus(READ);
-                break;
-            case SERVICE_OUT:
-
-                setTaskStatus(TASK_STATUS_DESTROY);
-                break;
-        }
-    }
 
 
 
@@ -102,5 +45,21 @@ public class NIOTask extends AbstractTask {
 
     public void setServiceType(int serviceType) {
         this.serviceType = serviceType;
+    }
+
+    public void init(Object object) {
+
+    }
+
+    public void work(Object object) {
+
+    }
+
+    public void otherWork(Object object) {
+
+    }
+
+    public void destroy(Object object) throws IOException {
+
     }
 }
