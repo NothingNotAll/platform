@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @create 2017-06-12 21:13
  **/
 
-public abstract class LogTask extends AbstractTask {
+public class LogTask extends AbstractTask {
     private static final SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:MM:ss:SSS");
     public static final int ERROR=Integer.MAX_VALUE;
     public static final int INFO=0;
@@ -78,7 +78,7 @@ public abstract class LogTask extends AbstractTask {
                 if(canFlush()){
                     Long start=System.currentTimeMillis();
                     setTaskStatus(TASK_STATUS_WORK);
-                    submitEvent();
+                    submitEvent(logStr);
                     System.out.println("日志路径:"+logDir+" 线程 id:"+getThreadId()+" 名称:"+getThreadName()+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
                 }
             }
@@ -90,54 +90,19 @@ public abstract class LogTask extends AbstractTask {
         return isInit&&logStrBuilder.toString().getBytes().length >= flushLimit;
     }
 
-    public void create() {
-        init();
-    }
-
-//    public void init() {
-//        if(isInitPending){
-//            return ;
-//        }
-//        isInitPending=true;
-//        String logPath= logDir+
-//                logSeqGen.getAndIncrement();
-//        String logFileName=logPath+"/"+logName;
-//        try {
-//            File logDir=new File(logPath);
-//            if(!logDir.exists()){
-//                logDir.mkdirs();
-//            }
-//            File logFile=new File(logFileName);
-//            if(!logFile.exists()){
-//                logFile.createNewFile();
-//            }
-//            writer=new BufferedWriter(
-//                    new OutputStreamWriter(
-//                            new FileOutputStream(logFile),encode));
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }finally {
-//            isInit=true;
-//        }
-//    }
-
-    public void work() {
-        try {
-            writer.write("");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void destroy() throws IOException {
+    public void init(Object object) {
 
     }
 
-    public void otherWork() {
+    public void work(Object object) {
+
+    }
+
+    public void otherWork(Object object) {
+
+    }
+
+    public void destroy(Object object) throws IOException {
 
     }
 }
