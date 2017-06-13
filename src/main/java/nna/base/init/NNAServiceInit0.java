@@ -66,7 +66,7 @@ public class NNAServiceInit0 {
              ResultSet rs=psts[2].executeQuery();
              rs.next();
              PlatformLog platformLog=(PlatformLog) getBean(rs,Marco.PLATFORM_LOG);
-             Log log=getPlatformLog(platformLog);
+             Log log=getPlatformLog(platformLog,1000);
              MetaBean confMeta=new MetaBean();
              confMeta.setLog(log);
              ConfMetaSetFactory.setConfMeta(confMeta);
@@ -108,7 +108,7 @@ public class NNAServiceInit0 {
         return initPsts(sqls.toArray(new String[]{}));
     }
 
-    private static Log getPlatformLog(PlatformLog platformLog) {
+    private static Log getPlatformLog(PlatformLog platformLog,int logTimes) {
         SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
         String logPath="/log/"+format.format(System.currentTimeMillis())+platformLog.getLogDir();
         String logName="log";
@@ -118,7 +118,7 @@ public class NNAServiceInit0 {
                 platformLog.getLogLevel(),
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
-                platformLog.getLogEncode());
+                platformLog.getLogEncode(),logTimes);
     }
 
     private static void initObjectFactories(PreparedStatement objectFactoryPst) throws SQLException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException {

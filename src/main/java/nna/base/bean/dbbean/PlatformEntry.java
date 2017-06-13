@@ -25,6 +25,7 @@ public class PlatformEntry extends Clone {
     private String entryReqId;
     private String entryRspId;
     private String entryDesc;
+    private int entryLogTimes;
 
     public PlatformEntry(){
 
@@ -140,5 +141,13 @@ public class PlatformEntry extends Clone {
 
     public void setEntryFree(Boolean entryFree) {
         this.entryFree = entryFree;
+    }
+
+    public int getEntryLogTimes() {
+        return entryLogTimes;
+    }
+
+    public void setEntryLogTimes(int entryLogTimes) {
+        this.entryLogTimes = entryLogTimes;
     }
 }

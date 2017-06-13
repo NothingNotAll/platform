@@ -1,4 +1,4 @@
-package nna.base.ioc;
+package nna.base.util.ioc;
 
 /**
  * ${description}

@@ -95,6 +95,7 @@ public class MetaBean extends Clone{
     private Log log;
     private int logLevel;
     private boolean isLogEncrypt;//encrypt
+    private int logTimes;
 
     public static HashMap<String, PlatformRole[]> getAllUserRole() {
         return allUserRole;
@@ -554,5 +555,13 @@ public class MetaBean extends Clone{
 
     public void setInnerColumns(HashMap<String, String[]> innerColumns) {
         this.innerColumns = innerColumns;
+    }
+
+    public int getLogTimes() {
+        return logTimes;
+    }
+
+    public void setLogTimes(int logTimes) {
+        this.logTimes = logTimes;
     }
 }

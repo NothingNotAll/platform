@@ -31,12 +31,14 @@ public abstract class AbstractTask{
         WorkerEntry.init(null);
     }
 
-    public AbstractTask(String taskName,Object initObjectAttach){
+    public AbstractTask(String taskName,Object initObjectAttach,int workCount){
         this.taskName=taskName;
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
         setTaskStatus(TASK_STATUS_INIT);
+        this.workCount=workCount;
+        submitInitEvent(initObjectAttach,true);
     }
 
     protected void submitInitEvent(Object object,boolean keepWorkSeq){

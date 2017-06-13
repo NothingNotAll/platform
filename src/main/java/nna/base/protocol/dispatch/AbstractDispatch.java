@@ -89,7 +89,7 @@ public abstract class AbstractDispatch {
                 combLog.getLogLevel()
                 ,logDir,
                 combLog,
-                serviceName);
+                serviceName,confMeta.getLogTimes());
         confMeta.setLog(log);
     }
 
@@ -97,14 +97,14 @@ public abstract class AbstractDispatch {
             int logLevel,
                               String logDir,
                               PlatformLog platformLog,
-                              String serviceName) {
+                              String serviceName,int logTimes) {
         return Log.getLog(
                 logDir,
                 serviceName,
                 logLevel,
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
-                platformLog.getLogEncode()
+                platformLog.getLogEncode(),logTimes
         );
     }
 

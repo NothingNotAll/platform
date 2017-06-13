@@ -34,9 +34,10 @@ public class Log extends AbstractTask {
             int appLogLevel,
             int flushLimit,
             int closeTimeout,
-            String encode
+            String encode,
+            int logTimes
             ) {
-        super("log",new Object());
+        super("log",null,logTimes);
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
@@ -44,8 +45,6 @@ public class Log extends AbstractTask {
         this.flushLimit=flushLimit;
         this.closeTimeout=closeTimeout;
         this.encode=encode;
-        setWorkCount(30);
-        submitInitEvent(null,true);
     }
 
     public void log(String log,int logLevel){
@@ -152,12 +151,12 @@ public class Log extends AbstractTask {
             int appLogLevel,
             int flushLimit,
             int closeTimeout,
-            String encode){
+            String encode,int logTime){
         return new Log(
                 logDir,
                 logFileName,
                 appLogLevel,
                 flushLimit,
-                closeTimeout,encode);
+                closeTimeout,encode,logTime);
     }
 }
