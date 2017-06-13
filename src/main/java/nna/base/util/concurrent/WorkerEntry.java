@@ -21,11 +21,11 @@ public class WorkerEntry {
         workerManager=new WorkerManager(workerCount,worker);
     }
 
-    public void submitEvent(AbstractTask abstractTask){
-        workerManager.submitEvent(abstractTask);
+    public void submitEvent(AbstractTask abstractTask,Object object){
+        workerManager.submitEvent(abstractTask,object);
     }
 
-    void submitInitEvent(AbstractTask abstractTask){
-        workerManager.submitInitEvent(abstractTask);
+    void submitInitEvent(AbstractTask abstractTask,Object object){
+        workerManager.submitInitEvent(abstractTask,object);
     }
 }

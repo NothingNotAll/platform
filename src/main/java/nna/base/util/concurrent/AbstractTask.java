@@ -42,21 +42,21 @@ public abstract class AbstractTask{
         workerEntry=new WorkerEntry();
     }
 
-    public void submitInitEvent(){
-        workerEntry.submitInitEvent(this);
+    public void submitInitEvent(Object object){
+        workerEntry.submitInitEvent(this,object);
     }
 
-    public void submitEvent(){
-        workerEntry.submitEvent(this);
+    public void submitEvent(Object object){
+        workerEntry.submitEvent(this,object);
     }
 
-    public abstract void init();
+    public abstract void init(Object object);
 
-    public abstract void work();
+    public abstract void work(Object object);
 
-    public abstract void otherWork();
+    public abstract void otherWork(Object object);
 
-    public abstract void destroy() throws IOException;
+    public abstract void destroy(Object object) throws IOException;
 
     public Long getIndex() {
         return index;

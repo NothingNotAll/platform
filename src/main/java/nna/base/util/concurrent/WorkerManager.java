@@ -39,17 +39,17 @@ public class WorkerManager {
     void deleteWorker(){
 
     }
-     void submitEvent(AbstractTask abstractTask){
+     void submitEvent(AbstractTask abstractTask,Object object){
         int workId=abstractTask.getWorkId();
         Worker worker=balancedWorkerList.get(workId);
-        TaskDispatcher taskDispatcher =new TaskDispatcher(worker,abstractTask);
+        TaskDispatcher taskDispatcher =new TaskDispatcher(worker,abstractTask,object);
         cachedService.submit(taskDispatcher);
     }
 
-     void submitInitEvent(AbstractTask abstractTask){
+     void submitInitEvent(AbstractTask abstractTask,Object object){
         WorkerEntry entry=getBalanceWorker();
         abstractTask.setWorkId(entry.workerId);
-        entry.worker.submitInitTask(abstractTask);
+        entry.worker.submitInitTask(abstractTask,object);
     }
 
     private WorkerEntry getBalanceWorker() {
