@@ -88,21 +88,21 @@ public class NewWorker implements Runnable{
             index=currentTasks.currentWorkIndex+1;
             currentTask=tempTasks[index];
             if(currentTask!=null){
-                workCurrentTask(currentTasks);
+                workCurrentTask(currentTask);
                 tempTasks[index]=null;
                 currentTasks.currentWorkIndex=index;
             }
         }else {
             for(;iteratorIndex<currentTasks.workCount;iteratorIndex++){
                 currentTask=tempTasks[iteratorIndex];
-                workCurrentTask(currentTasks);
+                workCurrentTask(currentTask);
                 tempTasks[iteratorIndex]=null;
                 currentTasks.currentWorkIndex=iteratorIndex;
             }
         }
     }
 
-    private void workCurrentTask(Tasks currentTasks) {
+    private void workCurrentTask(AbstractTask currentTasks) {
 
     }
 
