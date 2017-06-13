@@ -14,14 +14,10 @@ import java.util.concurrent.Executors;
  class WorkerManager {
     private static WorkerManager workerManager;
     private static volatile boolean init=false;
-    private static volatile boolean initPending=false;
     private static ExecutorService cachedService= Executors.newCachedThreadPool();
 
     public synchronized static WorkerManager initWorkerManager(Integer workCount){
         if(init){
-            while(!initPending){
-                continue;
-            }
             return workerManager;
         }
         init=true;
@@ -29,7 +25,6 @@ import java.util.concurrent.Executors;
             workCount=Runtime.getRuntime().availableProcessors()-1;
         }
         workerManager=new WorkerManager(workCount,new Worker());
-        initPending=true;
         return workerManager;
     }
 
