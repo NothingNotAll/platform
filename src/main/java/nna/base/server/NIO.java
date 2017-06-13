@@ -92,40 +92,16 @@ public class NIO {
                     SocketChannel socketChannel;
                     switch (selectionKey){
                         case SelectionKey.OP_ACCEPT:
-                            socketChannel=(SocketChannel) channel;
-                            if(!socketChannel.isConnected()){
-                                socketChannel.finishConnect();
-                            }
-                            nioTask=new NIOTask("OP_ACCEPT",channel,NIOTask.SERVICE_IN);
-                            temp.attach(nioTask);
-                            nioTask.submitInitEvent();
-                            channel.register(selector,SelectionKey.OP_WRITE,nioTask);
+
                             break;
                         case SelectionKey.OP_READ:
-                            nioTask=(NIOTask) temp.attachment();
-                            nioTask.setTaskName("OP_READ");
-                            nioTask.submitEvent();
-                            if(nioTask.getTaskStatus()!=NIOTask.TASK_STATUS_DESTROY){
-                                channel.register(selector,SelectionKey.OP_WRITE,nioTask);
-                            }
+
                             break;
                         case SelectionKey.OP_WRITE:
-                            nioTask=(NIOTask) temp.attachment();
-                            nioTask.submitEvent();
-                            nioTask.setTaskName("OP_WRITE");
-                            if(nioTask.getTaskStatus()!=NIOTask.TASK_STATUS_DESTROY){
-                                channel.register(selector,SelectionKey.OP_READ,nioTask);
-                            }
+
                             break;
                         case SelectionKey.OP_CONNECT:
-                            socketChannel=(SocketChannel) channel;
-                            if(!socketChannel.isConnected()){
-                                socketChannel.finishConnect();
-                            }
-                            nioTask=new NIOTask("OP_CONNECT",channel,NIOTask.SERVICE_OUT);
-                            temp.attach(nioTask);
-                            nioTask.submitInitEvent();
-                            channel.register(selector,SelectionKey.OP_READ,nioTask);
+
                             break;
                     }
                     nioTask.setChannel(channel);
