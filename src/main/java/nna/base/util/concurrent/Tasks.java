@@ -12,7 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
  class Tasks{
-     private volatile AbstractTask[] list;//for 有序的 task
+
+    private volatile AbstractTask[] list;//for 有序的 task
      private volatile Object[] objects;
      private volatile Integer enQueueIndex;
      private volatile Integer workIndex;
@@ -74,6 +75,14 @@ import java.util.concurrent.atomic.AtomicInteger;
         list[seq]=abstractTask;//一定可以保证有序，当前只有业务线程来处理
         objects[seq]=attach;
         enQueueIndex++;
+    }
+
+    public AbstractTask[] getList() {
+        return list;
+    }
+
+    public void setList(AbstractTask[] list) {
+        this.list = list;
     }
 
 }

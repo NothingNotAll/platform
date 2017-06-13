@@ -1,7 +1,5 @@
 package nna.base.util.concurrent;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author NNA-SHUAI
@@ -16,7 +14,7 @@ import java.util.concurrent.LinkedBlockingQueue;
     public void run() {
         worker.getWorkQueue().add(temp);
         if(isMapDispatch){
-            worker.getWorkMap().putIfAbsent(temp.list[0].getIndex(),temp);
+            worker.getWorkMap().putIfAbsent(temp.getList()[0].getIndex(),temp);
         }
     }
 
