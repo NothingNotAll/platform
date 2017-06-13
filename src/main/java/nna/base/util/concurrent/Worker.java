@@ -140,9 +140,6 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
                 currentTasks.destroy(object);
                 workMap.remove(currentTasks.getIndex());
                 break;
-            case AbstractTask.TASK_STATUS_INIT:
-                currentTasks.init(object);
-                break;
             case AbstractTask.TASK_STATUS_WORK:
                 currentTasks.work(object);
                 break;
