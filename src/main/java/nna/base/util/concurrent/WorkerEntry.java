@@ -5,8 +5,8 @@ package nna.base.util.concurrent;
  * @create 2017-06-13 14:05
  **/
 
-public class WorkerEntry {
-    public static WorkerManager workerManager;
+ class WorkerEntry {
+    static WorkerManager workerManager;
 
     static void init(Integer workCount){
         workerManager=WorkerManager.initWorkerManager(workCount);
