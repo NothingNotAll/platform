@@ -77,7 +77,7 @@ public class LogManager {
         //care the sequence , u can submit it to the thread instead immediately. this will improve the performance of the logic thread
         /*
         * no sequence mode for high performance:
-        *  LogDispatcher logDispatcher=new LogDispatcher(LOG_WORKERV2,log, LogWorker.LogTask.LOG_WRITE);
+        *  LogDispatcher logDispatcher=new LogDispatcher(LOG_WORKERV2,log, LogWorker.LogV2.LOG_WRITE);
         *  cachedService.submit(logDispatcher);
         * */
         LogWorker logWorker=getBalanceLogWorker(log);

@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @create 2017-06-12 21:13
  **/
 
-public class LogTask extends AbstractTask {
+public class LogV2 extends AbstractTask {
     private static final SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:MM:ss:SSS");
     public static final int ERROR=Integer.MAX_VALUE;
     public static final int INFO=0;
@@ -32,7 +32,7 @@ public class LogTask extends AbstractTask {
     private volatile boolean isInit=false;
     private volatile boolean isInitPending=false;//ensure only init for once;
 
-    public LogTask(
+    public LogV2(
             String taskName,
             String logDir,
             AtomicLong logSeqGen,
@@ -42,7 +42,7 @@ public class LogTask extends AbstractTask {
             int closeTimeout,
             String encode
             ) {
-        super(taskName);
+        super(taskName,new Object());
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logSeqGen=logSeqGen;
@@ -51,6 +51,7 @@ public class LogTask extends AbstractTask {
         this.flushLimit=flushLimit;
         this.closeTimeout=closeTimeout;
         this.encode=encode;
+        submitInitEvent(null,true);
     }
 
     public void log(String log,int logLevel){
@@ -91,6 +92,34 @@ public class LogTask extends AbstractTask {
     }
 
     public Object init(Object object) {
+        if(isInitPending){
+            return null;
+        }
+        isInitPending=true;
+        String logPath= logDir+
+                logSeqGen.getAndIncrement();
+        String logFileName=logPath+"/"+logName;
+        try {
+            File logDir=new File(logPath);
+            if(!logDir.exists()){
+                logDir.mkdirs();
+            }
+            File logFile=new File(logFileName);
+            if(!logFile.exists()){
+                logFile.createNewFile();
+            }
+            writer=new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(logFile),encode));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            isInit=true;
+        }
         return null;
     }
 

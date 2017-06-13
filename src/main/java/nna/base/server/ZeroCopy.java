@@ -35,7 +35,7 @@ public class ZeroCopy {
         int size=0;
         for(;currentArrayIndex < arrayCount;currentArrayIndex++){
             bytes[currentBlockIndex][currentArrayIndex]=writes[size++];
-            if(size==needCount){
+            if((size+1)==needCount){
                 writeCount+=needCount;
                 return;
             }

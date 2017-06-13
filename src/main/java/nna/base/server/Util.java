@@ -12,20 +12,24 @@ import java.nio.channels.ReadableByteChannel;
 public class Util {
     private Util(){}
 
-    public static int readHead(ReadableByteChannel channel, int headLength) throws IOException {
+    public static int getSize(ReadableByteChannel channel, int headLength) throws IOException {
         byte[] bytes=readBytes(channel,headLength);
         return Integer.valueOf(new String(bytes));
     }
 
     public static byte[] readBytes(ReadableByteChannel channel,int readLength) throws IOException {
         ByteBuffer byteBuffer=ByteBuffer.allocate(readLength);
-        int readCount;
+        int readCount=0;
         while(true){
-            readCount=channel.read(byteBuffer);
-            if(readCount==-1||readCount==0){
+            int temp=channel.read(byteBuffer);
+            if(temp==-1||temp==0||readCount==readLength){
                 break;
+            }else{
+                readCount+=temp;
             }
         }
+        byte[] bytes=new byte[readCount];
+        byteBuffer.get(bytes,0,readLength);
         return byteBuffer.array();
     }
 
@@ -38,7 +42,9 @@ public class Util {
             if(readSize==-1||readSize==0){
                 return zeroCopy.toBytes();
             }else{
-                zeroCopy.writeBytes(byteBuffer.array());
+                byte[] bytes=new byte[3];
+                byteBuffer.get(bytes,0,readSize);
+                zeroCopy.writeBytes(bytes);
                 byteBuffer.clear();
             }
         }

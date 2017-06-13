@@ -6,6 +6,9 @@ package nna.base.util.concurrent;
  **/
 
  class WorkerEntry {
+    static{
+        init(null);
+    }
     static WorkerManager workerManager;
 
     static void init(Integer workCount){
