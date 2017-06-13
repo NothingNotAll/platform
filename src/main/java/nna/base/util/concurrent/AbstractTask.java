@@ -14,7 +14,6 @@ public abstract class AbstractTask{
     public static final int TASK_STATUS_WORK=2;
     public static final int TASK_STATUS_DESTROY=3;
 
-    private static WorkerEntry workerEntry;
     private static AtomicLong taskNo=new AtomicLong();
 
     private int workCount;
@@ -25,6 +24,7 @@ public abstract class AbstractTask{
     private Thread thread;
     private volatile int taskStatus;
     private Integer workId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
+    private volatile boolean isInit=false;
 
     public AbstractTask(String taskName){
         this.taskName=taskName;
@@ -35,24 +35,8 @@ public abstract class AbstractTask{
         index=taskNo.getAndDecrement();
     }
 
-    static {
-        initWorkEntry();
-    }
-
-    protected static void initWorkEntry(){
-        workerEntry=new WorkerEntry();
-    }
-
     protected void submitInitEvent(boolean keepWorkSeq){
 
-    }
-
-    public void submitInitEvent(Object object,boolean keepWorkSeq){
-        workerEntry.submitInitEvent(this,object,keepWorkSeq);
-    }
-
-    public void submitEvent(Object object){
-        workerEntry.submitEvent(this,object);
     }
 
     public abstract Object init(Object object);
@@ -125,5 +109,13 @@ public abstract class AbstractTask{
 
     public void setWorkCount(int workCount) {
         this.workCount = workCount;
+    }
+
+    public boolean isInit() {
+        return isInit;
+    }
+
+    public void setInit(boolean init) {
+        isInit = init;
     }
 }

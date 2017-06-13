@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -17,6 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public class Worker<T extends AbstractTask> extends Clone implements Runnable{
+    private ExecutorService cachedService= Executors.newCachedThreadPool();
+    private static final WorkerManager workerManager=WorkerManager.initWorkerManager(null);
 
     private AtomicLong taskNo=new AtomicLong(0L);
     private Integer loadNo;
@@ -27,8 +31,8 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         int seq=temp.sequenceGen.getAndIncrement();
         temp.list[seq]=t;//一定可以保证有序，当前只有业务线程来处理
         temp.objects[seq]=object;
-
-        workQueue.add(temp);
+        Dispatcher dispatcher=new Dispatcher(temp,false);
+        cachedService.submit(dispatcher);
     }
 
     public void submitInitEvent(T t,Object object,boolean keepWorkSeq) {
@@ -36,9 +40,8 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         tasks.initObject=object;
         Long taskSeq=taskNo.getAndDecrement();
         t.setIndex(taskSeq);
-
-        workMap.putIfAbsent(taskSeq,tasks);
-        workQueue.add(tasks);
+        Dispatcher mapDispatcher=new Dispatcher(tasks,true);
+        cachedService.submit(mapDispatcher);
     }
 
     public Integer getLoadNo() {
@@ -146,6 +149,9 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
             if(currentTasks==null){
                 break;
             }
+            if(!currentTask.isInit()){
+                return ;
+            }
             temp=os[iteratorIndex];
             workCurrentTask(currentTask,temp);
             tempTasks[iteratorIndex]=null;
@@ -191,6 +197,22 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
 
     public void setTempWorkCount(int tempWorkCount) {
         this.tempWorkCount = tempWorkCount;
+    }
+
+    private class Dispatcher implements Runnable{
+        private Tasks temp;
+        private boolean isMapDispatch;
+        public void run() {
+            workQueue.add(temp);
+            if(isMapDispatch){
+                workMap.putIfAbsent(temp.list[0].getIndex(),temp);
+            }
+        }
+
+        public Dispatcher(Tasks tasks,boolean isMapDispatch){
+            this.temp=tasks;
+            this.isMapDispatch=isMapDispatch;
+        }
     }
 
 }

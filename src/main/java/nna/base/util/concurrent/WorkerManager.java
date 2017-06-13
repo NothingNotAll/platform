@@ -11,18 +11,36 @@ import java.util.concurrent.Executors;
  * @create 2017-05-30 16:40
  **/
 
-public class WorkerManager {
-    private ExecutorService cachedService= Executors.newCachedThreadPool();
+ class WorkerManager {
+    private static WorkerManager workerManager;
+    private static volatile boolean init=false;
+    private static volatile boolean initPending=false;
+
+    public synchronized static WorkerManager initWorkerManager(Integer workCount){
+        if(init){
+            while(!initPending){
+                continue;
+            }
+            return workerManager;
+        }
+        init=true;
+        if(workCount==null){
+            workCount=Runtime.getRuntime().availableProcessors()-1;
+        }
+        workerManager=new WorkerManager(workCount,new Worker());
+        initPending=true;
+        return workerManager;
+    }
+
     private ExecutorService fixedLogWorkerService;
     private ArrayList<Worker> balancedWorkerList=new ArrayList<Worker>();
 
-    public WorkerManager(int workerCount,Worker worker){
+    private WorkerManager(int workerCount,Worker worker){
         init(workerCount,worker);
     }
 
     private void init(int workerCount,Worker worker) {
         fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
-        cachedService=Executors.newCachedThreadPool();
         Worker logWorker;
         for(int index=0;index < workerCount;index++){
             logWorker= (Worker) worker.clone();
@@ -32,33 +50,24 @@ public class WorkerManager {
         }
     }
 
-    void addWorker(Worker worker){
+     void addWorker(Worker worker){
 
     }
 
-    void deleteWorker(){
+     void deleteWorker(){
 
     }
-     void submitEvent(AbstractTask abstractTask,Object object){
-        int workId=abstractTask.getWorkId();
-        Worker worker=balancedWorkerList.get(workId);
-        TaskDispatcher taskDispatcher =new TaskDispatcher(worker,abstractTask,object);
-        cachedService.submit(taskDispatcher);
-    }
 
-     void submitInitEvent(AbstractTask abstractTask,Object object,boolean keepWorkSequence){
-        WorkerEntry entry=getBalanceWorker();
-        abstractTask.setWorkId(entry.workerId);
-        entry.worker.submitInitEvent(abstractTask,object,keepWorkSequence);
-    }
-
-    void submitUnifyEvent(AbstractTask abstractTask,Object object,boolean keepWorkSequence){
-        Integer workId=abstractTask.getWorkId();
-        if(workId==null){
-            submitInitEvent(abstractTask,object,keepWorkSequence);
-        }else {
-            submitEvent(abstractTask,object);
-        }
+    Worker getWorker(AbstractTask abstractTask){
+         Integer workId=abstractTask.getWorkId();
+         if(workId==null){
+             WorkerEntry workerEntry= getBalanceWorker();
+             WorkerEntry entry=getBalanceWorker();
+             abstractTask.setWorkId(entry.workerId);
+             return workerEntry.worker;
+         }else{
+             return balancedWorkerList.get(workId.intValue());
+         }
     }
 
     private WorkerEntry getBalanceWorker() {
