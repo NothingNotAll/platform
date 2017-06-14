@@ -56,7 +56,7 @@ import java.util.concurrent.locks.ReentrantLock;
                 break;
             }
             // for 乐观锁 ; for performance
-            if(!canWork(workIndex)){
+            if(!(status[workIndex]==INIT)){
                 continue;
             }
             work(abstractTask,workMap,workIndex);
@@ -67,17 +67,13 @@ import java.util.concurrent.locks.ReentrantLock;
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
                     // for 乐观锁 ; for performance
-                    if(!canWork(workIndex)){
+                    if(!(status[tempIndex]==INIT)){
                         continue;
                     }
                     work(abstractTask,workMap,tempIndex);
                 }
             }
         }
-    }
-
-    private boolean canWork(int index){
-        return status[index]==INIT;
     }
 
     private void work(
@@ -87,7 +83,7 @@ import java.util.concurrent.locks.ReentrantLock;
         ReentrantLock lock=locks[tempIndex];
         try{
             lock.lock();
-            if(canWork(tempIndex)){
+            if(!(status[tempIndex]==INIT)){
                status[tempIndex]=WORKING;
                Object attach=objects[tempIndex];
                work(abstractTask,attach,workMap,tempIndex);
