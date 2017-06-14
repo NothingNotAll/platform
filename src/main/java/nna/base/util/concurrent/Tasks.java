@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
      private Integer workCount;
      private volatile Integer beenWorkedCount;
      private AtomicInteger sequenceGen=new AtomicInteger();
-     private boolean isTaskEnQueueBySeq;
+     private boolean isTaskEnQueueBySeq;//任务队列工作是否按照数组顺序工作
 
      Tasks(int taskCount,boolean keepTaskSeq){
         enQueueIndex=0;
