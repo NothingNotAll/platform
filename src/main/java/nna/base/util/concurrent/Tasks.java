@@ -60,7 +60,7 @@ import java.util.concurrent.locks.ReentrantLock;
             }
             // for 乐观锁 ; for performance
             if(status[workIndex]==INIT){
-                work(abstractTask,workMap,workIndex);
+                lock(abstractTask,workMap,workIndex);
             }
         }
         int tempIndex=workIndex;
@@ -70,14 +70,14 @@ import java.util.concurrent.locks.ReentrantLock;
                 if(abstractTask!=null){
                     // for 乐观锁 ; for performance
                     if(status[tempIndex]==INIT){
-                        work(abstractTask,workMap,tempIndex);
+                        lock(abstractTask,workMap,tempIndex);
                     }
                 }
             }
         }
     }
 
-    private void work(
+    private void lock(
             AbstractTask abstractTask,
             ConcurrentHashMap<Long,Tasks> workMap,
             int tempIndex){
