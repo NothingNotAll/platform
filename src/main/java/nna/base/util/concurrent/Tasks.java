@@ -11,7 +11,9 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 
-//Single Direction Insert Task , can not make use of Been Set Null ' s slot;
+//Single Direction Insert Task , can not make use of
+// Been Set Null ' s slot;
+// but we can solve it with recycle queue to make full use of memory and solve the oom problem
  class Tasks{
      public static final int INIT=0;
      public static final int WORKING=1;
