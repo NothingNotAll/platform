@@ -88,14 +88,14 @@ import java.util.concurrent.Executors;
         cachedService.submit(dispatcher);
     }
 
-    void submitInitEvent(AbstractTask t,Object object,boolean keepWorkSeq) {
+    void submitInitEvent(AbstractTask t,Object object,boolean isParallelCompute) {
         Entry entry=getBalanceWorker();
         Worker worker=entry.worker;
         int workId=entry.entryId;
         t.setWorkId(workId);
         Long taskSeq=Worker.taskNo.getAndIncrement();//性能瓶頸點
         t.setIndex(taskSeq);
-        Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
+        Tasks tasks=new Tasks(t.getWorkCount(),isParallelCompute);
         tasks.addTask(t,object);
         Dispatcher mapDispatcher=new Dispatcher(tasks, worker,true);
         cachedService.submit(mapDispatcher);
