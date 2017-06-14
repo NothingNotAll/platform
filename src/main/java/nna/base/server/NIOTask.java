@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.channels.Channel;
 
 /**
+ * not support for long IO event
  * @author NNA-SHUAI
  * @create 2017-06-12 0:06
  **/

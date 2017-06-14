@@ -34,7 +34,7 @@ public class Util {
     }
 
     public static byte[] readBytes(ReadableByteChannel channel) throws IOException {
-        ZeroCopy zeroCopy=new ZeroCopy();
+        ZeroCopy zeroCopy=new ZeroCopy(1024,100,100);
         ByteBuffer byteBuffer=ByteBuffer.allocate(10);
         int readSize;
         while(true){
@@ -44,7 +44,7 @@ public class Util {
             }else{
                 byte[] bytes=new byte[3];
                 byteBuffer.get(bytes,0,readSize);
-                zeroCopy.writeBytes(bytes);
+                zeroCopy.add(bytes);
                 byteBuffer.clear();
             }
         }
