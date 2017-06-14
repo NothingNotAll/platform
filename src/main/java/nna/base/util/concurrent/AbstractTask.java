@@ -2,7 +2,6 @@ package nna.base.util.concurrent;
 
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI

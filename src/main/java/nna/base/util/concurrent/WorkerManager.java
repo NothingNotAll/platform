@@ -84,8 +84,22 @@ import java.util.concurrent.Executors;
         ConcurrentHashMap<Long,Tasks> workMap=worker.getWorkMap();
         Tasks tasks=workMap.get(taskSeq);
         tasks.addTask(t,object);
+        if(tasks.isParallelCompute()){
+            parallel(tasks,false);
+            return ;
+        }
         Dispatcher dispatcher=new Dispatcher(tasks,worker, false);
         cachedService.submit(dispatcher);
+    }
+
+    private void parallel(Tasks tasks,boolean isInit) {
+        int size=balancedWorkerList.size();
+        Worker worker;
+        for(int index=0;index < size;index++){
+            worker=balancedWorkerList.get(index);
+            Dispatcher dispatcher=new Dispatcher(tasks,worker, isInit);
+            cachedService.submit(dispatcher);
+        }
     }
 
     void submitInitEvent(AbstractTask t,Object object,boolean isParallelCompute) {
@@ -97,6 +111,10 @@ import java.util.concurrent.Executors;
         t.setIndex(taskSeq);
         Tasks tasks=new Tasks(t.getWorkCount(),isParallelCompute);
         tasks.addTask(t,object);
+        if(tasks.isParallelCompute()){
+            parallel(tasks,false);
+            return ;
+        }
         Dispatcher mapDispatcher=new Dispatcher(tasks, worker,true);
         cachedService.submit(mapDispatcher);
     }
