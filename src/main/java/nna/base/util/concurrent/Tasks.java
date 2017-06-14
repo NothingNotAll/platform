@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
      private volatile Integer workIndex;
      private Integer workCount;
      private AtomicInteger sequenceGen=new AtomicInteger();
-     private boolean isTaskEnQueueBySeq;//任务队列工作是否按照数组顺序工作
+     private boolean isParallelCompute;//任务队列工作是否按照数组顺序工作
     /*
     * only adapt for One Producer(business thread producer) and One Consumer Thread
     * */
@@ -38,7 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
-        this.isTaskEnQueueBySeq=keepTaskSeq;
+        this.isParallelCompute=keepTaskSeq;
         list=new AbstractTask[taskCount];
         objects=new Object[taskCount];
         status=new int[taskCount];
@@ -64,7 +64,7 @@ import java.util.concurrent.locks.ReentrantLock;
             }
         }
         int tempIndex=workIndex;
-        if(!isTaskEnQueueBySeq){
+        if(!isParallelCompute){
             for(;tempIndex<workCount;tempIndex++){
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
