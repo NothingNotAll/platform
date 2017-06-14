@@ -81,7 +81,7 @@ import java.util.concurrent.locks.ReentrantLock;
         ReentrantLock lock=locks[tempIndex];
         try{
             lock.lock();
-            if(!(status[tempIndex]==INIT)){
+            if(status[tempIndex]==INIT){
                status[tempIndex]=WORKING;
                Object attach=objects[tempIndex];
                work(abstractTask,attach,workMap,tempIndex);
