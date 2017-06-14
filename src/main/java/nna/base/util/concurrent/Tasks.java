@@ -29,7 +29,8 @@ import java.util.concurrent.locks.ReentrantLock;
      private volatile Integer workIndex;
      private Integer workCount;
      private AtomicInteger sequenceGen=new AtomicInteger();
-     private boolean isParallelCompute;//任务队列工作是否按照数组顺序工作
+
+    private boolean isParallelCompute;//任务队列工作是否按照数组顺序工作
     /*
     * only adapt for One Producer(business thread producer) and One Consumer Thread
     * */
@@ -136,4 +137,11 @@ import java.util.concurrent.locks.ReentrantLock;
         this.list = list;
     }
 
+    public boolean isParallelCompute() {
+        return isParallelCompute;
+    }
+
+    public void setParallelCompute(boolean parallelCompute) {
+        isParallelCompute = parallelCompute;
+    }
 }
