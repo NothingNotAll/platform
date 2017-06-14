@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
  class Tasks{
-     //limit we want to user container as this:can auto resize and give up non using null slot;
+     //limit we want to user container as this:can auto resize and gc non using null slot;
      private volatile AbstractTask[] list;//for 有序的 task
      private volatile Object[] objects;//oom-limit : a large of
     // waste memory with null slot except that task is been worked with short time
@@ -88,9 +88,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
     void addTask(AbstractTask abstractTask,Object attach){
         int seq=sequenceGen.getAndIncrement();
-        seq=enQueueIndex++;//并发策略失当
         list[seq]=abstractTask;//一定可以保证有序，当前只有业务线程来处理
         objects[seq]=attach;
+        enQueueIndex++;
     }
 
     public AbstractTask[] getList() {
