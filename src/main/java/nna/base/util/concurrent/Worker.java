@@ -16,32 +16,15 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
 public class Worker<T extends AbstractTask> extends Clone implements Runnable{
+
+    public static AtomicLong taskNo=new AtomicLong(0L);
     private static final Long serialVersionUID=-1L;
-
-    private static AtomicLong taskNo=new AtomicLong(0L);
-
     private Integer loadNo;
-
     /*
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
     private ConcurrentHashMap<Long,Tasks> workMap=new ConcurrentHashMap<Long, Tasks>();
     private LinkedBlockingQueue<Tasks> workQueue=new LinkedBlockingQueue<Tasks>();
-
-    Tasks submitEvent(T t,Object object) {
-        Long taskSeq=t.getIndex();
-        Tasks temp=workMap.get(taskSeq);
-        temp.addTask(t,object);
-        return temp;
-    }
-
-    Tasks submitInitEvent(T t,Object object,boolean keepWorkSeq) {
-        Long taskSeq=taskNo.getAndIncrement();//性能瓶頸點
-        t.setIndex(taskSeq);
-        Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
-        tasks.addTask(t,object);
-        return tasks;
-    }
 
     private int tempWorkCount;
     private Tasks blockTasks;

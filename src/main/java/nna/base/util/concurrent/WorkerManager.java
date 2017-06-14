@@ -3,6 +3,7 @@ package nna.base.util.concurrent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -79,7 +80,10 @@ import java.util.concurrent.Executors;
     void submitEvent(AbstractTask t,Object object) {
         Integer workId=t.getWorkId();
         Worker worker=balancedWorkerList.get(workId.intValue());
-        Tasks tasks=worker.submitEvent(t,object);
+        Long taskSeq=t.getIndex();
+        ConcurrentHashMap<Long,Tasks> workMap=worker.getWorkMap();
+        Tasks tasks=workMap.get(taskSeq);
+        tasks.addTask(t,object);
         Dispatcher dispatcher=new Dispatcher(tasks,worker, false);
         cachedService.submit(dispatcher);
     }
@@ -89,7 +93,10 @@ import java.util.concurrent.Executors;
         Worker worker=entry.worker;
         int workId=entry.entryId;
         t.setWorkId(workId);
-        Tasks tasks=worker.submitInitEvent(t,object,keepWorkSeq);
+        Long taskSeq=Worker.taskNo.getAndIncrement();//性能瓶頸點
+        t.setIndex(taskSeq);
+        Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
+        tasks.addTask(t,object);
         Dispatcher mapDispatcher=new Dispatcher(tasks, worker,true);
         cachedService.submit(mapDispatcher);
     }
