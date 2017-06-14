@@ -3,6 +3,7 @@ package nna.base.util.concurrent;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author NNA-SHUAI
@@ -12,14 +13,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
  class Tasks{
+     static final int INIT=0;
+     static final int WORKING=1;
+     static final int END=2;
      //limit we want to user container as this:can auto resize and gc non using null slot;
      private volatile AbstractTask[] list;//for 有序的 task
      private volatile Object[] objects;//oom-limit : a large of
+     private ReentrantLock[] locks;
+     private volatile int[] status;
     // waste memory with null slot except that task is been worked with short time
      private volatile Integer enQueueIndex;
      private volatile Integer workIndex;
      private Integer workCount;
-     private volatile Integer beenWorkedCount;
      private AtomicInteger sequenceGen=new AtomicInteger();
      private boolean isTaskEnQueueBySeq;//任务队列工作是否按照数组顺序工作
     /*
@@ -30,10 +35,15 @@ import java.util.concurrent.atomic.AtomicInteger;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
-        beenWorkedCount=0;
         this.isTaskEnQueueBySeq=keepTaskSeq;
         list=new AbstractTask[taskCount];
         objects=new Object[taskCount];
+        status=new int[taskCount];
+        locks=new ReentrantLock[taskCount];
+        for(int index=0;index < taskCount;index++){
+            locks[index]=new ReentrantLock();
+            status[index]=INIT;
+        }
     }
 
 
@@ -43,21 +53,46 @@ import java.util.concurrent.atomic.AtomicInteger;
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){
             abstractTask=list[workIndex];
-            attach=objects[workIndex];
             if(abstractTask==null){
                 break;
             }
-            work(abstractTask,attach,workMap,workIndex);
+            if(!canWork(workIndex)){
+                continue;
+            }
+            work(abstractTask,workMap,workIndex);
         }
         int tempIndex=workIndex;
         if(!isTaskEnQueueBySeq){
             for(;tempIndex<workCount;tempIndex++){
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
-                    attach=objects[tempIndex];
-                    work(abstractTask,attach,workMap,tempIndex);
+                    work(abstractTask,workMap,tempIndex);
                 }
             }
+        }
+    }
+
+    private boolean canWork(int index){
+        return status[index]!=WORKING&&status[index]!=END;
+    }
+
+    private void work(
+            AbstractTask abstractTask,
+            ConcurrentHashMap<Long,Tasks> workMap,
+            int tempIndex){
+        ReentrantLock lock=locks[tempIndex];
+        try{
+            lock.lock();
+            if(canWork(tempIndex)){
+               status[tempIndex]=WORKING;
+               Object attach=objects[tempIndex];
+               work(abstractTask,attach,workMap,tempIndex);
+               status[workIndex]=END;
+            }
+        }catch (Exception e){
+            e.getMessage();
+        }finally {
+            lock.unlock();
         }
     }
 
@@ -83,7 +118,6 @@ import java.util.concurrent.atomic.AtomicInteger;
                 abstractTask.otherWork(attach);
         }
         setNull(index);
-        beenWorkedCount++;
     }
 
     void addTask(AbstractTask abstractTask,Object attach){
@@ -101,11 +135,4 @@ import java.util.concurrent.atomic.AtomicInteger;
         this.list = list;
     }
 
-    public Integer getBeenWorkedCount() {
-        return beenWorkedCount;
-    }
-
-    public void setBeenWorkedCount(Integer beenWorkedCount) {
-        this.beenWorkedCount = beenWorkedCount;
-    }
 }
