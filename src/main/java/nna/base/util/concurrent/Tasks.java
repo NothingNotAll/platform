@@ -56,10 +56,9 @@ import java.util.concurrent.locks.ReentrantLock;
                 break;
             }
             // for 乐观锁 ; for performance
-            if(!(status[workIndex]==INIT)){
-                continue;
+            if(status[workIndex]==INIT){
+                work(abstractTask,workMap,workIndex);
             }
-            work(abstractTask,workMap,workIndex);
         }
         int tempIndex=workIndex;
         if(!isTaskEnQueueBySeq){
@@ -67,10 +66,9 @@ import java.util.concurrent.locks.ReentrantLock;
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
                     // for 乐观锁 ; for performance
-                    if(!(status[tempIndex]==INIT)){
-                        continue;
+                    if(status[tempIndex]==INIT){
+                        work(abstractTask,workMap,tempIndex);
                     }
-                    work(abstractTask,workMap,tempIndex);
                 }
             }
         }
