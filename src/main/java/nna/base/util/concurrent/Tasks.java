@@ -13,9 +13,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
  class Tasks{
-     static final int INIT=0;
-     static final int WORKING=1;
-     static final int END=2;
+     public static final int INIT=0;
+     public static final int WORKING=1;
+     public static final int END=2;
+
      //limit we want to user container as this:can auto resize and gc non using null slot;
      private volatile AbstractTask[] list;//for 有序的 task
      private volatile Object[] objects;//oom-limit : a large of
