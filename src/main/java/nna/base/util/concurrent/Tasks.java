@@ -49,13 +49,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
     void works(ConcurrentHashMap<Long,Tasks> workMap) throws IOException {
         AbstractTask abstractTask;
-        Object attach;
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){
             abstractTask=list[workIndex];
             if(abstractTask==null){
                 break;
             }
+            // for 乐观锁 ; for performance
             if(!canWork(workIndex)){
                 continue;
             }
