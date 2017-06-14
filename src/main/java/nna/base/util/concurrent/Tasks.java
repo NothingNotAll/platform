@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 
-
+//Single Direction Insert Task , can not make use of Been Set Null ' s slot;
  class Tasks{
      public static final int INIT=0;
      public static final int WORKING=1;
