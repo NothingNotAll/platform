@@ -93,6 +93,9 @@ import java.util.concurrent.Executors;
     }
 
     private void parallel(Tasks tasks,boolean isInit) {
+        if(isInit){
+            tasks.getList()[0].setWorkId(0);
+        }
         int size=balancedWorkerList.size();
         Worker worker;
         for(int index=0;index < size;index++){
@@ -103,18 +106,18 @@ import java.util.concurrent.Executors;
     }
 
     void submitInitEvent(AbstractTask t,Object object,boolean isParallelCompute) {
-        Entry entry=getBalanceWorker();
-        Worker worker=entry.worker;
-        int workId=entry.entryId;
-        t.setWorkId(workId);
-        Long taskSeq=Worker.taskNo.getAndIncrement();//性能瓶頸點
-        t.setIndex(taskSeq);
         Tasks tasks=new Tasks(t.getWorkCount(),isParallelCompute);
         tasks.addTask(t,object);
         if(tasks.isParallelCompute()){
             parallel(tasks,false);
             return ;
         }
+        Entry entry=getBalanceWorker();
+        Worker worker=entry.worker;
+        int workId=entry.entryId;
+        t.setWorkId(workId);
+        Long taskSeq=Worker.taskNo.getAndIncrement();//性能瓶頸點
+        t.setIndex(taskSeq);
         Dispatcher mapDispatcher=new Dispatcher(tasks, worker,true);
         cachedService.submit(mapDispatcher);
     }
