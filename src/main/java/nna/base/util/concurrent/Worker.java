@@ -36,10 +36,10 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     }
 
     Tasks submitInitEvent(T t,Object object,boolean keepWorkSeq) {
-        Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
-        tasks.addTask(t,object);
         Long taskSeq=taskNo.getAndIncrement();//性能瓶頸點
         t.setIndex(taskSeq);
+        Tasks tasks=new Tasks(t.getWorkCount(),keepWorkSeq);
+        tasks.addTask(t,object);
         return tasks;
     }
 
@@ -72,10 +72,9 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     }
 
     private void destroy() {
-        tempWorkList.clear();
+        tempWorkList=new LinkedList<Tasks>();
         blockTasks=null;
         tempWorkCount=0;
-        iterator=null;
         currentTasks=null;
     }
 

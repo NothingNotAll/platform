@@ -73,7 +73,7 @@ public class Log extends AbstractTask {
                     Long start=System.currentTimeMillis();
                     setTaskStatus(TASK_STATUS_WORK);
                     submitEvent(logStr);
-                    System.out.println("日志路径:"+logDir+" 线程 id:"+getThreadId()+" 名称:"+getThreadName()+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
+//                    System.out.println("日志路径:"+logDir+" 线程 id:"+getThreadId()+" 名称:"+getThreadName()+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
                 }
             }
             logStrBuilder=new StringBuilder("");
@@ -98,7 +98,7 @@ public class Log extends AbstractTask {
             }
             int logCount=logDir.list().length;
             int logSeq=logCount==0?0:logCount+1;
-            File logFile=new File(logFileName+"_"+logSeq+".log");
+            File logFile=new File(logFileName+"-"+logSeq+".log");
             if(!logFile.exists()){
                 logFile.createNewFile();
             }
@@ -119,7 +119,7 @@ public class Log extends AbstractTask {
 
     protected Object work(Object object) {
         try {
-            writer.write(object.toString());
+            writer.write(object==null?"null":object.toString());
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();

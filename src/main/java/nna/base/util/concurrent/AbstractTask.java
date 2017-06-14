@@ -28,7 +28,7 @@ public abstract class AbstractTask{
 
     static{
         System.out.println("init Worker Manager!");
-        WorkerEntry.init(null);
+        WorkerEntry.init(1);
     }
 
     public AbstractTask(String taskName,Object initObjectAttach,int workCount){

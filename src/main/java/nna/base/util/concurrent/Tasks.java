@@ -12,8 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
  class Tasks{
-
-    private volatile AbstractTask[] list;//for 有序的 task
+     private volatile AbstractTask[] list;//for 有序的 task
      private volatile Object[] objects;//oom-limit : a large of
     // waste memory with null slot except that task is been worked with short time
      private volatile Integer enQueueIndex;
@@ -21,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
      private Integer workCount;
      private volatile Integer beenWorkedCount;
      private AtomicInteger sequenceGen=new AtomicInteger();
-     boolean keepTaskSeq;
+     private boolean keepTaskSeq;
 
      Tasks(int taskCount,boolean keepTaskSeq){
         enQueueIndex=0;
@@ -41,8 +40,10 @@ import java.util.concurrent.atomic.AtomicInteger;
         for(;workIndex < temp;workIndex++){
             abstractTask=list[workIndex];
             attach=objects[workIndex];
-            work(abstractTask,attach,workMap);
-            setNull(workIndex);
+            if(abstractTask==null){
+                break;
+            }
+            work(abstractTask,attach,workMap,workIndex);
         }
         int tempIndex=workIndex;
         if(!keepTaskSeq){
@@ -50,8 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
                     attach=objects[tempIndex];
-                    work(abstractTask,attach,workMap);
-                    setNull(tempIndex);
+                    work(abstractTask,attach,workMap,tempIndex);
                 }
             }
         }
@@ -62,7 +62,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         objects[workIndex]=null;
     }
 
-    private void work(AbstractTask abstractTask,Object attach,ConcurrentHashMap<Long,Tasks> workMap) throws IOException {
+    private void work(AbstractTask abstractTask,Object attach,ConcurrentHashMap<Long,Tasks> workMap,int index) throws IOException {
         int taskStatus=abstractTask.getTaskStatus();
         switch (taskStatus){
             case AbstractTask.TASK_STATUS_DESTROY:
@@ -78,14 +78,15 @@ import java.util.concurrent.atomic.AtomicInteger;
             default:
                 abstractTask.otherWork(attach);
         }
+        setNull(index);
         beenWorkedCount++;
     }
 
     void addTask(AbstractTask abstractTask,Object attach){
         int seq=sequenceGen.getAndIncrement();
+        seq=enQueueIndex++;//并发策略失当
         list[seq]=abstractTask;//一定可以保证有序，当前只有业务线程来处理
         objects[seq]=attach;
-        enQueueIndex++;
     }
 
     public AbstractTask[] getList() {

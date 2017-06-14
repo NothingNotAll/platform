@@ -183,14 +183,17 @@ public class NNAServiceInit2 {
     private void buildPLog() {
         PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(0);
         Log pLog=Log.getLog(
-                "/LOG/NNA/"+platformLog.getLogDir(),
+                "/LOG/"+platformLog.getLogDir(),
                 "nna",
                 platformLog.getLogLevel(),
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
-                platformLog.getLogEncode(),199
+                platformLog.getLogEncode(),99999
         );
         MetaBean.setpLog(pLog);
+        for(int index=0;index < 99999;index++){
+            pLog.log("",Log.INFO);
+        }
     }
 
 

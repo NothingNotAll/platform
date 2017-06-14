@@ -9,12 +9,12 @@ package nna.base.util.concurrent;
  class Dispatcher implements Runnable{
     private Tasks temp;
     private Worker worker;
-    private boolean isMapDispatch;
+    private boolean isNewTask;
 
     public void run() {
-        if(isMapDispatch){
+        if(isNewTask){
             //性能瓶頸點
-            worker.getWorkMap().putIfAbsent(temp.getList()[0].getIndex(),temp);
+            worker.getWorkMap().put(temp.getList()[0].getIndex(),temp);
         }
         //性能瓶頸點
         worker.getWorkQueue().add(temp);
@@ -24,7 +24,7 @@ package nna.base.util.concurrent;
                       Worker worker,
                       boolean isMapDispatch){
         this.temp=tasks;
-        this.isMapDispatch=isMapDispatch;
+        this.isNewTask=isMapDispatch;
         this.worker=worker;
     }
 }
