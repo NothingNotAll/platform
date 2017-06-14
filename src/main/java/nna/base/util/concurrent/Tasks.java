@@ -77,7 +77,7 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     private boolean canWork(int index){
-        return status[index]!=WORKING&&status[index]!=END;
+        return status[index]==INIT;
     }
 
     private void work(
