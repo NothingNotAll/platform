@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
     void works(ConcurrentHashMap<Long,Tasks> workMap) throws IOException {
         AbstractTask abstractTask;
         Object attach;
-        int temp=enQueueIndex;
+        int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){
             abstractTask=list[workIndex];
             attach=objects[workIndex];
