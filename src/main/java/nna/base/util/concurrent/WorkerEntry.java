@@ -13,7 +13,7 @@ package nna.base.util.concurrent;
 *   LinkedBlockingQueue.add
 * workCount's alg:
 * workCount=max(time/threshold,coreSize);
-*
+*Test: the sequence 's right;
 * */
  class WorkerEntry {
     static WorkerManager workerManager;
