@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 
  class Tasks{
+     //limit we want to user container as this:can auto resize and give up non using null slot;
      private volatile AbstractTask[] list;//for 有序的 task
      private volatile Object[] objects;//oom-limit : a large of
     // waste memory with null slot except that task is been worked with short time
