@@ -82,7 +82,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         iterator=tempWorkList.iterator();
         while(iterator.hasNext()){
             currentTasks=iterator.next();
-            currentTasks.works(workMap);
+            currentTasks.works(workMap);//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
         }
     }
 
