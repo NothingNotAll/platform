@@ -24,26 +24,17 @@ import java.util.concurrent.Executors;
     * think of :
     * workCount=max(time/threshold,coreSize);
     * */
-    synchronized static WorkerManager initWorkerManager(Integer workCount){
-        if(init){
-            return workerManager;
-        }
-        init=true;
-        if(workCount==null){
-            workCount=getAvlCPUCount();
-        }
-        workerManager=new WorkerManager(workCount,new Worker());
-        return workerManager;
-    }
 
     synchronized static WorkerManager initWorkerManager(Long maxBusinessProcessTime,Long thresholdTime){
         if(init){
             return workerManager;
         }
         init=true;
-        int workCount=getAvlCPUCount();
-        int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
-        workCount=Math.max(count,workCount);
+        int workCount=getAvlCPUCount();;
+        if(maxBusinessProcessTime!=null&&thresholdTime!=null){
+            int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
+            workCount=Math.max(count,workCount);
+        }
         workerManager=new WorkerManager(workCount,new Worker());
         return workerManager;
     }
