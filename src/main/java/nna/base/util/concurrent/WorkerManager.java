@@ -16,6 +16,14 @@ import java.util.concurrent.Executors;
     private static volatile boolean init=false;
     private static ExecutorService cachedService= Executors.newCachedThreadPool();
 
+    /*
+    * workCount:we should think of that the time of every IO task,
+    * if time is too short ,the workCount can be set only by CPU's Core size;
+    *
+    * if time is too Long , we can set the workCount with the Core Size of Cpu and
+    * think of :
+    * workCount=max(time/threshold,coreSize);
+    * */
     synchronized static WorkerManager initWorkerManager(Integer workCount){
         if(init){
             return workerManager;
