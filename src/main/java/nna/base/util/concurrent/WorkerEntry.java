@@ -14,6 +14,8 @@ package nna.base.util.concurrent;
 * workCount's alg:
 * workCount=max(time/threshold,coreSize);
 *Test: the sequence 's right;
+*
+* we must think of that too long IO event process's method
 * */
  class WorkerEntry {
     static WorkerManager workerManager;
