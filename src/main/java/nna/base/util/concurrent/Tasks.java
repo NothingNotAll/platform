@@ -89,7 +89,7 @@ import java.util.concurrent.atomic.AtomicInteger;
     void addTask(AbstractTask abstractTask,Object attach){
         int seq=sequenceGen.getAndIncrement();
         list[seq]=abstractTask;//一定可以保证有序，当前只有业务线程来处理
-        objects[seq]=attach;
+        objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
         enQueueIndex++;
     }
 
