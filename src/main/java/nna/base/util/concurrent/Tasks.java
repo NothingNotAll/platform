@@ -66,6 +66,10 @@ import java.util.concurrent.locks.ReentrantLock;
             for(;tempIndex<workCount;tempIndex++){
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
+                    // for 乐观锁 ; for performance
+                    if(!canWork(workIndex)){
+                        continue;
+                    }
                     work(abstractTask,workMap,tempIndex);
                 }
             }
