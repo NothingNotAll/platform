@@ -30,11 +30,33 @@ import java.util.concurrent.Executors;
         }
         init=true;
         if(workCount==null){
-            int coreCount=Runtime.getRuntime().availableProcessors()-1;
-            workCount=coreCount<=1?1:coreCount-1;
+            workCount=getAvlCPUCount();
         }
         workerManager=new WorkerManager(workCount,new Worker());
         return workerManager;
+    }
+
+    synchronized static WorkerManager initWorkerManager(Long maxBusinessProcessTime,Long thresholdTime){
+        if(init){
+            return workerManager;
+        }
+        init=true;
+        int workCount=getAvlCPUCount();
+        int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
+        workCount=Math.max(count,workCount);
+        workerManager=new WorkerManager(workCount,new Worker());
+        return workerManager;
+    }
+
+    private static int getBusinessCount(Long maxBusinessProcessTime,Long thresholdTime){
+        long count=maxBusinessProcessTime/thresholdTime;
+        count=maxBusinessProcessTime%thresholdTime==0?count:count+1;
+        return (int)count;
+    }
+
+    private static int getAvlCPUCount(){
+        int coreCount=Runtime.getRuntime().availableProcessors()-1;
+        return coreCount<=1?1:coreCount-1;
     }
 
     private ExecutorService fixedLogWorkerService;
