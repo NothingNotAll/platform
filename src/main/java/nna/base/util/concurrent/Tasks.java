@@ -20,14 +20,14 @@ import java.util.concurrent.atomic.AtomicInteger;
      private Integer workCount;
      private volatile Integer beenWorkedCount;
      private AtomicInteger sequenceGen=new AtomicInteger();
-     private boolean keepTaskSeq;
+     private boolean isTaskEnQueueBySeq;
 
      Tasks(int taskCount,boolean keepTaskSeq){
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
         beenWorkedCount=0;
-        this.keepTaskSeq=keepTaskSeq;
+        this.isTaskEnQueueBySeq=keepTaskSeq;
         list=new AbstractTask[taskCount];
         objects=new Object[taskCount];
     }
@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
             work(abstractTask,attach,workMap,workIndex);
         }
         int tempIndex=workIndex;
-        if(!keepTaskSeq){
+        if(!isTaskEnQueueBySeq){
             for(;tempIndex<workCount;tempIndex++){
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
