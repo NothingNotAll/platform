@@ -24,6 +24,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
     private ConcurrentHashMap<Long,AbstractTasks> workMap=new ConcurrentHashMap<Long, AbstractTasks>();
+    //in the future this must be replaced of ArrayListBlockingQueue;and used index as the priorLevel;
     private LinkedBlockingQueue<AbstractTasks> workQueue=new LinkedBlockingQueue<AbstractTasks>();
 
     private int tempWorkCount;
