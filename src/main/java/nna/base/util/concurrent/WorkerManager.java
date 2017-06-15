@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
             int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
             workCount=Math.max(count,workCount);
         }
-        workerManager=new WorkerManager(workCount,new Worker());
+        workerManager=new WorkerManager(workCount);
         return workerManager;
     }
 
@@ -47,27 +47,32 @@ import java.util.concurrent.Executors;
     }
 
     private static int getAvlCPUCount(){
-        int coreCount=Runtime.getRuntime().availableProcessors()-1;
+        int coreCount=Runtime.getRuntime().availableProcessors();
         return coreCount<=1?1:coreCount-1;
     }
 
     private ExecutorService fixedLogWorkerService;
     private ArrayList<Worker> balancedWorkerList;
 
-    private WorkerManager(int workerCount,Worker worker){
-        init(1,worker);
+    private WorkerManager(int workerCount){
+        init(workerCount);
     }
 
-    private void init(int workerCount,Worker worker) {
+    private void init(int workerCount) {
+        Monitor monitor=new Monitor();
+        Worker[] workers=new Worker[workerCount];
         balancedWorkerList=new ArrayList<Worker>(workerCount);
         fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
         Worker tempWorker;
         for(int index=0;index < workerCount;index++){
-            tempWorker= (Worker) worker.clone();
+            tempWorker=new Worker();
             tempWorker.setLoadNo(index);
             balancedWorkerList.add(tempWorker);
             fixedLogWorkerService.submit(tempWorker);
+            workers[index]=tempWorker;
         }
+        monitor.setWorkers(workers);
+        new Thread(monitor).start();
     }
 
     void addWorker(Worker worker){
@@ -80,7 +85,7 @@ import java.util.concurrent.Executors;
 
     void submitEvent(AbstractTask t,Object object,int taskStatus) {
         Integer workId=t.getWorkId();
-        Worker worker=balancedWorkerList.get(workId.intValue());
+        Worker worker=balancedWorkerList.get(workId);
         Long taskSeq=t.getIndex();
         ConcurrentHashMap<Long,AbstractTasks> workMap=worker.getWorkMap();
         AbstractTasks abstractTasks =workMap.get(taskSeq);
@@ -98,8 +103,6 @@ import java.util.concurrent.Executors;
         Worker worker=entry.worker;
         int workId=entry.entryId;
         t.setWorkId(workId);
-        Long taskSeq=Worker.taskNo.getAndIncrement();//性能瓶頸點
-        t.setIndex(taskSeq);
         Runnable initDispatcher =new InitDispatcher(abstractTasks, worker);
         cachedService.submit(initDispatcher);
     }

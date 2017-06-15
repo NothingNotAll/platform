@@ -11,6 +11,8 @@ package nna.base.util.concurrent;
     private Worker worker;
 
     public void run() {
+        Long taskSeq=Worker.taskNo.getAndIncrement();//性能瓶頸點
+        temp.getList()[0].setIndex(taskSeq);
         //性能瓶頸點
         worker.getWorkMap().put(temp.getList()[0].getIndex(),temp);
         //性能瓶頸點

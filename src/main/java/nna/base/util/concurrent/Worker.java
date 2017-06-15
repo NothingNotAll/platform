@@ -33,6 +33,8 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     private LinkedList<AbstractTasks> tempWorkList=new LinkedList<AbstractTasks>();
     private Iterator<AbstractTasks> iterator;
     private AbstractTasks currentAbstractTasks;
+    private static ConcurrentHashMap<AbstractTasks,AbstractTasks> test=new ConcurrentHashMap<AbstractTasks, AbstractTasks>();
+    private ConcurrentHashMap<AbstractTasks,AbstractTasks> test2=new ConcurrentHashMap<AbstractTasks, AbstractTasks>();
 
     public void run() {
         try{
@@ -69,8 +71,12 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         iterator=tempWorkList.iterator();
         while(iterator.hasNext()){
             currentAbstractTasks =iterator.next();
+            check(currentAbstractTasks);
             currentAbstractTasks.doTasks(workMap);//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
         }
+    }
+
+    private void check(AbstractTasks currentAbstractTasks) {
     }
 
     public int getTempWorkCount() {

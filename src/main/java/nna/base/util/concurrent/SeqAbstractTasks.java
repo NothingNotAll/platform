@@ -1,6 +1,5 @@
 package nna.base.util.concurrent;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,7 +21,7 @@ public class SeqAbstractTasks extends AbstractTasks {
             Integer has=map.putIfAbsent(Integer.valueOf(workIndex),Integer.valueOf(workIndex));
             abstractTask=list[workIndex];
             if(has!=null){
-                System.out.println(abstractTask.getWorkId()+"--"+has);
+//                System.out.println(abstractTask.getWorkId()+"--"+has);
             }
             // for 乐观锁 ; for performance
             if(status[workIndex]==START){
@@ -34,6 +33,9 @@ public class SeqAbstractTasks extends AbstractTasks {
             }
         }
         return abstractTask;
+    }
+
+    public static void main(String[] args){
     }
 
 }
