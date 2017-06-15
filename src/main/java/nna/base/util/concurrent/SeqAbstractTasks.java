@@ -13,10 +13,16 @@ public class SeqAbstractTasks extends AbstractTasks {
         super(taskCount);
     }
 
+    ConcurrentHashMap<Integer,Integer> map=new ConcurrentHashMap<Integer, Integer>();
+
     protected AbstractTask doTasks(ConcurrentHashMap<Long, AbstractTasks> workMap) {
         AbstractTask abstractTask = null;
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){
+            Integer has=map.putIfAbsent(Integer.valueOf(workIndex),Integer.valueOf(workIndex));
+            if(has!=null){
+                System.out.println("--"+has);
+            }
             abstractTask=list[workIndex];
             // for 乐观锁 ; for performance
             if(status[workIndex]==START){
