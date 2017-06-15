@@ -71,6 +71,7 @@ public class Log extends AbstractTask {
             if(isSynWrite){
                 try {
                     writer.write(logStr);
+                    logStrBuilder=new StringBuilder("");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -79,10 +80,10 @@ public class Log extends AbstractTask {
                     Long start=System.currentTimeMillis();
                     setTaskStatus(WRITING);
                     submitEvent(logStr,WRITING);
+                    logStrBuilder=new StringBuilder("");
 //                    System.out.println("日志路径:"+logDir+" 线程 id:"+getThreadId()+" 名称:"+getThreadName()+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
                 }
             }
-            logStrBuilder=new StringBuilder("");
         }
     }
 
