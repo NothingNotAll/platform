@@ -24,17 +24,6 @@ public class NoSeqAbstractTasks extends AbstractTasks {
                 if(status[tempIndex]==START){
                     lockAndExe(abstractTask,workMap,tempIndex);
                 }
-                try{
-                    //性能瓶颈点
-                    lock.lock();
-                    beenWorkedCount++;
-                    if(beenWorkedCount==workCount){
-                        workMap.remove(abstractTask.getIndex());
-                        endTime=System.currentTimeMillis();
-                    }
-                }finally {
-                    lock.unlock();
-                }
             }
         }
         return abstractTask;

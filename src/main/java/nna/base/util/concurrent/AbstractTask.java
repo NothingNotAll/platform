@@ -39,9 +39,7 @@ public abstract class AbstractTask{
         WorkerEntry.submitEvent(this,object,taskType);
     }
 
-    protected abstract Object doTask(int taskStatus,Object attach);
-
-    protected abstract Object destroy(Object object);
+    protected abstract Object doTask(int taskType,Object attach);
 
     public Long getIndex() {
         return index;

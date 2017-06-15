@@ -3,6 +3,7 @@ package nna.base.util.concurrent;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -37,8 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
     protected volatile Integer workIndex;
     protected Integer workCount;
 
-    protected Integer beenWorkedCount;
-    protected ReentrantLock lock=new ReentrantLock();
+    protected AtomicLong counter;
     protected AtomicInteger sequenceGen=new AtomicInteger();
 
     /*
@@ -50,7 +50,7 @@ import java.util.concurrent.locks.ReentrantLock;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
-        beenWorkedCount=0;
+         counter=new AtomicLong(Long.valueOf(taskCount).longValue());
         list=new AbstractTask[taskCount];
         taskTypes=new int[taskCount];
         objects=new Object[taskCount];
@@ -75,21 +75,26 @@ import java.util.concurrent.locks.ReentrantLock;
             ConcurrentHashMap<Long,AbstractTasks> workMap,
             int tempIndex){
         ReentrantLock lock=locks[tempIndex];
+        Long endTime=System.currentTimeMillis();
         try{
             lock.lock();
             if(status[tempIndex]==START){
                status[tempIndex]=WORKING;
                Object attach=objects[tempIndex];
                work(abstractTask,attach,workMap,taskTypes[tempIndex]);
-               Long endTime=System.currentTimeMillis();
+               endTime=System.currentTimeMillis();
                taskEndTimes[tempIndex]=endTime;
                status[tempIndex]=END;
                setNull(tempIndex);
-               beenWorkedCount++;
             }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
+            Long count=counter.getAndDecrement();
+            if(count==1){
+                workMap.remove(abstractTask.getIndex());
+                this.endTime=endTime;
+            }
             lock.unlock();
         }
     }
@@ -137,14 +142,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
     public void setList(AbstractTask[] list) {
         this.list = list;
-    }
-
-    public Integer getBeenWorkedCount() {
-        return beenWorkedCount;
-    }
-
-    public void setBeenWorkedCount(Integer beenWorkedCount) {
-        this.beenWorkedCount = beenWorkedCount;
     }
 
     public Long getEndTime() {

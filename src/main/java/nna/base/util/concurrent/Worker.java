@@ -10,7 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
+/**时间片机制
+ * 长IO机制
+ * 轮询机制
+ * 优先级机制
  * the sequence of execute task List 's alg may be customer
  * @author NNA-SHUAI
  * @create 2017-06-13 10:12
@@ -24,9 +27,9 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     /*
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
-    private ConcurrentHashMap<Long,AbstractTasks> workMap=new ConcurrentHashMap<Long, AbstractTasks>();
+    private volatile ConcurrentHashMap<Long,AbstractTasks> workMap=new ConcurrentHashMap<Long, AbstractTasks>();
     //in the future this must be replaced of ArrayListBlockingQueue;and used index as the priorLevel;
-    private LinkedBlockingQueue<AbstractTasks> workQueue=new LinkedBlockingQueue<AbstractTasks>();
+    private volatile LinkedBlockingQueue<AbstractTasks> workQueue=new LinkedBlockingQueue<AbstractTasks>();
 
     private int tempWorkCount;
     private AbstractTasks blockAbstractTasks;
