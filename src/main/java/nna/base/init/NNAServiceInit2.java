@@ -192,7 +192,7 @@ public class NNAServiceInit2 {
                 platformLog.getLogEncode(),4000
         );
         MetaBean.setpLog(pLog);
-        for(int index=0;index < 1;index++){
+        for(int index=0;index < 1000;index++){
             final Log pLog2=Log.getLog(
                     "/LOG/"+platformLog.getLogDir(),
                     "nna",
