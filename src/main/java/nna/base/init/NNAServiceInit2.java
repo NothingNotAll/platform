@@ -207,7 +207,7 @@ public class NNAServiceInit2 {
                     for(int i=0;i<= 3998;i++){
                         pLog2.log(i+"",Log.INFO);
                     }
-//                    pLog2.close();
+                    pLog2.close();
                 }
             }).start();
         }

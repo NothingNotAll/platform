@@ -133,10 +133,6 @@ public class Log extends AbstractTask {
         return null;
     }
 
-    protected Object otherWork(Object object) {
-        return null;
-    }
-
     protected Object destroy(Object object) {
         try {
             writer.close();
@@ -175,7 +171,7 @@ public class Log extends AbstractTask {
                 work(attach);
                 break;
             case CLOSE:
-                close();
+                destroy(attach);
                 break;
         }
         return null;

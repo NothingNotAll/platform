@@ -13,8 +13,8 @@ public class SeqAbstractTasks extends AbstractTasks {
         super(taskCount);
     }
 
-    void works(ConcurrentHashMap<Long, AbstractTasks> workMap) throws IOException {
-        AbstractTask abstractTask;
+    protected AbstractTask doTasks(ConcurrentHashMap<Long, AbstractTasks> workMap) {
+        AbstractTask abstractTask = null;
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){
             abstractTask=list[workIndex];
@@ -22,8 +22,11 @@ public class SeqAbstractTasks extends AbstractTasks {
             if(status[workIndex]==START){
                 lockAndExe(abstractTask,workMap,workIndex);
             }
+            if(workIndex>=workCount-1){
+                workMap.remove(abstractTask.getIndex());
+            }
         }
+        return abstractTask;
     }
-
 
 }

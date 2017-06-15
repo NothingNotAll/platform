@@ -31,6 +31,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     private LinkedList<AbstractTasks> tempWorkList=new LinkedList<AbstractTasks>();
     private Iterator<AbstractTasks> iterator;
     private AbstractTasks currentAbstractTasks;
+
     public void run() {
         try{
             while(true){
@@ -65,7 +66,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         iterator=tempWorkList.iterator();
         while(iterator.hasNext()){
             currentAbstractTasks =iterator.next();
-            currentAbstractTasks.works(workMap);//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
+            currentAbstractTasks.doTasks(workMap);//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
         }
     }
 

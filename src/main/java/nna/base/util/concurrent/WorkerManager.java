@@ -60,12 +60,13 @@ import java.util.concurrent.Executors;
 
     private void init(int workerCount,Worker worker) {
         fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
-        Worker logWorker;
+        Worker tempWorker;
         for(int index=0;index < workerCount;index++){
-            logWorker= (Worker) worker.clone();
-            logWorker.setLoadNo(index);
-            balancedWorkerList.add(logWorker);
-            fixedLogWorkerService.submit(logWorker);
+            tempWorker= (Worker) worker.clone();
+            tempWorker.setLoadNo(index);
+            balancedWorkerList.add(tempWorker);
+            fixedLogWorkerService.submit(tempWorker);
+            new Thread(new Monitor(tempWorker)).start();
         }
     }
 

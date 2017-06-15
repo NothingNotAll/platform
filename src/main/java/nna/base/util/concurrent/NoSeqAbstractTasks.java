@@ -14,17 +14,18 @@ public class NoSeqAbstractTasks extends AbstractTasks {
         super(taskCount);
     }
 
-    void works(ConcurrentHashMap<Long, AbstractTasks> workMap) throws IOException {
-            AbstractTask abstractTask;
-            int tempIndex=0;
-            for(;tempIndex<workCount;tempIndex++){
-                abstractTask=list[tempIndex];
-                if(abstractTask!=null){
-                    // for 乐观锁 ; for performance
-                    if(status[tempIndex]==START){
-                        lockAndExe(abstractTask,workMap,tempIndex);
-                    }
+    protected AbstractTask doTasks(ConcurrentHashMap<Long, AbstractTasks> workMap) {
+        AbstractTask abstractTask=null;
+        int tempIndex=0;
+        for(;tempIndex<workCount;tempIndex++){
+            abstractTask=list[tempIndex];
+            if(abstractTask!=null){
+                // for 乐观锁 ; for performance
+                if(status[tempIndex]==START){
+                    lockAndExe(abstractTask,workMap,tempIndex);
                 }
             }
+        }
+        return abstractTask;
     }
 }

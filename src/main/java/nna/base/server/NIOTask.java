@@ -57,7 +57,7 @@ public class NIOTask extends AbstractTask {
         return null;
     }
 
-    public Object destroy(Object object) throws IOException {
+    public Object destroy(Object object)  {
         return null;
     }
 

@@ -33,15 +33,17 @@ public abstract class AbstractTask{
         this.workCount=workCount;
     }
 
-    protected void submitInitEvent(Object object,int taskStatus){
-        WorkerEntry.submitInitEvent(this,object,taskStatus);
+    protected void submitInitEvent(Object object,int taskType){
+        WorkerEntry.submitInitEvent(this,object,taskType);
     }
 
-    protected void submitEvent(Object object,int taskStatus){
-        WorkerEntry.submitEvent(this,object,taskStatus);
+    protected void submitEvent(Object object,int taskType){
+        WorkerEntry.submitEvent(this,object,taskType);
     }
 
     protected abstract Object doTask(int taskStatus,Object attach);
+
+    protected abstract Object destroy(Object object);
 
     public Long getIndex() {
         return index;
