@@ -15,16 +15,17 @@ import java.util.concurrent.locks.ReentrantLock;
 // Been Set Null ' s slot;
 // but we can solve it with recycle queue to make full use of memory and solve the oom problem
  abstract class AbstractTasks {
-     public static final int INIT=0;
+     public static final int START=0;
      public static final int WORKING=1;
      public static final int END=2;
 
      //limit we want to user container as this:can auto resize and gc non using null slot;
     protected volatile AbstractTask[] list;//for 有序的 task
     protected volatile int[] taskStatus;//
+    protected volatile int[] status;
     protected volatile Object[] objects;//oom-limit : a large of
     protected ReentrantLock[] locks;
-    protected volatile int[] status;
+
     // waste memory with null slot except that task is been worked with short time
     protected volatile Integer enQueueIndex;
     protected volatile Integer workIndex;
@@ -46,21 +47,21 @@ import java.util.concurrent.locks.ReentrantLock;
         locks=new ReentrantLock[taskCount];
         for(int index=0;index < taskCount;index++){
             locks[index]=new ReentrantLock();
-            status[index]=INIT;
+            status[index]=START;
         }
     }
 
 
     abstract void works(ConcurrentHashMap<Long,AbstractTasks> workMap) throws IOException ;
 
-    protected void lock(
+    protected void lockAndExe(
             AbstractTask abstractTask,
             ConcurrentHashMap<Long,AbstractTasks> workMap,
             int tempIndex){
         ReentrantLock lock=locks[tempIndex];
         try{
             lock.lock();
-            if(status[tempIndex]==INIT){
+            if(status[tempIndex]==START){
                status[tempIndex]=WORKING;
                Object attach=objects[tempIndex];
                work(abstractTask,attach,workMap,taskStatus[tempIndex]);
@@ -91,13 +92,20 @@ import java.util.concurrent.locks.ReentrantLock;
             int workStatus,
             Object attach){
         int seq=sequenceGen.getAndIncrement();
-        ReentrantLock lock=locks[seq];
+        if(seq>=workCount){
+            return;
+        }
+        ReentrantLock lock=null;
         try{
+            lock=locks[seq];
             lock.lock();
             list[seq]=abstractTask;//一定可以保证有序，当前只有业务线程来处理
             taskStatus[seq]=workStatus;
             objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
             enQueueIndex=seq+1;
+        }catch (Exception e){
+            System.out.println(seq);
+            e.printStackTrace();
         }finally {
             lock.unlock();
         }

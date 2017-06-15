@@ -31,12 +31,12 @@ import java.util.concurrent.Executors;
             return workerManager;
         }
         init=true;
-        int workCount=getAvlCPUCount();;
+        int workCount=getAvlCPUCount();
         if(maxBusinessProcessTime!=null&&thresholdTime!=null){
             int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
             workCount=Math.max(count,workCount);
         }
-        workerManager=new WorkerManager(workCount,new Worker());
+        workerManager=new WorkerManager(1,new Worker());
         return workerManager;
     }
 
@@ -77,49 +77,30 @@ import java.util.concurrent.Executors;
 
     }
 
-    void submitEvent(AbstractTask t,Object object) {
+    void submitEvent(AbstractTask t,Object object,int taskStatus) {
         Integer workId=t.getWorkId();
         Worker worker=balancedWorkerList.get(workId.intValue());
         Long taskSeq=t.getIndex();
-        ConcurrentHashMap<Long,Tasks> workMap=worker.getWorkMap();
-        Tasks tasks=workMap.get(taskSeq);
-        tasks.addTask(t,object);
-        if(tasks.isParallelCompute()){
-            parallel(tasks,false);
-            return ;
-        }
-        Dispatcher dispatcher=new Dispatcher(tasks,worker, false);
-        cachedService.submit(dispatcher);
+        ConcurrentHashMap<Long,AbstractTasks> workMap=worker.getWorkMap();
+        AbstractTasks abstractTasks =workMap.get(taskSeq);
+        abstractTasks.addTask(t,taskStatus,object);
+        Runnable nonInitDispatcher =new NonInitDispatcher(abstractTasks,worker);
+        cachedService.submit(nonInitDispatcher);
     }
 
-    private void parallel(Tasks tasks,boolean isInit) {
-        if(isInit){
-            tasks.getList()[0].setWorkId(0);
-        }
-        int size=balancedWorkerList.size();
-        Worker worker;
-        for(int index=0;index < size;index++){
-            worker=balancedWorkerList.get(index);
-            Dispatcher dispatcher=new Dispatcher(tasks,worker, isInit);
-            cachedService.submit(dispatcher);
-        }
-    }
-
-    void submitInitEvent(AbstractTask t,Object object,boolean isParallelCompute) {
-        Tasks tasks=new Tasks(t.getWorkCount(),isParallelCompute);
-        tasks.addTask(t,object);
-        if(tasks.isParallelCompute()){
-            parallel(tasks,false);
-            return ;
-        }
+    void submitInitEvent(AbstractTask t,
+                         Object object,
+                         int taskStatus) {
+        AbstractTasks abstractTasks =new SeqAbstractTasks(t.getWorkCount());
+        abstractTasks.addTask(t,taskStatus,object);
         Entry entry=getBalanceWorker();
         Worker worker=entry.worker;
         int workId=entry.entryId;
         t.setWorkId(workId);
         Long taskSeq=Worker.taskNo.getAndIncrement();//性能瓶頸點
         t.setIndex(taskSeq);
-        Dispatcher mapDispatcher=new Dispatcher(tasks, worker,true);
-        cachedService.submit(mapDispatcher);
+        Runnable initDispatcher =new InitDispatcher(abstractTasks, worker);
+        cachedService.submit(initDispatcher);
     }
 
     private Entry getBalanceWorker() {
@@ -128,6 +109,7 @@ import java.util.concurrent.Executors;
         Worker minWorker=null;
         int count;
         Integer minCount=null;
+        Integer workerIndex=null;
         int index=0;
         while(iterator.hasNext()){
             worker=iterator.next();
@@ -135,9 +117,12 @@ import java.util.concurrent.Executors;
             if(minCount==null){
                 minWorker=worker;
                 minCount=count;
+                workerIndex=index;
             }else{
                 if(minCount>count){
                     minWorker=worker;
+                    workerIndex=index;
+                    minCount=count;
                 }
             }
             if(minCount==0){
@@ -145,7 +130,7 @@ import java.util.concurrent.Executors;
             }
             index++;
         }
-        return new Entry(minWorker,index);
+        return new Entry(minWorker,workerIndex);
     }
 
     private class Entry{

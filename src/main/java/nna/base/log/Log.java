@@ -11,8 +11,12 @@ import java.text.SimpleDateFormat;
  **/
 
 public class Log extends AbstractTask {
+    public static final int INIT=0;
+    public static final int WRITING=1;
+    public static final int CLOSE=2;
+
     public static final SimpleDateFormat yyMMdd=new SimpleDateFormat("yyyy-MM-dd$HH-mm-ss-SSS");
-    private static final SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:MM:ss:SSS");
+    private static final SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
     public static final int ERROR=Integer.MAX_VALUE;
     public static final int INFO=0;
     public static final int TRACE=1;
@@ -37,7 +41,7 @@ public class Log extends AbstractTask {
             String encode,
             int logTimes
             ) {
-        super("log",null,logTimes);
+        super("log",logTimes);
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
@@ -45,6 +49,8 @@ public class Log extends AbstractTask {
         this.flushLimit=flushLimit;
         this.closeTimeout=closeTimeout;
         this.encode=encode;
+        setTaskStatus(INIT);
+        submitInitEvent(null,INIT);
     }
 
     public void log(String log,int logLevel){
@@ -71,8 +77,8 @@ public class Log extends AbstractTask {
             }else{
                 if(canFlush()){
                     Long start=System.currentTimeMillis();
-                    setTaskStatus(TASK_STATUS_WORK);
-                    submitEvent(logStr);
+                    setTaskStatus(WRITING);
+                    submitEvent(logStr,WRITING);
 //                    System.out.println("日志路径:"+logDir+" 线程 id:"+getThreadId()+" 名称:"+getThreadName()+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
                 }
             }
@@ -141,8 +147,8 @@ public class Log extends AbstractTask {
     }
 
     public void close(){
-        setTaskStatus(TASK_STATUS_DESTROY);
-        submitEvent(null);
+        setTaskStatus(CLOSE);
+        submitEvent(null,CLOSE);
     }
 
     public static Log getLog(
@@ -158,5 +164,20 @@ public class Log extends AbstractTask {
                 appLogLevel,
                 flushLimit,
                 closeTimeout,encode,logTime);
+    }
+
+    protected Object doTask(int taskStatus, Object attach) {
+        switch (taskStatus){
+            case INIT:
+                init(attach);
+                break;
+            case WRITING:
+                work(attach);
+                break;
+            case CLOSE:
+                close();
+                break;
+        }
+        return null;
     }
 }

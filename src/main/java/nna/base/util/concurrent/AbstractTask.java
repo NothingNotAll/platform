@@ -10,11 +10,6 @@ import java.io.IOException;
 
 public abstract class AbstractTask{
 
-    public static final int TASK_STATUS_INIT = 0;
-    public static final int TASK_STATUS_WORK=1;
-    public static final int TASK_STATUS_DESTROY=2;
-
-
     private int workCount;
     private Long index;//任务队列索引
     private String taskName;
@@ -30,31 +25,23 @@ public abstract class AbstractTask{
         WorkerEntry.init(null,null);
     }
 
-    public AbstractTask(String taskName,Object initObjectAttach,int workCount){
+    public AbstractTask(String taskName,int workCount){
         this.taskName=taskName;
         thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        setTaskStatus(TASK_STATUS_INIT);
         this.workCount=workCount;
-        submitInitEvent(initObjectAttach,true);
     }
 
-    protected void submitInitEvent(Object object,boolean keepWorkSeq){
-        WorkerEntry.submitInitEvent(this,object,keepWorkSeq);
+    protected void submitInitEvent(Object object,int taskStatus){
+        WorkerEntry.submitInitEvent(this,object,taskStatus);
     }
 
-    protected void submitEvent(Object object){
-        WorkerEntry.submitEvent(this,object);
+    protected void submitEvent(Object object,int taskStatus){
+        WorkerEntry.submitEvent(this,object,taskStatus);
     }
 
-    protected abstract Object init(Object object);
-
-    protected abstract Object work(Object object);
-
-    protected abstract Object otherWork(Object object);
-
-    protected abstract Object destroy(Object object) throws IOException;
+    protected abstract Object doTask(int taskStatus,Object attach);
 
     public Long getIndex() {
         return index;

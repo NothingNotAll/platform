@@ -23,14 +23,14 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     /*
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
-    private ConcurrentHashMap<Long,Tasks> workMap=new ConcurrentHashMap<Long, Tasks>();
-    private LinkedBlockingQueue<Tasks> workQueue=new LinkedBlockingQueue<Tasks>();
+    private ConcurrentHashMap<Long,AbstractTasks> workMap=new ConcurrentHashMap<Long, AbstractTasks>();
+    private LinkedBlockingQueue<AbstractTasks> workQueue=new LinkedBlockingQueue<AbstractTasks>();
 
     private int tempWorkCount;
-    private Tasks blockTasks;
-    private LinkedList<Tasks> tempWorkList=new LinkedList<Tasks>();
-    private Iterator<Tasks> iterator;
-    private Tasks currentTasks;
+    private AbstractTasks blockAbstractTasks;
+    private LinkedList<AbstractTasks> tempWorkList=new LinkedList<AbstractTasks>();
+    private Iterator<AbstractTasks> iterator;
+    private AbstractTasks currentAbstractTasks;
     public void run() {
         try{
             while(true){
@@ -39,8 +39,8 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
                     //性能瓶頸點
                     workQueue.drainTo(tempWorkList,tempWorkCount);
                 }else{
-                    blockTasks=workQueue.take();
-                    tempWorkList.add(blockTasks);
+                    blockAbstractTasks =workQueue.take();
+                    tempWorkList.add(blockAbstractTasks);
                 }
                 try{
                     consumer(tempWorkList);
@@ -55,17 +55,17 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     }
 
     private void destroy() {
-        tempWorkList=new LinkedList<Tasks>();
-        blockTasks=null;
+        tempWorkList=new LinkedList<AbstractTasks>();
+        blockAbstractTasks =null;
         tempWorkCount=0;
-        currentTasks=null;
+        currentAbstractTasks =null;
     }
 
-    private void consumer(LinkedList<Tasks> tempWorkList) throws IOException {
+    private void consumer(LinkedList<AbstractTasks> tempWorkList) throws IOException {
         iterator=tempWorkList.iterator();
         while(iterator.hasNext()){
-            currentTasks=iterator.next();
-            currentTasks.works(workMap);//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
+            currentAbstractTasks =iterator.next();
+            currentAbstractTasks.works(workMap);//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
         }
     }
 
@@ -85,19 +85,19 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         this.loadNo = loadNo;
     }
 
-    public ConcurrentHashMap<Long, Tasks> getWorkMap() {
+    public ConcurrentHashMap<Long, AbstractTasks> getWorkMap() {
         return workMap;
     }
 
-    public void setWorkMap(ConcurrentHashMap<Long, Tasks> workMap) {
+    public void setWorkMap(ConcurrentHashMap<Long, AbstractTasks> workMap) {
         this.workMap = workMap;
     }
 
-    public LinkedBlockingQueue<Tasks> getWorkQueue() {
+    public LinkedBlockingQueue<AbstractTasks> getWorkQueue() {
         return workQueue;
     }
 
-    public void setWorkQueue(LinkedBlockingQueue<Tasks> workQueue) {
+    public void setWorkQueue(LinkedBlockingQueue<AbstractTasks> workQueue) {
         this.workQueue = workQueue;
     }
 }

@@ -24,11 +24,13 @@ package nna.base.util.concurrent;
         workerManager=WorkerManager.initWorkerManager(maxBusinessProcessTime,thresholdTime);
     }
 
-    static void submitEvent(AbstractTask t,Object object) {
-        workerManager.submitEvent(t,object);
+    static void submitEvent(AbstractTask t,Object object,int taskStatus) {
+        workerManager.submitEvent(t,object,taskStatus);
     }
 
-    static void submitInitEvent(AbstractTask t,Object object,boolean keepWorkSeq) {
-        workerManager.submitInitEvent(t,object,keepWorkSeq);
+    static void submitInitEvent(AbstractTask t,
+                                Object object,
+                                int taskStatus) {
+        workerManager.submitInitEvent(t,object,taskStatus);
     }
 }

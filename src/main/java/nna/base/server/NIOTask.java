@@ -24,7 +24,7 @@ public class NIOTask extends AbstractTask {
     public NIOTask(String taskName,
                    Channel channel,
                    int serviceType){
-        super(taskName,null,1);
+        super(taskName,1);
         this.channel=channel;
         this.serviceType=serviceType;
     }
@@ -58,6 +58,10 @@ public class NIOTask extends AbstractTask {
     }
 
     public Object destroy(Object object) throws IOException {
+        return null;
+    }
+
+    protected Object doTask(int taskStatus, Object attach) {
         return null;
     }
 }

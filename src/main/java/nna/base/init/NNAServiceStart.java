@@ -21,8 +21,8 @@ public class NNAServiceStart {
     static{
         try {
             NNAServiceInit0 nna0=new NNAServiceInit0();
-            PreparedStatement[] psts=nna0.build();
-            NNAServiceInit1 nna1=new NNAServiceInit1(psts);
+            PreparedStatement[] preparedStatements=nna0.build();
+            NNAServiceInit1 nna1=new NNAServiceInit1(preparedStatements);
             nna1.build();
             NNAServiceInit2 nna2=new NNAServiceInit2();
             nna2.build();

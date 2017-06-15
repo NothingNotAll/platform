@@ -21,8 +21,8 @@ public class NoSeqAbstractTasks extends AbstractTasks {
                 abstractTask=list[tempIndex];
                 if(abstractTask!=null){
                     // for 乐观锁 ; for performance
-                    if(status[tempIndex]==INIT){
-                        lock(abstractTask,workMap,tempIndex);
+                    if(status[tempIndex]==START){
+                        lockAndExe(abstractTask,workMap,tempIndex);
                     }
                 }
             }

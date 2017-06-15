@@ -3,6 +3,7 @@ package nna.base.init;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
+import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.util.List;
 
 import java.io.IOException;
@@ -182,7 +183,8 @@ public class NNAServiceInit2 {
 
     private void buildPLog() {
         PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(0);
-        Log pLog=Log.getLog(
+
+        final Log pLog=Log.getLog(
                 "/LOG/"+platformLog.getLogDir(),
                 "nna",
                 platformLog.getLogLevel(),
@@ -191,6 +193,24 @@ public class NNAServiceInit2 {
                 platformLog.getLogEncode(),4000
         );
         MetaBean.setpLog(pLog);
+        for(int index=0;index < 1;index++){
+            final Log pLog2=Log.getLog(
+                    "/LOG/"+platformLog.getLogDir(),
+                    "nna",
+                    platformLog.getLogLevel(),
+                    platformLog.getLogBufferThreshold(),
+                    platformLog.getLogCloseTimedout(),
+                    platformLog.getLogEncode(),4000
+            );
+            new Thread(new Runnable() {
+                public void run() {
+                    for(int i=0;i<= 3998;i++){
+                        pLog2.log(i+"",Log.INFO);
+                    }
+//                    pLog2.close();
+                }
+            }).start();
+        }
     }
 
 

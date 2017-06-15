@@ -18,14 +18,9 @@ public class SeqAbstractTasks extends AbstractTasks {
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){
             abstractTask=list[workIndex];
-            if(abstractTask==null){
-                System.out.println(workIndex);
-                break;
-            }
-//            System.out.println(workIndex);
             // for 乐观锁 ; for performance
-            if(status[workIndex]==INIT){
-                lock(abstractTask,workMap,workIndex);
+            if(status[workIndex]==START){
+                lockAndExe(abstractTask,workMap,workIndex);
             }
         }
     }
