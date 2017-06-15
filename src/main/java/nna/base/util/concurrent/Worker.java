@@ -11,6 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * the sequence of execute task List 's alg may be customer
  * @author NNA-SHUAI
  * @create 2017-06-13 10:12
  **/
