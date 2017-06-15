@@ -14,6 +14,7 @@ public class Log extends AbstractTask {
     public static final int INIT=0;
     public static final int WRITING=1;
     public static final int CLOSE=2;
+    public static final int NOTHING=3;
 
     public static final SimpleDateFormat yyMMdd=new SimpleDateFormat("yyyy-MM-dd$HH-mm-ss-SSS");
     private static final SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
@@ -104,7 +105,7 @@ public class Log extends AbstractTask {
                 logDir.mkdirs();
             }
             int logCount=logDir.list().length;
-            int logSeq=logCount==0?0:logCount+1;
+            int logSeq=logCount==0?1:logCount+1;
             File logFile=new File(logFileName+"-"+logSeq+".log");
             if(!logFile.exists()){
                 logFile.createNewFile();
@@ -163,8 +164,8 @@ public class Log extends AbstractTask {
                 closeTimeout,encode,logTime);
     }
 
-    protected Object doTask(int taskStatus, Object attach) {
-        switch (taskStatus){
+    protected Object doTask(int taskType, Object attach) {
+        switch (taskType){
             case INIT:
                 init(attach);
                 break;
