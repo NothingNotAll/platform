@@ -52,13 +52,14 @@ import java.util.concurrent.Executors;
     }
 
     private ExecutorService fixedLogWorkerService;
-    private ArrayList<Worker> balancedWorkerList=new ArrayList<Worker>();
+    private ArrayList<Worker> balancedWorkerList;
 
     private WorkerManager(int workerCount,Worker worker){
         init(workerCount,worker);
     }
 
     private void init(int workerCount,Worker worker) {
+        balancedWorkerList=new ArrayList<Worker>(workerCount);
         fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
         Worker tempWorker;
         for(int index=0;index < workerCount;index++){

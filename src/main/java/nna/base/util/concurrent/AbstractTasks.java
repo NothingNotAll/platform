@@ -56,6 +56,9 @@ import java.util.concurrent.locks.ReentrantLock;
         objects=new Object[taskCount];
         status=new int[taskCount];
         locks=new ReentrantLock[taskCount];
+        taskPriorLevels=new Long[taskCount];
+        taskEndTimes=new Long[taskCount];
+        taskStartTimes=new Long[taskCount];
         for(int index=0;index < taskCount;index++){
             locks[index]=new ReentrantLock();
             status[index]=START;

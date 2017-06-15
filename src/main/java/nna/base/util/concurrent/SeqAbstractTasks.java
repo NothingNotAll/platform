@@ -20,10 +20,10 @@ public class SeqAbstractTasks extends AbstractTasks {
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){
             Integer has=map.putIfAbsent(Integer.valueOf(workIndex),Integer.valueOf(workIndex));
-            if(has!=null){
-                System.out.println("--"+has);
-            }
             abstractTask=list[workIndex];
+            if(has!=null){
+                System.out.println(abstractTask.getWorkId()+"--"+has);
+            }
             // for 乐观锁 ; for performance
             if(status[workIndex]==START){
                 lockAndExe(abstractTask,workMap,workIndex);

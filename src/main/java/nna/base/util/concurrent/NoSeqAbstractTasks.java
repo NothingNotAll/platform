@@ -25,6 +25,7 @@ public class NoSeqAbstractTasks extends AbstractTasks {
                     lockAndExe(abstractTask,workMap,tempIndex);
                 }
                 try{
+                    //性能瓶颈点
                     lock.lock();
                     beenWorkedCount++;
                     if(beenWorkedCount==workCount){
