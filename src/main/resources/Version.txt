@@ -6,5 +6,6 @@
 5:IOC
 6:将ConfMeta与其它模块的耦合度去除，使得各个模块只使用到自己相关联的Meta-Bean,达到
 平台的任意修改与扩展
+7:并发框架：无序并行计算；有序并行计算；按照任务优先级别进行执行，单个任务的每个任务之间的执行顺序也可按照优先级进行度量。
 
 The goal is that config with person instead of write with hand
