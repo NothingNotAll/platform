@@ -30,6 +30,8 @@ import java.util.concurrent.locks.ReentrantLock;
     protected volatile Integer enQueueIndex;
     protected volatile Integer workIndex;
     protected Integer workCount;
+
+    protected Integer beenWorkedCount;
     protected AtomicInteger sequenceGen=new AtomicInteger();
 
     /*
@@ -40,6 +42,7 @@ import java.util.concurrent.locks.ReentrantLock;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
+         beenWorkedCount=0;
         list=new AbstractTask[taskCount];
          taskTypes=new int[taskCount];
         objects=new Object[taskCount];
@@ -68,6 +71,7 @@ import java.util.concurrent.locks.ReentrantLock;
                work(abstractTask,attach,workMap,taskTypes[tempIndex]);
                status[workIndex]=END;
                setNull(tempIndex);
+               beenWorkedCount++;
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -117,6 +121,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
     public void setList(AbstractTask[] list) {
         this.list = list;
+    }
+
+    public Integer getBeenWorkedCount() {
+        return beenWorkedCount;
+    }
+
+    public void setBeenWorkedCount(Integer beenWorkedCount) {
+        this.beenWorkedCount = beenWorkedCount;
     }
 
 }

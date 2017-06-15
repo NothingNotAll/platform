@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
             int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
             workCount=Math.max(count,workCount);
         }
-        workerManager=new WorkerManager(1,new Worker());
+        workerManager=new WorkerManager(workCount,new Worker());
         return workerManager;
     }
 
@@ -66,7 +66,7 @@ import java.util.concurrent.Executors;
             tempWorker.setLoadNo(index);
             balancedWorkerList.add(tempWorker);
             fixedLogWorkerService.submit(tempWorker);
-            new Thread(new Monitor(tempWorker)).start();
+//            new Thread(new Monitor(tempWorker)).start();
         }
     }
 

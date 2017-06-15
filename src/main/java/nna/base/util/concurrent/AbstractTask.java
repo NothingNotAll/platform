@@ -1,7 +1,6 @@
 package nna.base.util.concurrent;
 
 
-import java.io.IOException;
 
 /**
  * @author NNA-SHUAI
@@ -15,7 +14,6 @@ public abstract class AbstractTask{
     private String taskName;
     private Long threadId;
     private String threadName;
-    private Thread thread;
     private volatile int taskStatus;
     private Integer workId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
     private volatile boolean isInit=false;
@@ -27,7 +25,7 @@ public abstract class AbstractTask{
 
     public AbstractTask(String taskName,int workCount){
         this.taskName=taskName;
-        thread=Thread.currentThread();
+        Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
         this.workCount=workCount;
@@ -67,14 +65,6 @@ public abstract class AbstractTask{
 
     public void setThreadName(String threadName) {
         this.threadName = threadName;
-    }
-
-    public Thread getThread() {
-        return thread;
-    }
-
-    public void setThread(Thread thread) {
-        this.thread = thread;
     }
 
     public int getTaskStatus() {

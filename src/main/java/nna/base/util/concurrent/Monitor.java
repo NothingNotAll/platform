@@ -35,11 +35,11 @@ public class Monitor implements Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(seq+"-"+worker.getWorkMap().size());
+            System.out.println(worker.getLoadNo()+"-"+seq+"-"+worker.getWorkMap().size());
             Map<Long,AbstractTasks> map=worker.getWorkMap();
             Iterator<Map.Entry<Long,AbstractTasks>> iterator=map.entrySet().iterator();
             while(iterator.hasNext()){
-                System.out.println(seq+"-"+iterator.next().getValue().getList().length);
+                System.out.println(worker.getLoadNo()+"-"+seq+"-"+iterator.next().getValue().getList().length);
             }
         }
     }
