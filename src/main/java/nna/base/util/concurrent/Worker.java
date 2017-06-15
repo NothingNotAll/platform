@@ -38,10 +38,11 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
                 tempWorkCount=workQueue.size();
                 if(tempWorkCount > 0){
                     //性能瓶頸點
-                    workQueue.drainTo(tempWorkList,tempWorkCount);
+                    tempWorkCount=workQueue.drainTo(tempWorkList,tempWorkCount);
                 }else{
                     blockAbstractTasks =workQueue.take();
                     tempWorkList.add(blockAbstractTasks);
+                    tempWorkCount=1;
                 }
                 try{
                     consumer(tempWorkList);

@@ -30,6 +30,7 @@ public class SeqAbstractTasks extends AbstractTasks {
             }
             if(workIndex>=workCount-1){
                 workMap.remove(abstractTask.getIndex());
+                endTime=System.currentTimeMillis();
             }
         }
         return abstractTask;
