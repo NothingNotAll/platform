@@ -55,7 +55,7 @@ import java.util.concurrent.Executors;
     private ArrayList<Worker> balancedWorkerList;
 
     private WorkerManager(int workerCount,Worker worker){
-        init(workerCount,worker);
+        init(1,worker);
     }
 
     private void init(int workerCount,Worker worker) {

@@ -3,7 +3,6 @@ package nna.base.init;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
-import nna.base.protocol.dispatch.ConfMetaSetFactory;
 import nna.base.util.List;
 
 import java.io.IOException;
@@ -204,7 +203,7 @@ public class NNAServiceInit2 {
             );
             new Thread(new Runnable() {
                 public void run() {
-                    for(int i=0;i<= 3998;i++){
+                    for(int i=0;i< 3998;i++){
                         pLog2.log(i+"",Log.INFO);
                     }
                     pLog2.close();
