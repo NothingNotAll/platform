@@ -42,7 +42,8 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
 
 
     /*
-    * new version:
+    * new version: the tasksQueue is the fixed size list
+    * and tasks Map is the Long(taskSequence)-AbstractTasks key-value map
     * */
 
     private ListV2<AbstractTasks>[] tasksQueue;//the index is the priorLevel;

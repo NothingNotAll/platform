@@ -101,10 +101,10 @@ import java.util.concurrent.locks.ReentrantLock;
         }finally {
             if(!isLocked){
                 Long count=counter.getAndDecrement();
-                if(count==1){
-                    workMap.remove(abstractTask.getIndex());
-                    this.endTime=endTime;
-                }
+//                if(count==1){
+//                    workMap.remove(abstractTask.getIndex());
+//                    this.endTime=endTime;
+//                }
                 lock.unlock();
             }
         }
