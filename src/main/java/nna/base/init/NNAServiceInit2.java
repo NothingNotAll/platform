@@ -57,8 +57,10 @@ public class NNAServiceInit2 {
             PlatformController platformController=NNAServiceInit1.controllerMap.get(controllerId);
             temp.setPlatformController(platformController);
             Object[] os=ProxyFactory.getProxy(NNAServiceInit1.proxyServiceMap,platformController.getRenderClass(),platformController.getRenderMethod());
-            temp.setRenderObject(os[0]);
-            temp.setRenderMethod((Method)os[1]);
+            if(os!=null){
+                temp.setRenderObject(os[0]);
+                temp.setRenderMethod((Method)os[1]);
+            }
         }
 
         String serviceId=entry.getEntryServiceId();
@@ -66,8 +68,10 @@ public class NNAServiceInit2 {
             PlatformService platformService=NNAServiceInit1.platformServiceMap.get(serviceId);
             temp.setPlatformService(platformService);
             Object[] os=ProxyFactory.getProxy(NNAServiceInit1.proxyServiceMap,platformService.getServiceClass(),platformService.getServiceMethodType().toString());
-            temp.setServiceObject(os[0]);
-            temp.setServiceMethod((Method)os[1]);
+            if(os!=null){
+                temp.setServiceObject(os[0]);
+                temp.setServiceMethod((Method)os[1]);
+            }
         }
 
         Integer appId=entry.getEntryAppId();
@@ -104,6 +108,7 @@ public class NNAServiceInit2 {
             ArrayList<PlatformColumn> rspColumns=NNAServiceInit1.columnMap.get(rspId.trim());
             temp.setRspColConfig(rspColumns.toArray(new PlatformColumn[0]));
             temp.setInnerColumns(new HashMap<String, String[]>(reqColumns.size()+rspColumns.size()));
+            temp.setRspColumns(new HashMap<String, String[]>(rspColumns.size()));
         }
 
         Integer tempSize=entry.getEntryTempSize();
@@ -186,6 +191,7 @@ public class NNAServiceInit2 {
         if(dbCon!=null){
             return dbCon;
         }
+        System.out.println(platformDB.getDbLogId());
         dbCon=new DBCon(new DBMeta(true,
                 platformDB.getDbUrl(),
                 platformDB.getDbDriver(),
@@ -196,7 +202,7 @@ public class NNAServiceInit2 {
                 platformDB.getDbPoolCount(),
                 Long.valueOf(platformDB.getDbHeartbeatTest()),
                 platformDB.getDbFailTrytime()),Log.getLog(
-                "/LOG/DB/"+dbLog.getLogDir(),
+                dbLog.getLogDir(),
                 "db",
                 dbLog.getLogLevel(),
                 dbLog.getLogBufferThreshold(),
@@ -318,7 +324,7 @@ public class NNAServiceInit2 {
         PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(0);
 
         final Log pLog=Log.getLog(
-                "/LOG/"+platformLog.getLogDir(),
+                platformLog.getLogDir(),
                 "nna",
                 platformLog.getLogLevel(),
                 platformLog.getLogBufferThreshold(),

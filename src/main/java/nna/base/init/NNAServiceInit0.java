@@ -109,8 +109,7 @@ public class NNAServiceInit0 {
     }
 
     private static Log getPlatformLog(PlatformLog platformLog,int logTimes) {
-        SimpleDateFormat format=new SimpleDateFormat("yyyyMMdd");
-        String logPath="/log/"+format.format(System.currentTimeMillis())+platformLog.getLogDir();
+        String logPath="init";
         String logName="init";
         return Log.getLog(
                 logPath,

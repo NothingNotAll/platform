@@ -3,6 +3,7 @@ package nna.base.init;
 import nna.Marco;
 import nna.base.bean.Clone;
 import nna.base.bean.dbbean.*;
+import nna.base.proxy.ProxyFactory;
 import nna.base.proxy.ProxyService;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +19,7 @@ import java.util.*;
 public class NNAServiceInit1 {
     public static PreparedStatement[] psts;
     public static HashMap<Integer,PlatformApp> appMap=new HashMap<Integer, PlatformApp>();
-    public static HashMap<String,PlatformController> controllerMap=new HashMap<String, PlatformController>();
+    public static HashMap<Integer,PlatformController> controllerMap=new HashMap<Integer, PlatformController>();
     public static HashMap<Integer,PlatformDB> platformDBMap=new HashMap<Integer, PlatformDB>();
     public static HashMap<Integer,PlatformEntry> platformEntryMap=new HashMap<Integer, PlatformEntry>();
     public static HashMap<Integer,PlatformLog> platformLogMap=new HashMap<Integer, PlatformLog>();
@@ -40,7 +41,6 @@ public class NNAServiceInit1 {
     public static HashMap<String,ArrayList<PlatformEntryTransaction>> serviceTranMap=new HashMap<String, ArrayList<PlatformEntryTransaction>>();
     public static HashMap<String,ArrayList<PlatformTransaction>> tranMap=new HashMap<String, ArrayList<PlatformTransaction>>();
     public static HashMap<Integer,ArrayList<PlatformUserRole>> userRoleMap=new HashMap<Integer, ArrayList<PlatformUserRole>>();
-    public static HashMap<String,ArrayList<PlatformProxy>> proxyMap=new HashMap<String, ArrayList<PlatformProxy>>();
     public static HashMap<String,ProxyService> proxyServiceMap=new HashMap<String, ProxyService>();
 
     public NNAServiceInit1(PreparedStatement[] psts){
@@ -48,7 +48,7 @@ public class NNAServiceInit1 {
     }
     public void build() throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException, NoSuchMethodException, ClassNotFoundException {
         appMap=buildIMap(psts[0],"getAppId",Marco.PLATFORM_APP);
-        controllerMap=buildSMap(psts[1],"getId",Marco.PLATFORM_CONTROLLER);
+        controllerMap=buildIMap(psts[1],"getId",Marco.PLATFORM_CONTROLLER);
         platformDBMap=buildIMap(psts[2],"getDbId",Marco.PLATFORM_DB);
         platformEntryMap=buildIMap(psts[3],"getEntryId",Marco.PLATFORM_ENTRY);
         platformLogMap=buildIMap(psts[4],"getLogId",Marco.PLATFORM_LOG);
@@ -75,18 +75,7 @@ public class NNAServiceInit1 {
     }
 
     private void reducePlatformProxies() {
-        Iterator<PlatformProxy> iterator=proxies.iterator();
-        while(iterator.hasNext()){
-            PlatformProxy platformProxy=iterator.next();
-            ArrayList<PlatformProxy> platformProxies=proxyMap.get(platformProxy.getBeenproxyClassRegex()+"/"+platformProxy.getBeenproxyMethodRegex());
-            if(platformProxies==null){
-                ArrayList<PlatformProxy> arrayList=new ArrayList();
-                arrayList.add(platformProxy);
-                proxyMap.put(platformProxy.getBeenproxyClassRegex()+"/"+platformProxy.getBeenproxyMethodRegex(),arrayList);
-            }else{
-                platformProxies.add(platformProxy);
-            }
-        }
+        proxyServiceMap=ProxyFactory.getClassMethodProxyServiceConfig(proxies);
     }
 
     public void reduceSList(
