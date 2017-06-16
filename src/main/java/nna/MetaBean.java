@@ -78,6 +78,7 @@ public class MetaBean extends Clone{
     private PlatformColumn[] rspColConfig;
     private Map<String,String[]> outColumns;
     private HashMap<String,String[]> innerColumns;
+    private HashMap<String,String[]> rspColumns;
     private HashMap<String,Object> temp;
 
     private ArrayList<Connection> conStack;
@@ -563,5 +564,13 @@ public class MetaBean extends Clone{
 
     public void setLogTimes(int logTimes) {
         this.logTimes = logTimes;
+    }
+
+    public HashMap<String, String[]> getRspColumns() {
+        return rspColumns;
+    }
+
+    public void setRspColumns(HashMap<String, String[]> rspColumns) {
+        this.rspColumns = rspColumns;
     }
 }
