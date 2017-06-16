@@ -1,6 +1,6 @@
 package nna.base.util.view;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * template
@@ -12,7 +12,7 @@ public class Template {
     private String[] strs;
     private View[] views;
 
-    public String render(HashMap<String,String[]> map){
+    public String render(Map<String,String[]> map){
         StringBuilder renderStr=new StringBuilder("");
         int count=views.length;
         String temp;
@@ -32,7 +32,7 @@ public class Template {
         return renderStr.toString();
     }
 
-    private String renderView(View view, HashMap<String, String[]> map) {
+    private String renderView(View view, Map<String, String[]> map) {
         StringBuilder render=new StringBuilder("");
         String[] views=view.getViews();
         String[] keys=view.getRenderNms();
