@@ -19,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
      public static final int START=0;
      public static final int WORKING=1;
      public static final int END=2;
+     public static final int FAIL=3;
 
     protected Long startTime;
     protected Long endTime;
@@ -75,27 +76,37 @@ import java.util.concurrent.locks.ReentrantLock;
             ConcurrentHashMap<Long,AbstractTasks> workMap,
             int tempIndex){
         ReentrantLock lock=locks[tempIndex];
+        boolean isLocked=false;
         Long endTime=System.currentTimeMillis();
         try{
+            if(lock.isLocked()){
+                isLocked=true;
+                return ;
+            }
             lock.lock();
             if(status[tempIndex]==START){
                status[tempIndex]=WORKING;
                Object attach=objects[tempIndex];
-               work(abstractTask,attach,workMap,taskTypes[tempIndex]);
+               if(!work(abstractTask,attach,workMap,taskTypes[tempIndex])){
+                   status[tempIndex]=FAIL;
+               }else{
+                   status[tempIndex]=END;
+               }
                endTime=System.currentTimeMillis();
                taskEndTimes[tempIndex]=endTime;
-               status[tempIndex]=END;
                setNull(tempIndex);
             }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            Long count=counter.getAndDecrement();
-            if(count==1){
-                workMap.remove(abstractTask.getIndex());
-                this.endTime=endTime;
+            if(!isLocked){
+                Long count=counter.getAndDecrement();
+                if(count==1){
+                    workMap.remove(abstractTask.getIndex());
+                    this.endTime=endTime;
+                }
+                lock.unlock();
             }
-            lock.unlock();
         }
     }
 
@@ -106,11 +117,17 @@ import java.util.concurrent.locks.ReentrantLock;
         objects[workIndex]=null;
     }
 
-    private void work(AbstractTask abstractTask,
+    private boolean work(AbstractTask abstractTask,
                       Object attach,
                       ConcurrentHashMap<Long,AbstractTasks> workMap,
-                      int status) throws IOException {
-        abstractTask.doTask(status,attach);
+                      int status) {
+        boolean isSuccess=true;
+        try{
+            abstractTask.doTask(status,attach);
+        }catch (Exception e){
+            isSuccess=false;
+        }
+        return isSuccess;
     }
 
     void addTask(

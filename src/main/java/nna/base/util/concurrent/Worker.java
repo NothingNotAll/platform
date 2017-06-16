@@ -2,6 +2,7 @@ package nna.base.util.concurrent;
 
 
 import nna.base.bean.Clone;
+import nna.base.util.ListV2;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -38,6 +39,14 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     private AbstractTasks currentAbstractTasks;
     private static ConcurrentHashMap<AbstractTasks,AbstractTasks> test=new ConcurrentHashMap<AbstractTasks, AbstractTasks>();
     private ConcurrentHashMap<AbstractTasks,AbstractTasks> test2=new ConcurrentHashMap<AbstractTasks, AbstractTasks>();
+
+
+    /*
+    * new version:
+    * */
+
+    private ListV2<AbstractTasks>[] tasksQueue;//the index is the priorLevel;
+    private ListV2[] tasksMap;
 
     public void run() {
         try{

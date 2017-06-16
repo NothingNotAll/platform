@@ -9,6 +9,7 @@ package nna.base.util.concurrent;
 
 public abstract class AbstractTask{
 
+    private int failTryTimes;
     private int workCount;
     private Long index;//任务队列索引
     private String taskName;
@@ -103,5 +104,13 @@ public abstract class AbstractTask{
 
     public void setInit(boolean init) {
         isInit = init;
+    }
+
+    public int getFailTryTimes() {
+        return failTryTimes;
+    }
+
+    public void setFailTryTimes(int failTryTimes) {
+        this.failTryTimes = failTryTimes;
     }
 }
