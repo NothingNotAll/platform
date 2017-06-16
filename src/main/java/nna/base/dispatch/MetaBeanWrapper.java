@@ -1,4 +1,4 @@
-package nna.base.protocol.dispatch;
+package nna.base.dispatch;
 
 import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformApp;
@@ -72,5 +72,9 @@ public class MetaBeanWrapper {
 
     public Method getRenderMethod(){
         return metaBean.getRenderMethod();
+    }
+
+    public int getProtocolType(){
+        return metaBean.getProtocolType();
     }
 }

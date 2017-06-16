@@ -1,4 +1,4 @@
-package nna.base.protocol.dispatch;
+package nna.base.dispatch;
 
 
 import nna.MetaBean;
