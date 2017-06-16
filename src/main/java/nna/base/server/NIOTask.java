@@ -15,8 +15,8 @@ public class NIOTask extends AbstractTask {
     public static final int SERVICE_IN=0;//接入其它渠道的服务
     public static final int SERVICE_OUT=1;//接出本平台的服务；
 
-    public static final int READ=4;
-    public static final int WRITE=5;
+    public static final int READ=2;
+    public static final int WRITE=3;
 
     private int serviceType;
     private Channel channel;
@@ -43,22 +43,6 @@ public class NIOTask extends AbstractTask {
 
     public void setServiceType(int serviceType) {
         this.serviceType = serviceType;
-    }
-
-    public Object init(Object object) {
-        return null;
-    }
-
-    public Object work(Object object) {
-        return null;
-    }
-
-    public Object otherWork(Object object) {
-        return null;
-    }
-
-    public Object destroy(Object object)  {
-        return null;
     }
 
     protected Object doTask(int taskStatus, Object attach) {

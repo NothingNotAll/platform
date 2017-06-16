@@ -41,7 +41,7 @@ public class Log extends AbstractTask {
             String encode,
             int logTimes
             ) {
-        super("log",logTimes);
+        super(logFileName,logTimes);
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
