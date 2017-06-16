@@ -87,6 +87,8 @@ public class MetaBean extends Clone{
     private ArrayList<PlatformSql[]> platformSqlStack;
     private ArrayList<String[]> SQLStack;
 
+    private int protocolType;
+
     private Integer currentServTranIndex;
     private PlatformSql[] currentPlatformSqls;
     private String[] currentSQLS;
@@ -173,7 +175,10 @@ public class MetaBean extends Clone{
     @Override
     public MetaBean clone(){
         MetaBean metaBean=(MetaBean) super.clone();
-        metaBean.setOutColumns(null);
+        metaBean.setOutColumns(new HashMap<String, String[]>(this.outColumns.size()));
+        metaBean.setInnerColumns(new HashMap<String, String[]>(this.innerColumns.size()));
+        metaBean.setRspColumns(new HashMap<String, String[]>(this.rspColumns.size()));
+        metaBean.setTemp(new HashMap<String, Object>(this.temp.size()));
 
         //for monitor
         Thread thread=Thread.currentThread();
@@ -572,5 +577,13 @@ public class MetaBean extends Clone{
 
     public void setRspColumns(HashMap<String, String[]> rspColumns) {
         this.rspColumns = rspColumns;
+    }
+
+    public int getProtocolType() {
+        return protocolType;
+    }
+
+    public void setProtocolType(int protocolType) {
+        this.protocolType = protocolType;
     }
 }

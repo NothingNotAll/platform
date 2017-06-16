@@ -118,4 +118,6 @@ public interface Marco {
 
     String LOG_TIME_DIR = "HH-mm-ss-SSS";
     String YYYYMMDD_DIR = "yyyyMMdd";
+    int HTTP_PROTOCOL=0;
+    int XML_PROTOCOL=1;
 }
