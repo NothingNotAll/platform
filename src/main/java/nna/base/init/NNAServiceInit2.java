@@ -2,8 +2,11 @@ package nna.base.init;
 
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
+import nna.base.db.DBCon;
+import nna.base.db.DBMeta;
 import nna.base.log.Log;
 import nna.base.util.List;
+import nna.enums.DBSQLConValType;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -21,13 +24,14 @@ public class NNAServiceInit2 {
         System.out.println(Log.yyMMdd.format(System.currentTimeMillis()));
     }
 
+    private static HashMap<Integer,DBCon> dbConMap=new HashMap<Integer, DBCon>();
     public void build() throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException, NoSuchMethodException, ClassNotFoundException, IOException {
         buildStaticAttribute();
         buildNonStaticAttribute();
         System.out.println("init success!");
     }
 
-    private void buildNonStaticAttribute() {
+    private void buildNonStaticAttribute() throws SQLException, ClassNotFoundException {
         List<MetaBean> list=MetaBean.getConfMetaCache();
         int count=list.getCapacity();
         MetaBean temp;
@@ -41,11 +45,14 @@ public class NNAServiceInit2 {
         }
     }
 
-    private void buildMetaBean(MetaBean temp,PlatformEntry entry) {
+    private void buildMetaBean(MetaBean temp,PlatformEntry entry) throws SQLException, ClassNotFoundException {
+        temp.setLogTimes(entry.getEntryLogTimes());
         temp.setPlatformEntry(entry);
         temp.setPublic(entry.getEntryFree());
+
         Integer controllerId=entry.getEntryControllerId();
         PlatformController platformController=NNAServiceInit1.controllerMap.get(controllerId);
+        temp.setPlatformController(platformController);
 
         Integer appId=entry.getEntryAppId();
         PlatformApp platformApp=NNAServiceInit1.appMap.get(appId);
@@ -53,24 +60,106 @@ public class NNAServiceInit2 {
 
         Integer dbId=entry.getEntryDBId();
         PlatformDB platformDB=NNAServiceInit1.platformDBMap.get(dbId);
+        temp.setPlatformDB(platformDB);
+        PlatformLog dbLog=NNAServiceInit1.platformLogMap.get(platformDB.getDbLogId());
+        DBCon dBcon=getDBCon(platformDB,dbLog);
+        temp.setDbCon(dBcon);
 
         Integer logId=entry.getEntryLogId();
         PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(logId);
+        temp.setPlatformLog(platformLog);
 
         String reqId=entry.getEntryReqId();
         ArrayList<PlatformColumn> reqColumns=NNAServiceInit1.columnMap.get(reqId);
+        temp.setReqColConfig(reqColumns.toArray(new PlatformColumn[0]));
+        temp.setOutColumns(new HashMap<String, String[]>(reqColumns.size()));
 
         String rspId=entry.getEntryRspId();
-        ArrayList<PlatformColumn> rspColumns=NNAServiceInit1.columnMap.get(reqId);
+        ArrayList<PlatformColumn> rspColumns=NNAServiceInit1.columnMap.get(rspId);
+        temp.setRspColConfig(rspColumns.toArray(new PlatformColumn[0]));
+        temp.setInnerColumns(new HashMap<String, String[]>(reqColumns.size()+rspColumns.size()));
 
         String serviceId=entry.getEntryServiceId();
         PlatformService platformService=NNAServiceInit1.platformServiceMap.get(serviceId);
+        temp.setPlatformService(platformService);
 
         Integer tempSize=entry.getEntryTempSize();
+        temp.setTemp(new HashMap<String, Object>(tempSize));
 
         String tranName=entry.getEntryTransactions();
         ArrayList<PlatformEntryTransaction> trans=NNAServiceInit1.serviceTranMap.get(tranName);
+        PlatformEntryTransaction[] tranList=trans.toArray(new PlatformEntryTransaction[0]);
+        temp.setServiceTrans(tranList);
+        buildTrans(temp,tranList);
+    }
 
+    private void buildTrans(MetaBean temp, PlatformEntryTransaction[] tranList) throws SQLException {
+        String tranNm;
+        String sqlId;
+        ArrayList<PlatformTransaction> trans;
+        PlatformSql platformSql;
+        String SQL;
+        ArrayList<PlatformTransaction[]> etrans=new ArrayList<PlatformTransaction[]>();
+        ArrayList<PlatformSql[]> tranPlatformSql=new ArrayList<PlatformSql[]>();
+        ArrayList<String[]> SQLS=new ArrayList<String[]>();
+        ArrayList<ArrayList<DBSQLConValType[]>> dbsqlConValTypes=new ArrayList<ArrayList<DBSQLConValType[]>>();
+        ArrayList<ArrayList<String[]>> cons=new ArrayList<ArrayList<String[]>>();
+        ArrayList<ArrayList<String[]>> cols=new ArrayList<ArrayList<String[]>>();
+        for(PlatformEntryTransaction platformEntryTransaction:tranList){
+            tranNm=platformEntryTransaction.getTransactionName();
+            trans=NNAServiceInit1.tranMap.get(tranNm);
+            ArrayList<PlatformTransaction> transList=new ArrayList<PlatformTransaction>();
+            ArrayList<PlatformSql> platformSqlList=new ArrayList<PlatformSql>();
+            ArrayList<String> sqlList=new ArrayList<String>();
+            ArrayList<DBSQLConValType[]> valTypes=new ArrayList<DBSQLConValType[]>();
+            ArrayList<String[]> conList=new ArrayList<String[]>();
+            ArrayList<String[]> colList=new ArrayList<String[]>();
+            for(PlatformTransaction platformTransaction:trans){
+                transList.add(platformTransaction);
+                sqlId=platformTransaction.getSqlId();
+                platformSql=NNAServiceInit1.platformSQLMap.get(sqlId);
+                SQL=Util.buildSQL(platformSql);
+                sqlList.add(SQL);
+
+            }
+            etrans.add(transList.toArray(new PlatformTransaction[0]));
+            tranPlatformSql.add(platformSqlList.toArray(new PlatformSql[0]));
+            SQLS.add(sqlList.toArray(new String[0]));
+            dbsqlConValTypes.add(valTypes);
+            cons.add(conList);
+            cols.add(colList);
+        }
+        temp.setTranPlatformSql(tranPlatformSql);
+        temp.setSQLS(SQLS);
+        temp.setDbsqlConValTypes(dbsqlConValTypes);
+        temp.setCons(cons);
+        temp.setCols(cols);
+    }
+
+    private DBCon getDBCon(PlatformDB platformDB,PlatformLog dbLog) throws SQLException, ClassNotFoundException {
+        DBCon dbCon=dbConMap.get(Integer.valueOf(platformDB.getDbLogId()));
+        if(dbCon!=null){
+            return dbCon;
+        }
+        dbCon=new DBCon(new DBMeta(true,
+                platformDB.getDbUrl(),
+                platformDB.getDbDriver(),
+                platformDB.getDbAccount(),
+                platformDB.getDbPassword(),
+                platformDB.getDbPoolsCount(),
+                platformDB.getDbPoolsCount(),
+                platformDB.getDbPoolCount(),
+                Long.valueOf(platformDB.getDbHeartbeatTest()),
+                platformDB.getDbFailTrytime()),Log.getLog(
+                "/LOG/DB/"+dbLog.getLogDir(),
+                "db",
+                dbLog.getLogLevel(),
+                dbLog.getLogBufferThreshold(),
+                dbLog.getLogCloseTimedout(),
+                dbLog.getLogEncode(),4000
+        ));
+        dbConMap.put(Integer.valueOf(platformDB.getDbId()),dbCon);
+        return dbCon;
     }
 
     public void buildStaticAttribute(){
@@ -192,7 +281,7 @@ public class NNAServiceInit2 {
                 platformLog.getLogEncode(),4000
         );
         MetaBean.setpLog(pLog);
-        for(int index=0;index < 1000;index++){
+        for(int index=0;index < 300;index++){
             final Log pLog2=Log.getLog(
                     "/LOG/"+platformLog.getLogDir(),
                     "nna",

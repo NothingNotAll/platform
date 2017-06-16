@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 public class Log extends AbstractTask {
     public static final int INIT=0;
     public static final int WRITING=1;
-    public static final int CLOSE=2;
     public static final int NOTHING=3;
 
     public static final SimpleDateFormat yyMMdd=new SimpleDateFormat("yyyy-MM-dd$HH-mm-ss-SSS");
@@ -145,8 +144,8 @@ public class Log extends AbstractTask {
     }
 
     public void close(){
-        setTaskStatus(CLOSE);
-        submitEvent(null,CLOSE);
+        setTaskStatus(OVER);
+        submitEvent(null,OVER);
     }
 
     public static Log getLog(
@@ -172,7 +171,7 @@ public class Log extends AbstractTask {
             case WRITING:
                 work(attach);
                 break;
-            case CLOSE:
+            case OVER:
                 destroy(attach);
                 break;
         }
