@@ -14,6 +14,7 @@ public abstract class AbstractTask{
     private int workCount;
     private Long index;//任务队列索引
     private String taskName;
+    private Thread thread;
     private Long threadId;
     private String threadName;
     private volatile int taskStatus;
@@ -27,7 +28,7 @@ public abstract class AbstractTask{
 
     public AbstractTask(String taskName,int workCount){
         this.taskName=taskName;
-        Thread thread=Thread.currentThread();
+        this.thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
         this.workCount=workCount;
@@ -113,5 +114,13 @@ public abstract class AbstractTask{
 
     public void setFailTryTimes(int failTryTimes) {
         this.failTryTimes = failTryTimes;
+    }
+
+    public Thread getThread() {
+        return thread;
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
     }
 }
