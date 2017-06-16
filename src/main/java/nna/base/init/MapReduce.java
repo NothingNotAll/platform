@@ -1,6 +1,8 @@
 package nna.base.init;
 
+import nna.Marco;
 import nna.base.bean.Clone;
+import nna.base.bean.dbbean.PlatformLog;
 import nna.base.util.orm.ObjectUtil;
 
 import java.lang.reflect.InvocationTargetException;
@@ -58,10 +60,16 @@ import static nna.base.util.orm.ObjectFactory.getBean;
             Clone clone= getBean(rs,serializableId);
             method= ObjectUtil.loadMethodFromObjectAndMethodName(clone,getMethodName);
             map.put((Integer)method.invoke(clone),clone);
+//            test(clone,serializableId);
         }
         rs.close();
         pst.close();
         return map;
+    }
+    static void test(Clone clone,int serializableId){
+        if(serializableId== Marco.PLATFORM_LOG){
+//            System.out.println(((PlatformLog)clone).getLogDir()+"-"+((PlatformLog)clone).getLogId());
+        }
     }
 
      static HashMap<String,Clone> getSMap(PreparedStatement pst,String getMethodName,int serializableId) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {

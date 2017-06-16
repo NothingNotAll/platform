@@ -3,6 +3,7 @@ package nna.base.init;
 import nna.Marco;
 import nna.base.bean.Clone;
 import nna.base.bean.dbbean.*;
+import nna.base.proxy.ProxyService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
@@ -23,7 +24,7 @@ public class NNAServiceInit1 {
     public static HashMap<Integer,PlatformLog> platformLogMap=new HashMap<Integer, PlatformLog>();
     public static HashMap<Integer,PlatformResource> platformResourceMap=new HashMap<Integer, PlatformResource>();
     public static HashMap<Integer,PlatformRole> platformRoleMap=new HashMap<Integer, PlatformRole>();
-    public static HashMap<Integer,PlatformService> platformServiceMap=new HashMap<Integer, PlatformService>();
+    public static HashMap<String,PlatformService> platformServiceMap=new HashMap<String, PlatformService>();
     public static HashMap<String,PlatformSql> platformSQLMap=new HashMap<String, PlatformSql>();
     public static HashMap<Integer,PlatformUser> platformUserMap=new HashMap<Integer, PlatformUser>();
 
@@ -40,6 +41,7 @@ public class NNAServiceInit1 {
     public static HashMap<String,ArrayList<PlatformTransaction>> tranMap=new HashMap<String, ArrayList<PlatformTransaction>>();
     public static HashMap<Integer,ArrayList<PlatformUserRole>> userRoleMap=new HashMap<Integer, ArrayList<PlatformUserRole>>();
     public static HashMap<String,ArrayList<PlatformProxy>> proxyMap=new HashMap<String, ArrayList<PlatformProxy>>();
+    public static HashMap<String,ProxyService> proxyServiceMap=new HashMap<String, ProxyService>();
 
     public NNAServiceInit1(PreparedStatement[] psts){
         this.psts=psts;

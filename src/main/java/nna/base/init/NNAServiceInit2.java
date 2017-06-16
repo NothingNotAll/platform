@@ -5,11 +5,13 @@ import nna.base.bean.dbbean.*;
 import nna.base.db.DBCon;
 import nna.base.db.DBMeta;
 import nna.base.log.Log;
+import nna.base.proxy.ProxyFactory;
 import nna.base.util.List;
 import nna.enums.DBSQLConValType;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,46 +53,69 @@ public class NNAServiceInit2 {
         temp.setPublic(entry.getEntryFree());
 
         Integer controllerId=entry.getEntryControllerId();
-        PlatformController platformController=NNAServiceInit1.controllerMap.get(controllerId);
-        temp.setPlatformController(platformController);
-
-        Integer appId=entry.getEntryAppId();
-        PlatformApp platformApp=NNAServiceInit1.appMap.get(appId);
-        temp.setPlatformApp(platformApp);
-
-        Integer dbId=entry.getEntryDBId();
-        PlatformDB platformDB=NNAServiceInit1.platformDBMap.get(dbId);
-        temp.setPlatformDB(platformDB);
-        PlatformLog dbLog=NNAServiceInit1.platformLogMap.get(platformDB.getDbLogId());
-        DBCon dBcon=getDBCon(platformDB,dbLog);
-        temp.setDbCon(dBcon);
-
-        Integer logId=entry.getEntryLogId();
-        PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(logId);
-        temp.setPlatformLog(platformLog);
-
-        String reqId=entry.getEntryReqId();
-        ArrayList<PlatformColumn> reqColumns=NNAServiceInit1.columnMap.get(reqId);
-        temp.setReqColConfig(reqColumns.toArray(new PlatformColumn[0]));
-        temp.setOutColumns(new HashMap<String, String[]>(reqColumns.size()));
-
-        String rspId=entry.getEntryRspId();
-        ArrayList<PlatformColumn> rspColumns=NNAServiceInit1.columnMap.get(rspId);
-        temp.setRspColConfig(rspColumns.toArray(new PlatformColumn[0]));
-        temp.setInnerColumns(new HashMap<String, String[]>(reqColumns.size()+rspColumns.size()));
+        if(controllerId!=null){
+            PlatformController platformController=NNAServiceInit1.controllerMap.get(controllerId);
+            temp.setPlatformController(platformController);
+            Object[] os=ProxyFactory.getProxy(NNAServiceInit1.proxyServiceMap,platformController.getRenderClass(),platformController.getRenderMethod());
+            temp.setRenderObject(os[0]);
+            temp.setRenderMethod((Method)os[1]);
+        }
 
         String serviceId=entry.getEntryServiceId();
-        PlatformService platformService=NNAServiceInit1.platformServiceMap.get(serviceId);
-        temp.setPlatformService(platformService);
+        if(serviceId!=null){
+            PlatformService platformService=NNAServiceInit1.platformServiceMap.get(serviceId);
+            temp.setPlatformService(platformService);
+            Object[] os=ProxyFactory.getProxy(NNAServiceInit1.proxyServiceMap,platformService.getServiceClass(),platformService.getServiceMethodType().toString());
+            temp.setServiceObject(os[0]);
+            temp.setServiceMethod((Method)os[1]);
+        }
+
+        Integer appId=entry.getEntryAppId();
+        if(appId!=null){
+            PlatformApp platformApp=NNAServiceInit1.appMap.get(appId);
+            temp.setPlatformApp(platformApp);
+        }
+
+        Integer dbId=entry.getEntryDBId();
+        if(dbId!=null){
+            PlatformDB platformDB=NNAServiceInit1.platformDBMap.get(dbId);
+            temp.setPlatformDB(platformDB);
+            PlatformLog dbLog=NNAServiceInit1.platformLogMap.get(Integer.valueOf(platformDB.getDbLogId()));
+            DBCon dBcon=getDBCon(platformDB,dbLog);
+            temp.setDbCon(dBcon);
+        }
+
+        Integer logId=entry.getEntryLogId();
+        if(logId!=null){
+            PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(logId);
+            temp.setPlatformLog(platformLog);
+        }
+
+        String reqId=entry.getEntryReqId();
+        ArrayList<PlatformColumn> reqColumns=new ArrayList<PlatformColumn>();
+        if(reqId!=null&&!reqId.toString().trim().equals("")){
+            reqColumns=NNAServiceInit1.columnMap.get(reqId.trim());
+            temp.setReqColConfig(reqColumns.toArray(new PlatformColumn[0]));
+            temp.setOutColumns(new HashMap<String, String[]>(reqColumns.size()));
+        }
+
+        String rspId=entry.getEntryRspId();
+        if(rspId!=null&&!rspId.toString().trim().equals("")){
+            ArrayList<PlatformColumn> rspColumns=NNAServiceInit1.columnMap.get(rspId.trim());
+            temp.setRspColConfig(rspColumns.toArray(new PlatformColumn[0]));
+            temp.setInnerColumns(new HashMap<String, String[]>(reqColumns.size()+rspColumns.size()));
+        }
 
         Integer tempSize=entry.getEntryTempSize();
         temp.setTemp(new HashMap<String, Object>(tempSize));
 
         String tranName=entry.getEntryTransactions();
-        ArrayList<PlatformEntryTransaction> trans=NNAServiceInit1.serviceTranMap.get(tranName);
-        PlatformEntryTransaction[] tranList=trans.toArray(new PlatformEntryTransaction[0]);
-        temp.setServiceTrans(tranList);
-        buildTrans(temp,tranList);
+        if(tranName!=null&&!tranName.toString().trim().equals("")){
+            ArrayList<PlatformEntryTransaction> trans=NNAServiceInit1.serviceTranMap.get(tranName.trim());
+            PlatformEntryTransaction[] tranList=trans.toArray(new PlatformEntryTransaction[0]);
+            temp.setServiceTrans(tranList);
+            buildTrans(temp,tranList);
+        }
     }
 
     private void buildTrans(MetaBean temp, PlatformEntryTransaction[] tranList) throws SQLException {
@@ -99,12 +124,12 @@ public class NNAServiceInit2 {
         ArrayList<PlatformTransaction> trans;
         PlatformSql platformSql;
         String SQL;
-        ArrayList<PlatformTransaction[]> etrans=new ArrayList<PlatformTransaction[]>();
-        ArrayList<PlatformSql[]> tranPlatformSql=new ArrayList<PlatformSql[]>();
-        ArrayList<String[]> SQLS=new ArrayList<String[]>();
-        ArrayList<ArrayList<DBSQLConValType[]>> dbsqlConValTypes=new ArrayList<ArrayList<DBSQLConValType[]>>();
-        ArrayList<ArrayList<String[]>> cons=new ArrayList<ArrayList<String[]>>();
-        ArrayList<ArrayList<String[]>> cols=new ArrayList<ArrayList<String[]>>();
+        ArrayList<PlatformTransaction[]> transLists=temp.getTrans();
+        ArrayList<PlatformSql[]> tranPlatformSql=temp.getTranPlatformSql();
+        ArrayList<String[]> SQLS=temp.getSQLS();
+        ArrayList<ArrayList<DBSQLConValType[]>> dbsqlConValTypes=temp.getDbsqlConValTypes();
+        ArrayList<ArrayList<String[]>> cons=temp.getCons();
+        ArrayList<ArrayList<String[]>> cols=temp.getCols();
         for(PlatformEntryTransaction platformEntryTransaction:tranList){
             tranNm=platformEntryTransaction.getTransactionName();
             trans=NNAServiceInit1.tranMap.get(tranNm);
@@ -114,26 +139,46 @@ public class NNAServiceInit2 {
             ArrayList<DBSQLConValType[]> valTypes=new ArrayList<DBSQLConValType[]>();
             ArrayList<String[]> conList=new ArrayList<String[]>();
             ArrayList<String[]> colList=new ArrayList<String[]>();
+            String conStr;
+            String colStr;
+            String conTypeStr;
             for(PlatformTransaction platformTransaction:trans){
                 transList.add(platformTransaction);
                 sqlId=platformTransaction.getSqlId();
                 platformSql=NNAServiceInit1.platformSQLMap.get(sqlId);
                 SQL=Util.buildSQL(platformSql);
                 sqlList.add(SQL);
-
+                conStr=platformSql.getDbCondition();
+                if(conStr!=null&&!conStr.toString().trim().equals("")){
+                    conList.add(conStr.split("[,]"));
+                }
+                colStr=platformSql.getDbColumn();
+                if(colStr!=null&&!colStr.trim().equals("")){
+                    colList.add(colStr.split("[,]"));
+                }
+                conTypeStr=platformSql.getAppConditionType();
+                if(conTypeStr!=null&&!conTypeStr.trim().equals("")){
+                    String[] typeStrs=conTypeStr.split("[,]");
+                    DBSQLConValType[] types=getDBConTypes(typeStrs);
+                    valTypes.add(types);
+                }
             }
-            etrans.add(transList.toArray(new PlatformTransaction[0]));
+            transLists.add(transList.toArray(new PlatformTransaction[0]));
             tranPlatformSql.add(platformSqlList.toArray(new PlatformSql[0]));
             SQLS.add(sqlList.toArray(new String[0]));
             dbsqlConValTypes.add(valTypes);
             cons.add(conList);
             cols.add(colList);
         }
-        temp.setTranPlatformSql(tranPlatformSql);
-        temp.setSQLS(SQLS);
-        temp.setDbsqlConValTypes(dbsqlConValTypes);
-        temp.setCons(cons);
-        temp.setCols(cols);
+    }
+
+    private DBSQLConValType[] getDBConTypes(String[] typeStrs) {
+        int count=typeStrs.length;
+        DBSQLConValType[] types=new DBSQLConValType[count];
+        for(int index=0;index<count;index++){
+            types[index]=DBSQLConValType.valueOf(typeStrs[index]);
+        }
+        return types;
     }
 
     private DBCon getDBCon(PlatformDB platformDB,PlatformLog dbLog) throws SQLException, ClassNotFoundException {
@@ -281,25 +326,23 @@ public class NNAServiceInit2 {
                 platformLog.getLogEncode(),4000
         );
         MetaBean.setpLog(pLog);
-        for(int index=0;index < 300;index++){
-            final Log pLog2=Log.getLog(
-                    "/LOG/"+platformLog.getLogDir(),
-                    "nna",
-                    platformLog.getLogLevel(),
-                    platformLog.getLogBufferThreshold(),
-                    platformLog.getLogCloseTimedout(),
-                    platformLog.getLogEncode(),4000
-            );
-            new Thread(new Runnable() {
-                public void run() {
-                    for(int i=0;i< 3998;i++){
-                        pLog2.log(i+"",Log.INFO);
-                    }
-                    pLog2.close();
-                }
-            }).start();
-        }
+//        for(int index=0;index < 10;index++){
+//            final Log pLog2=Log.getLog(
+//                    "/LOG/"+platformLog.getLogDir(),
+//                    "nna",
+//                    platformLog.getLogLevel(),
+//                    platformLog.getLogBufferThreshold(),
+//                    platformLog.getLogCloseTimedout(),
+//                    platformLog.getLogEncode(),4000
+//            );
+//            new Thread(new Runnable() {
+//                public void run() {
+//                    for(int i=0;i< 3998;i++){
+//                        pLog2.log(i+"",Log.INFO);
+//                    }
+//                    pLog2.close();
+//                }
+//            }).start();
+//        }
     }
-
-
 }
