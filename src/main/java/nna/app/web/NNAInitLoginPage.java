@@ -2,7 +2,7 @@ package nna.app.web;
 
 import nna.app.tran.ext.TranSelAllRole;
 import nna.base.bean.dbbean.PlatformRole;
-import nna.base.protocol.dispatch.AppUtil;
+import nna.base.dispatch.AppUtil;
 import nna.transaction.MetaBeanWrapper;
 import nna.transaction.TransExecutor;
 

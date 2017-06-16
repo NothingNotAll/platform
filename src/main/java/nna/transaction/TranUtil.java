@@ -1,7 +1,7 @@
 package nna.transaction;
 
 import nna.Marco;
-import nna.base.protocol.dispatch.AppUtil;
+import nna.base.dispatch.AppUtil;
 
 import java.sql.*;
 

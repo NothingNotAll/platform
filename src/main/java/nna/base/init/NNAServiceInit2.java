@@ -187,11 +187,10 @@ public class NNAServiceInit2 {
     }
 
     private DBCon getDBCon(PlatformDB platformDB,PlatformLog dbLog) throws SQLException, ClassNotFoundException {
-        DBCon dbCon=dbConMap.get(Integer.valueOf(platformDB.getDbLogId()));
+        DBCon dbCon=dbConMap.get(Integer.valueOf(platformDB.getDbId()));
         if(dbCon!=null){
             return dbCon;
         }
-        System.out.println(platformDB.getDbLogId());
         dbCon=new DBCon(new DBMeta(true,
                 platformDB.getDbUrl(),
                 platformDB.getDbDriver(),
@@ -332,23 +331,5 @@ public class NNAServiceInit2 {
                 platformLog.getLogEncode(),4000
         );
         MetaBean.setpLog(pLog);
-//        for(int index=0;index < 10;index++){
-//            final Log pLog2=Log.getLog(
-//                    "/LOG/"+platformLog.getLogDir(),
-//                    "nna",
-//                    platformLog.getLogLevel(),
-//                    platformLog.getLogBufferThreshold(),
-//                    platformLog.getLogCloseTimedout(),
-//                    platformLog.getLogEncode(),4000
-//            );
-//            new Thread(new Runnable() {
-//                public void run() {
-//                    for(int i=0;i< 3998;i++){
-//                        pLog2.log(i+"",Log.INFO);
-//                    }
-//                    pLog2.close();
-//                }
-//            }).start();
-//        }
     }
 }

@@ -100,6 +100,7 @@ public class Log extends AbstractTask {
         String logPath=
                 "/"+logDir+"/"+yyMMdd.format(startTime)+"/"+logName+"/"+HHmmssSS.format(startTime)+"/";
         String logFileName=logPath+logName;
+        System.out.println(startTime+"-"+logFileName);
         try {
             File logDir=new File(logPath);
             if(!logDir.exists()){
@@ -146,6 +147,7 @@ public class Log extends AbstractTask {
     }
 
     public void close(){
+        System.out.println("close");
         setTaskStatus(OVER);
         submitEvent(null,OVER);
     }

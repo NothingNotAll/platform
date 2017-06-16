@@ -3,7 +3,7 @@ package nna.base.init;
 import nna.Marco;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.log.Log;
-import nna.base.protocol.dispatch.AppUtil;
+import nna.base.dispatch.AppUtil;
 import nna.base.util.BuildSQL;
 
 import java.sql.SQLException;

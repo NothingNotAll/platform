@@ -3,7 +3,7 @@ package nna.base.proxy;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import nna.base.log.Log;
-import nna.base.protocol.dispatch.AppUtil;
+import nna.base.dispatch.AppUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

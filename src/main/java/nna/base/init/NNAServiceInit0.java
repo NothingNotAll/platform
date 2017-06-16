@@ -10,7 +10,7 @@ import nna.Marco;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
-import nna.base.protocol.dispatch.ConfMetaSetFactory;
+import nna.base.dispatch.ConfMetaSetFactory;
 import nna.base.util.BuildSQL;
 import nna.base.util.List;
 import nna.base.util.orm.ObjectFactory;
@@ -18,7 +18,6 @@ import nna.base.util.orm.ObjectUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import static nna.base.init.Util.buildSQL;
@@ -109,7 +108,7 @@ public class NNAServiceInit0 {
     }
 
     private static Log getPlatformLog(PlatformLog platformLog,int logTimes) {
-        String logPath="init";
+        String logPath="LOG";
         String logName="init";
         return Log.getLog(
                 logPath,

@@ -1,5 +1,7 @@
 package nna.base.util.view;
 
+import nna.base.bean.Clone;
+
 import java.util.Map;
 
 /**
@@ -8,9 +10,16 @@ import java.util.Map;
  * @create 2017-05-14 21:40
  **/
 
-public class Template {
+public class Template extends Clone{
     private String[] strs;
     private View[] views;
+
+    public Template Clone(){
+        Template template=(Template) super.clone();
+        template.setStrs(strs.clone());
+        template.setViews(views.clone());
+        return template;
+    }
 
     public String render(Map<String,String[]> map){
         StringBuilder renderStr=new StringBuilder("");

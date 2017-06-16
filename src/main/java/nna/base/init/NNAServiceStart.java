@@ -1,6 +1,6 @@
 package nna.base.init;
 
-import nna.base.protocol.dispatch.ConfMetaSetFactory;
+import nna.base.dispatch.ConfMetaSetFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
