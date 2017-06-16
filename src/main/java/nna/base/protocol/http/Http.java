@@ -1,13 +1,11 @@
 package nna.base.protocol.http;
 
 import nna.Marco;
-import nna.base.protocol.dispatch.AbstractDispatch;
+import nna.base.protocol.dispatch.NNAService;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +14,7 @@ import java.util.Map;
 /**
  * Servlet Filter implementation class Http
  */
-public class Http extends AbstractDispatch implements Filter {
+public class Http extends NNAService implements Filter {
     /**
      * Default constructor. 
      */

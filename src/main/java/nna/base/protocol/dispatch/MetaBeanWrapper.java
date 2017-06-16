@@ -50,6 +50,10 @@ public class MetaBeanWrapper {
         return metaBean.getInnerColumns();
     }
 
+    public Map<String,String[]> getRsp(){
+        return metaBean.getRspColumns();
+    }
+
     public Method getServiceMethod() {
         return metaBean.getServiceMethod();
     }
@@ -62,4 +66,11 @@ public class MetaBeanWrapper {
         return metaBean.getRspColConfig();
     }
 
+    public Object getRenderObject(){
+        return metaBean.getRenderObject();
+    }
+
+    public Method getRenderMethod(){
+        return metaBean.getRenderMethod();
+    }
 }

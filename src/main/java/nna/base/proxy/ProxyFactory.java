@@ -6,10 +6,7 @@ import nna.base.util.orm.ObjectUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class ProxyFactory {
 	private static Enhancer enhancer = new Enhancer();
@@ -124,7 +121,7 @@ public class ProxyFactory {
 		}
   	}
 
-	public static HashMap<String, ProxyService> getClassMethodProxyServiceConfig(LinkedList<PlatformProxy> lists){
+	public static HashMap<String, ProxyService> getClassMethodProxyServiceConfig(List<PlatformProxy> lists){
 		HashMap<String, ProxyService> proxyServiceConfig=new HashMap<String, ProxyService>();
 		Iterator<PlatformProxy> iterator=lists.iterator();
 		while(iterator.hasNext()){

@@ -27,6 +27,12 @@ public class Monitor implements Runnable {
         while(true){
             for(Worker worker:workers){
                 System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+worker.getLoadNo()+"-"+worker.getWorkMap().size());
+                Iterator<Map.Entry<Long,AbstractTasks>> iterator=worker.getWorkMap().entrySet().iterator();
+                while(iterator.hasNext()){
+                    Map.Entry<Long,AbstractTasks> entry=iterator.next();
+                    AbstractTasks abstractTasks=entry.getValue();
+
+                }
             }
             try {
                 Thread.currentThread().sleep(3000L);

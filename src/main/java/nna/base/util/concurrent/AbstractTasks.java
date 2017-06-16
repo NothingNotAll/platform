@@ -5,6 +5,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
+/*
+* THE BEST queue alg is that : order by en_queue_time:System.currentTimeMillis() use it as the index of list;
+* this can be the best Concurrent FrameWork design;
+*
+* */
 /**
  * @author NNA-SHUAI
  * @create 2017-06-13 13:44

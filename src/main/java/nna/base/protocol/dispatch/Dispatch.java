@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
- class Dispatch {
+ final class Dispatch {
 
 	 static void dispatch(MetaBeanWrapper metaBean) throws Exception{
          Log log= metaBean.getLog();
@@ -32,9 +32,8 @@ import java.util.Map;
         metaBean.getServiceMethod().invoke(metaBean.getServiceObject());
         PlatformColumn[] rspColumns=metaBean.getRspColConfig();
         log.log("开始校验出参字段",Log.INFO);
-        Map<String,String[]> rspMap=metaBean.getReq();
-        rspMap.putAll(reqMap);
-        checkRsp(rspMap,rspColumns,log);
+        Map<String,String[]> rspMap=metaBean.getRsp();
+        checkRsp(reqMap,rspMap,rspColumns,log);
         String appEncode=platformApp.getAppEncode();
         log.log("应用编码："+appEncode,Log.INFO);
 	}
@@ -63,7 +62,7 @@ import java.util.Map;
     }
 
 
-    private static void checkRsp(Map<String, String[]> map, PlatformColumn[] columns, Log log) throws Exception {
+    private static void checkRsp(Map<String, String[]> map,Map<String,String[]> rspMap, PlatformColumn[] columns, Log log) throws Exception {
         int size=columns.length;
         PlatformColumn temp;
         HashMap<String,Integer> arraySizeMap=new HashMap<String, Integer>(size);
@@ -71,13 +70,13 @@ import java.util.Map;
             temp=columns[index];
             LogUtil.log(temp,log,Log.INFO);
             if(temp.isColumnIsarray()){
-                checkRspArray(arraySizeMap,map,temp,log);
+                checkRspArray(arraySizeMap,map,rspMap,temp,log);
             }else{
-                checkRspNonArray(map,temp,log);
+                checkRspNonArray(map,rspMap,temp,log);
             }
         }
     }
-    private static void checkRspNonArray(Map<String, String[]> map, PlatformColumn temp, Log log) throws Exception {
+    private static void checkRspNonArray(Map<String, String[]> map,Map<String,String[]> rspMap, PlatformColumn temp, Log log) throws Exception {
 	    String innerName=temp.getColumnInnerName();
 	    String outsideName=temp.getColumnOutsideName();
 	    String[] values=map.get(innerName);
@@ -103,10 +102,10 @@ import java.util.Map;
                 values=new String[]{defaultValue};
             }
         }
-        map.put(outsideName,values);
+        rspMap.put(outsideName,values);
     }
 
-    private static void checkRspArray(Map<String,Integer> arraySizeMap,Map<String, String[]> map, PlatformColumn temp, Log log) throws Exception {
+    private static void checkRspArray(Map<String,Integer> arraySizeMap,Map<String, String[]> map, Map<String,String[]> rspMap,PlatformColumn temp, Log log) throws Exception {
         String innerName=temp.getColumnInnerName();
         String outsideName=temp.getColumnOutsideName();
         int index=innerName.lastIndexOf("/");
@@ -146,7 +145,7 @@ import java.util.Map;
                 throw new Exception("response column:the different column but in the same array has no same length !");
             }
         }
-        map.put(outsideName,values);
+        rspMap.put(outsideName,values);
     }
 
 

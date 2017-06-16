@@ -1,5 +1,6 @@
 package nna.base.log;
 
+import nna.Marco;
 import nna.base.util.concurrent.AbstractTask;
 
 import java.io.*;
@@ -15,7 +16,8 @@ public class Log extends AbstractTask {
     public static final int WRITING=1;
     public static final int NOTHING=3;
 
-    public static final SimpleDateFormat yyMMdd=new SimpleDateFormat("yyyy-MM-dd$HH-mm-ss-SSS");
+    public static final SimpleDateFormat yyMMdd=new SimpleDateFormat(Marco.YYYYMMDD_DIR);
+    public static final SimpleDateFormat HHmmssSS=new SimpleDateFormat(Marco.LOG_TIME_DIR);
     private static final SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
     public static final int ERROR=Integer.MAX_VALUE;
     public static final int INFO=0;
@@ -95,9 +97,9 @@ public class Log extends AbstractTask {
         if(isInit()){
             return null;
         }
-        String logPath= logDir+
-                yyMMdd.format(startTime);
-        String logFileName=logPath+"/"+logName;
+        String logPath=
+                "/"+logDir+"/"+yyMMdd.format(startTime)+"/"+logName+"/"+HHmmssSS.format(startTime)+"/";
+        String logFileName=logPath+logName;
         try {
             File logDir=new File(logPath);
             if(!logDir.exists()){
