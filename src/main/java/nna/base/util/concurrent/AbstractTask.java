@@ -8,6 +8,7 @@ package nna.base.util.concurrent;
  **/
 
 public abstract class AbstractTask{
+    public static final int OVER=-1;//任务结束
 
     private int failTryTimes;
     private int workCount;

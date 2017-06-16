@@ -67,6 +67,11 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
+    protected void isRemoveAbstractTasks(AbstractTask abstractTask, Integer workIndex, ConcurrentHashMap<Long, AbstractTasks> workMap) {
+        if(taskTypes[workIndex]==AbstractTask.OVER){
+            workMap.remove(abstractTask.getIndex());
+        }
+    }
 
     protected abstract AbstractTask doTasks(ConcurrentHashMap<Long, AbstractTasks> workMap);
 

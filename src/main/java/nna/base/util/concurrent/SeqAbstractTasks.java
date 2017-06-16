@@ -20,6 +20,7 @@ public class SeqAbstractTasks extends AbstractTasks {
             // for 乐观锁 ; for performance
             if(status[workIndex]==START){
                 lockAndExe(abstractTask,workMap,workIndex);
+                isRemoveAbstractTasks(abstractTask,workIndex,workMap);
             }
         }
         return abstractTask;
