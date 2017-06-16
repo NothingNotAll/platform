@@ -1,6 +1,5 @@
 package nna.base.util.concurrent;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,7 +50,7 @@ import java.util.concurrent.locks.ReentrantLock;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
-         counter=new AtomicLong(Long.valueOf(taskCount).longValue());
+        counter=new AtomicLong(Long.valueOf(taskCount).longValue());
         list=new AbstractTask[taskCount];
         taskTypes=new int[taskCount];
         objects=new Object[taskCount];
@@ -70,6 +69,7 @@ import java.util.concurrent.locks.ReentrantLock;
     protected void isRemoveAbstractTasks(AbstractTask abstractTask, Integer workIndex, ConcurrentHashMap<Long, AbstractTasks> workMap) {
         if(taskTypes[workIndex]==AbstractTask.OVER){
             workMap.remove(abstractTask.getIndex());
+            this.endTime=System.currentTimeMillis();
         }
     }
 
@@ -82,7 +82,6 @@ import java.util.concurrent.locks.ReentrantLock;
             int tempIndex){
         ReentrantLock lock=locks[tempIndex];
         boolean isLocked=false;
-        Long endTime=System.currentTimeMillis();
         try{
             if(lock.isLocked()){
                 isLocked=true;
@@ -97,19 +96,15 @@ import java.util.concurrent.locks.ReentrantLock;
                }else{
                    status[tempIndex]=END;
                }
-               endTime=System.currentTimeMillis();
-               taskEndTimes[tempIndex]=endTime;
+                Long endTime=System.currentTimeMillis();
+                taskEndTimes[tempIndex]=endTime;
                setNull(tempIndex);
             }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
             if(!isLocked){
-                Long count=counter.getAndDecrement();
-//                if(count==1){
-//                    workMap.remove(abstractTask.getIndex());
-//                    this.endTime=endTime;
-//                }
+                counter.getAndDecrement();
                 lock.unlock();
             }
         }
