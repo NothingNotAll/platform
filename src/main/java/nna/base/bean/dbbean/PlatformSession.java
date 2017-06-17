@@ -10,6 +10,7 @@ import nna.enums.SessionType;
 
 public class PlatformSession extends Clone{
     private static final Long serialVersionUID=21L;
+    private Integer sessionUseid;
     private int sessionId;
     private SessionType sessionType;
     private int sessionTimeout;
@@ -36,5 +37,13 @@ public class PlatformSession extends Clone{
 
     public void setSessionId(int sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public Integer getSessionUseid() {
+        return sessionUseid;
+    }
+
+    public void setSessionUseid(Integer sessionUseid) {
+        this.sessionUseid = sessionUseid;
     }
 }
