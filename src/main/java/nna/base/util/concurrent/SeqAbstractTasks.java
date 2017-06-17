@@ -12,7 +12,7 @@ public class SeqAbstractTasks extends AbstractTasks {
         super(taskCount);
     }
 
-    protected AbstractTask doTasks(ConcurrentHashMap<Long, AbstractTasks> workMap) {
+    protected AbstractTask doTasks(ConcurrentHashMap workMap) {
         AbstractTask abstractTask = null;
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         for(;workIndex < temp;workIndex++){

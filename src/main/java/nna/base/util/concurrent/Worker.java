@@ -37,17 +37,6 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     private LinkedList<AbstractTasks> tempWorkList=new LinkedList<AbstractTasks>();
     private Iterator<AbstractTasks> iterator;
     private AbstractTasks currentAbstractTasks;
-    private static ConcurrentHashMap<AbstractTasks,AbstractTasks> test=new ConcurrentHashMap<AbstractTasks, AbstractTasks>();
-    private ConcurrentHashMap<AbstractTasks,AbstractTasks> test2=new ConcurrentHashMap<AbstractTasks, AbstractTasks>();
-
-
-    /*
-    * new version: the tasksQueue is the fixed size list
-    * and tasks Map is the Long(taskSequence)-AbstractTasks key-value map
-    * */
-
-    private ListV2<AbstractTasks>[] tasksQueue;//the index is the priorLevel;
-    private ListV2[] tasksMap;
 
     public void run() {
         try{

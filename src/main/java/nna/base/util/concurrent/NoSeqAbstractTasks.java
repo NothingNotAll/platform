@@ -14,7 +14,7 @@ public class NoSeqAbstractTasks extends AbstractTasks {
         super(taskCount);
     }
 
-    protected AbstractTask doTasks(ConcurrentHashMap<Long, AbstractTasks> workMap) {
+    protected AbstractTask doTasks(ConcurrentHashMap workMap) {
         AbstractTask abstractTask=null;
         int tempIndex=0;
         for(;tempIndex<workCount;tempIndex++){
