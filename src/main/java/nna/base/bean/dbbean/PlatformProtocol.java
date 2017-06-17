@@ -10,25 +10,9 @@ import nna.enums.ProtocolType;
 
 public class PlatformProtocol extends Clone{
     private static final Long serialVersionUID=23L;
-    private int entryId;
-    private int entryPort;
+    private int protocolId;
+    private int protocolPort;
     private ProtocolType protocolType;
-
-    public int getEntryId() {
-        return entryId;
-    }
-
-    public void setEntryId(int entryId) {
-        this.entryId = entryId;
-    }
-
-    public int getEntryPort() {
-        return entryPort;
-    }
-
-    public void setEntryPort(int entryPort) {
-        this.entryPort = entryPort;
-    }
 
     public ProtocolType getProtocolType() {
         return protocolType;
@@ -36,5 +20,21 @@ public class PlatformProtocol extends Clone{
 
     public void setProtocolType(ProtocolType protocolType) {
         this.protocolType = protocolType;
+    }
+
+    public int getProtocolId() {
+        return protocolId;
+    }
+
+    public void setProtocolId(int protocolId) {
+        this.protocolId = protocolId;
+    }
+
+    public int getProtocolPort() {
+        return protocolPort;
+    }
+
+    public void setProtocolPort(int protocolPort) {
+        this.protocolPort = protocolPort;
     }
 }

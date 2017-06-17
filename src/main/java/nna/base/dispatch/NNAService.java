@@ -12,6 +12,7 @@ import nna.base.log.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author NNA-SHUAI
@@ -80,6 +81,9 @@ public class NNAService {
 
     private static MetaBean getMetaBean(String entryCode) {
         MetaBean metaBean=null;
+        ConcurrentHashMap<String,Integer> map=MetaBean.getSrvEnNmToId();
+        Integer mbID=map.get(entryCode);
+        metaBean=MetaBean.getConfMetaCache().get(mbID);
         metaBean=metaBean.clone();
         return metaBean;
     }

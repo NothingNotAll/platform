@@ -6,7 +6,7 @@ package nna.base.util.concurrent;
  **/
 
 public class NonInitDispatcherV2 extends Dispatcher {
-    NonInitDispatcherV2(WorkerV2 worker, AbstractTasksV2 abstractTask) {
+    NonInitDispatcherV2(WorkerV2 worker, AbstractTasks abstractTask) {
         super(worker, abstractTask);
     }
 

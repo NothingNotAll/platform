@@ -219,6 +219,11 @@ public class NNAServiceInit2 {
         buildPlatformUserRole();
         buildPlatformUserResource();
         buildMetaBeanList();
+        buildPlatformProtocols();
+    }
+
+    private void buildPlatformProtocols() {
+        MetaBean.getProtocols().putAll(NNAServiceInit1.platformProtocols);
     }
 
     private void buildPlatformUserResource() {

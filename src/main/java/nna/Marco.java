@@ -76,6 +76,7 @@ public interface Marco {
     int PLATFORM_COLUMN=19;
     int PLATFORM_CLAZZ=20;
     int PLATFORM_SESSION=21;
+    int PLATFORM_PROTOCOL=22;
 
 
     //JAVA_VALUE_TYPE FOR ORM performance

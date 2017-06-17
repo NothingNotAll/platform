@@ -7,19 +7,19 @@ package nna.base.util.concurrent;
 
 public abstract class Dispatcher implements Runnable {
 
-    protected AbstractTasksV2 abstractTasks;
+    protected AbstractTasks abstractTasks;
     protected WorkerV2 worker;
 
-    Dispatcher(WorkerV2 worker, AbstractTasksV2 abstractTask){
+    Dispatcher(WorkerV2 worker, AbstractTasks abstractTask){
         this.worker=worker;
         this.abstractTasks=abstractTask;
     }
 
-    public AbstractTasksV2 getAbstractTasks() {
+    public AbstractTasks getAbstractTasks() {
         return abstractTasks;
     }
 
-    public void setAbstractTasks(AbstractTasksV2 abstractTasks) {
+    public void setAbstractTasks(AbstractTasks abstractTasks) {
         this.abstractTasks = abstractTasks;
     }
 

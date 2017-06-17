@@ -37,6 +37,7 @@ public class MetaBean extends Clone{
     private static List<MetaBean> confMetaCache;
     private static List<ObjectFactory> objectFactoryCache;
     private static ConcurrentHashMap<String,Integer> srvEnNmToId=new ConcurrentHashMap<String, Integer>();
+    private static ConcurrentHashMap<Integer,PlatformProtocol> protocols=new ConcurrentHashMap<Integer, PlatformProtocol>();
 
     //used in the request process
     private static ConcurrentHashMap<Long,MetaBean> metaMonitor=new ConcurrentHashMap<Long, MetaBean>();
@@ -170,6 +171,14 @@ public class MetaBean extends Clone{
 
     public static void setFreeCodeSet(HashSet<String> freeCodeSet) {
         MetaBean.freeCodeSet = freeCodeSet;
+    }
+
+    public static ConcurrentHashMap<Integer, PlatformProtocol> getProtocols() {
+        return protocols;
+    }
+
+    public static void setProtocols(ConcurrentHashMap<Integer, PlatformProtocol> protocols) {
+        MetaBean.protocols = protocols;
     }
 
     @Override

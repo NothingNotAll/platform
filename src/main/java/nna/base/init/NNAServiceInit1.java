@@ -28,6 +28,7 @@ public class NNAServiceInit1 {
     public static HashMap<String,PlatformService> platformServiceMap=new HashMap<String, PlatformService>();
     public static HashMap<String,PlatformSql> platformSQLMap=new HashMap<String, PlatformSql>();
     public static HashMap<Integer,PlatformUser> platformUserMap=new HashMap<Integer, PlatformUser>();
+    public static HashMap<Integer,PlatformProtocol> platformProtocols=new HashMap<Integer, PlatformProtocol>();
 
     public static ArrayList<PlatformColumn> columns=new ArrayList<PlatformColumn>();
     public static ArrayList<PlatformRoleResource> roleResources=new ArrayList<PlatformRoleResource>();
@@ -57,13 +58,14 @@ public class NNAServiceInit1 {
         platformServiceMap=buildSMap(psts[7],"getServiceName",Marco.PLATFORM_SERVICE);
         platformSQLMap=buildSMap(psts[8],"getSqlId",Marco.PLATFORM_SQL);
         platformUserMap=buildIMap(psts[9],"getUserId",Marco.PLATFORM_USER);
+        platformProtocols=buildIMap(psts[10],"getProtocolId",Marco.PLATFORM_PROTOCOL);
 
-        getList(columns,psts[10],Marco.PLATFORM_COLUMN);
-        getList(roleResources,psts[11],Marco.PLATFORM_ROLE_RESOURCE);
-        getList(serviceTrans,psts[12],Marco.PLATFORM_SERVICE_TRANSACTION);
-        getList(trans,psts[13],Marco.PLATFORM_TRANSACTION);
-        getList(userRoles,psts[14],Marco.PLATFORM_USER_ROLE);
-        getList(proxies,psts[15],Marco.PLATFORM_PROXY);
+        getList(columns,psts[11],Marco.PLATFORM_COLUMN);
+        getList(roleResources,psts[12],Marco.PLATFORM_ROLE_RESOURCE);
+        getList(serviceTrans,psts[13],Marco.PLATFORM_SERVICE_TRANSACTION);
+        getList(trans,psts[14],Marco.PLATFORM_TRANSACTION);
+        getList(userRoles,psts[15],Marco.PLATFORM_USER_ROLE);
+        getList(proxies,psts[16],Marco.PLATFORM_PROXY);
 
         reduceSList(columns,"getColumnId",(Map)columnMap);
         reduceIList(roleResources,"getRoleId",(Map)roleResourceMap);
