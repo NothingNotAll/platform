@@ -28,9 +28,4 @@ package nna.base.util.concurrent;
         workerManager.submitEvent(t,object,taskStatus);
     }
 
-    static void submitInitEvent(AbstractTask t,
-                                Object object,
-                                int taskStatus) {
-        workerManager.submitInitEvent(t,object,taskStatus);
-    }
 }

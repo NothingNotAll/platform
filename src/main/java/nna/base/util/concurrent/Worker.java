@@ -2,14 +2,11 @@ package nna.base.util.concurrent;
 
 
 import nna.base.bean.Clone;
-import nna.base.util.ListV2;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**时间片机制
  * 长IO机制
@@ -22,13 +19,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Worker<T extends AbstractTask> extends Clone implements Runnable{
 
-    public static AtomicLong taskNo=new AtomicLong(0L);
     private static final Long serialVersionUID=-1L;
     private Integer loadNo;
     /*
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
-    private volatile ConcurrentHashMap<Long,AbstractTasks> workMap=new ConcurrentHashMap<Long, AbstractTasks>();
     //in the future this must be replaced of ArrayListBlockingQueue;and used index as the priorLevel;
     private volatile LinkedBlockingQueue<AbstractTasks> workQueue=new LinkedBlockingQueue<AbstractTasks>();
 
@@ -74,7 +69,7 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         while(iterator.hasNext()){
             currentAbstractTasks =iterator.next();
             check(currentAbstractTasks);
-            currentAbstractTasks.doTasks(workMap);//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
+            currentAbstractTasks.doTasks();//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
         }
     }
 
@@ -95,14 +90,6 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
 
     public void setLoadNo(Integer loadNo) {
         this.loadNo = loadNo;
-    }
-
-    public ConcurrentHashMap<Long, AbstractTasks> getWorkMap() {
-        return workMap;
-    }
-
-    public void setWorkMap(ConcurrentHashMap<Long, AbstractTasks> workMap) {
-        this.workMap = workMap;
     }
 
     public LinkedBlockingQueue<AbstractTasks> getWorkQueue() {

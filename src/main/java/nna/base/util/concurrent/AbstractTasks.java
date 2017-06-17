@@ -1,6 +1,5 @@
 package nna.base.util.concurrent;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
@@ -71,35 +70,24 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    protected void isRemoveAbstractTasks(AbstractTask abstractTask, Integer workIndex, ConcurrentHashMap workMap) {
-        if(taskTypes[workIndex]==AbstractTask.OVER){
-            workMap.remove(abstractTask.getIndex());
-            this.endTime=System.currentTimeMillis();
-        }
-    }
-
-    /*
-    * ConcurrentHashMap<Long, AbstractTasks>
-    * */
-    protected abstract AbstractTask doTasks(ConcurrentHashMap workMap);
+    protected abstract AbstractTask doTasks();
 
 
-    protected void lockAndExe(
+    protected boolean lockAndExe(
             AbstractTask abstractTask,
-            ConcurrentHashMap<Long,AbstractTasks> workMap,
             int tempIndex){
         ReentrantLock lock=locks[tempIndex];
         boolean isLocked=false;
         try{
             if(lock.isLocked()){
                 isLocked=true;
-                return ;
+                return false;
             }
             lock.lock();
             if(status[tempIndex]==START){
                status[tempIndex]=WORKING;
                Object attach=objects[tempIndex];
-               if(!work(abstractTask,attach,workMap,taskTypes[tempIndex])){
+               if(!work(abstractTask,attach,taskTypes[tempIndex])){
                    status[tempIndex]=FAIL;
                }else{
                    status[tempIndex]=END;
@@ -114,6 +102,9 @@ import java.util.concurrent.locks.ReentrantLock;
             if(!isLocked){
                 counter.getAndDecrement();
                 lock.unlock();
+                return true;
+            }else{
+                return false;
             }
         }
     }
@@ -127,7 +118,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
     private boolean work(AbstractTask abstractTask,
                       Object attach,
-                      ConcurrentHashMap<Long,AbstractTasks> workMap,
                       int status) {
         boolean isSuccess=true;
         try{
@@ -151,10 +141,10 @@ import java.util.concurrent.locks.ReentrantLock;
             taskStartTimes[seq]=startTime;
             list[seq]=abstractTask;//一定可以保证有序，当前只有业务线程来处理
             taskTypes[seq]=taskType;
+//            System.out.println(taskType+"-"+seq);
             objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
             enQueueIndex=seq+1;
         }catch (Exception e){
-            System.out.println(seq);
             e.printStackTrace();
         }finally {
             lock.unlock();

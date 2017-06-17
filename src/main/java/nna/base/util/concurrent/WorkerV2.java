@@ -2,9 +2,7 @@ package nna.base.util.concurrent;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -15,18 +13,10 @@ import java.util.concurrent.locks.LockSupport;
 public class WorkerV2<T extends AbstractTasks> implements Runnable {
 
     private Thread workerThread;
-    void entry(AbstractTasks abstractTasks){
-        AbstractTask abstractTask=abstractTasks.getList()[0];
-        Long enQueueTime=abstractTasks.getStartTime();
-        ConcurrentHashMap<Long,AbstractTasks> map=new ConcurrentHashMap<Long,AbstractTasks>();
-        ConcurrentHashMap<Long,AbstractTasks> tempMap=taskMap.putIfAbsent(enQueueTime,map);
-        if(tempMap!=null){
-            map=tempMap;
-        }
-        Long newTaskSeq=taskSeqGen.getAndIncrement();
-        abstractTask.setIndex(newTaskSeq);
-        map.put(newTaskSeq,abstractTasks);
-        unPark(abstractTasks);
+    private Integer loadNo;
+
+    WorkerV2(Integer loadNo){
+        this.loadNo=loadNo;
     }
 
     void active(AbstractTasks AbstractTasks){
@@ -44,8 +34,6 @@ public class WorkerV2<T extends AbstractTasks> implements Runnable {
         * new version: the tasksQueue is the fixed size list
         * and tasks Map is the Long(taskSequence)-AbstractTasks key-value map
         * */
-    private ConcurrentHashMap<Long,ConcurrentHashMap<Long,AbstractTasks>> taskMap=new ConcurrentHashMap<Long, ConcurrentHashMap<Long,AbstractTasks>>();
-    private AtomicLong taskSeqGen=new AtomicLong();
     private LinkedBlockingQueue<AbstractTasks>[] taskQueue;
     private volatile int maxPriorLevel;
 
@@ -93,18 +81,10 @@ public class WorkerV2<T extends AbstractTasks> implements Runnable {
 
         }
     }
-    private Long startTime;
-    private ConcurrentHashMap map;
     private void consumer(LinkedList<AbstractTasks> tempTaskList) {
         Iterator<AbstractTasks> iterator=tempTaskList.iterator();
         while(iterator.hasNext()){
             tempTasks=iterator.next();
-            tempTasks.doTasks(taskMap);
-            startTime=tempTasks.getStartTime();
-            map=taskMap.get(startTime);
-            if(map.size()==0){
-                taskMap.remove(startTime);
-            }
         }
     }
 
@@ -113,15 +93,13 @@ public class WorkerV2<T extends AbstractTasks> implements Runnable {
         tempBlockCount=0;
         blockTotalCount=0;
         index=0;
-        startTime=null;
-        map=null;
     }
 
-    public ConcurrentHashMap<Long, ConcurrentHashMap<Long, AbstractTasks>> getTaskMap() {
-        return taskMap;
+    public Integer getLoadNo() {
+        return loadNo;
     }
 
-    public void setTaskMap(ConcurrentHashMap<Long, ConcurrentHashMap<Long, AbstractTasks>> taskMap) {
-        this.taskMap = taskMap;
+    public void setLoadNo(Integer loadNo) {
+        this.loadNo = loadNo;
     }
 }

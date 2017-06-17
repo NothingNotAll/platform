@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
@@ -13,6 +14,8 @@ import java.util.concurrent.Executors;
  **/
 
  class WorkerManager {
+    private static AtomicLong taskNo=new AtomicLong(0L);
+    private static ConcurrentHashMap<Long,AbstractTasks> monitorMap=new ConcurrentHashMap<Long, AbstractTasks>();
     private static WorkerManager workerManager;
     private static volatile boolean init=false;
     private static ExecutorService cachedService= Executors.newCachedThreadPool();
@@ -83,31 +86,31 @@ import java.util.concurrent.Executors;
 
     }
 
-    void submitEvent(AbstractTask t,Object object,int taskStatus) {
-        Integer workId=t.getWorkId();
-        Worker worker=balancedWorkerList.get(workId);
-        Long taskSeq=t.getIndex();
-        ConcurrentHashMap<Long,AbstractTasks> workMap=worker.getWorkMap();
-        AbstractTasks abstractTasks =workMap.get(taskSeq);
-        abstractTasks.addTask(t,taskStatus,object);
-        Runnable nonInitDispatcher =new NonInitDispatcher(abstractTasks,worker);
+    void submitEvent(AbstractTask t,Object object,int taskType) {
+        Worker worker;
+        AbstractTasks abstractTasks;
+        int workCount=t.getWorkCount();
+        if(t.isWorkSeq()){
+            worker=t.getWorker();
+            if(t.isInit()){
+                abstractTasks=t.getTasks();
+            }else{
+                abstractTasks=new SeqAbstractTasks(workCount);
+            }
+        }else{
+            worker=getBalanceWorker();
+            if(t.isInit()){
+                abstractTasks=t.getTasks();
+            }else{
+                abstractTasks=new NoSeqAbstractTasks(workCount);
+            }
+        }
+        abstractTasks.addTask(t,taskType,object);
+        Runnable nonInitDispatcher =new Dispatcher(abstractTasks,worker);
         cachedService.submit(nonInitDispatcher);
     }
 
-    void submitInitEvent(AbstractTask t,
-                         Object object,
-                         int taskStatus) {
-        AbstractTasks abstractTasks =new SeqAbstractTasks(t.getWorkCount());
-        abstractTasks.addTask(t,taskStatus,object);
-        Entry entry=getBalanceWorker();
-        Worker worker=entry.worker;
-        int workId=entry.entryId;
-        t.setWorkId(workId);
-        Runnable initDispatcher =new InitDispatcher(abstractTasks, worker);
-        cachedService.submit(initDispatcher);
-    }
-
-    private Entry getBalanceWorker() {
+     Worker getBalanceWorker() {
         Iterator<Worker> iterator=balancedWorkerList.iterator();
         Worker worker;
         Worker minWorker=null;
@@ -134,15 +137,7 @@ import java.util.concurrent.Executors;
             }
             index++;
         }
-        return new Entry(minWorker,workerIndex);
+         return minWorker;
     }
 
-    private class Entry{
-        private Integer entryId;
-        private Worker worker;
-        private Entry(Worker minWorker,int index){
-            this.entryId=index;
-            this.worker=minWorker;
-        }
-    }
 }

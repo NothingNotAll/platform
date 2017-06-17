@@ -1,33 +1,25 @@
 package nna.base.util.concurrent;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * @author NNA-SHUAI
- * @create 2017-06-17 9:41
+ * @create 2017-06-15 11:40
  **/
 
-public abstract class Dispatcher implements Runnable {
+public class Dispatcher implements Runnable {
+    private AbstractTasks temp;
+    private Worker worker;
 
-    protected AbstractTasks abstractTasks;
-    protected WorkerV2 worker;
+    public void run() {
+        LinkedBlockingQueue<AbstractTasks> queue=worker.getWorkQueue();
+        //性能瓶頸點
+        queue.add(temp);
+    }
 
-    Dispatcher(WorkerV2 worker, AbstractTasks abstractTask){
+    public Dispatcher(AbstractTasks abstractTasks,
+                      Worker worker){
+        this.temp= abstractTasks;
         this.worker=worker;
-        this.abstractTasks=abstractTask;
-    }
-
-    public AbstractTasks getAbstractTasks() {
-        return abstractTasks;
-    }
-
-    public void setAbstractTasks(AbstractTasks abstractTasks) {
-        this.abstractTasks = abstractTasks;
-    }
-
-    public WorkerV2 getWorker() {
-        return worker;
-    }
-
-    public void setWorker(WorkerV2 worker) {
-        this.worker = worker;
     }
 }

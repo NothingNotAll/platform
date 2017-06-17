@@ -2,7 +2,7 @@ package nna.base.util.concurrent;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author NNA-SHUAI
@@ -26,12 +26,12 @@ public class Monitor implements Runnable {
     public void run() {
         while(true){
             for(Worker worker:workers){
-                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+worker.getLoadNo()+"-"+worker.getWorkMap().size());
-                Iterator<Map.Entry<Long,AbstractTasks>> iterator=worker.getWorkMap().entrySet().iterator();
+                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+worker.getLoadNo()+"-"+worker.getWorkQueue().size());
+                LinkedBlockingQueue<AbstractTasks> queue=worker.getWorkQueue();
+                Iterator<AbstractTasks> iterator=queue.iterator();
+                AbstractTasks abstractTasks;
                 while(iterator.hasNext()){
-                    Map.Entry<Long,AbstractTasks> entry=iterator.next();
-                    AbstractTasks abstractTasks=entry.getValue();
-
+                    abstractTasks=iterator.next();
                 }
             }
             try {
