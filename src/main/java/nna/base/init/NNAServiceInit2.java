@@ -1,5 +1,6 @@
 package nna.base.init;
 
+import nna.Marco;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.db.DBCon;
@@ -333,8 +334,35 @@ public class NNAServiceInit2 {
                 platformLog.getLogLevel(),
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
-                platformLog.getLogEncode(),4000
+                platformLog.getLogEncode(),
+                4000
         );
         MetaBean.setpLog(pLog);
+        testConFrame(true);
+    }
+
+    private void testConFrame(boolean b) {
+        if(b){
+            for(int index = 0; index < Marco.CON_TEST_COUNT; index++){
+                final Log log=Log.getLog(
+                  "TEST_CON",
+                        "TEST-CON-LOG",
+                        10,
+                        0,
+                        1000,
+                        "UTF-8",
+                        Marco.CON_TEST_COUNT
+                );
+                new Thread(new Runnable() {
+                    public void run() {
+                        int count=Marco.CON_TEST_COUNT-2;
+                        for(int index = 1; index <= count; index++){
+                            log.log(""+index,10);
+                        }
+                        log.close();
+                    }
+                }).start();
+            }
+        }
     }
 }

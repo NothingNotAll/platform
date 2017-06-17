@@ -50,7 +50,7 @@ public class NNAServiceInit0 {
                      "SELECT "+
                              BuildSQL.getTableCols(initConnection,Marco.INIT_TABLENAME_PLATFORMLOG)+
                              " FROM "+
-                             Marco.INIT_TABLENAME_PLATFORMLOG+" WHERE LOG_ID='0'",
+                             Marco.INIT_TABLENAME_PLATFORMLOG+" WHERE LOG_ID='1'",
                      "SELECT "+
                              BuildSQL.getTableCols(initConnection,Marco.INIT_TABLENAME_PLATFROMTRANSACTION)+
                              " FROM "+

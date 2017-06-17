@@ -121,4 +121,5 @@ public interface Marco {
     String YYYYMMDD_DIR = "yyyyMMdd";
     int HTTP_PROTOCOL=0;
     int XML_PROTOCOL=1;
+    int CON_TEST_COUNT = 9;
 }

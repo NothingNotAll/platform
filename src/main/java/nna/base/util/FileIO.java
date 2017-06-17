@@ -17,11 +17,11 @@ public class FileIO extends AbstractTask{
     private Object object=new Object();
 
     public FileIO(String taskName, int workCount) {
-        super(taskName, workCount);
+        super(taskName, workCount,true);
         synchronized (object){
             try {
                 byte[] bytes=null;
-                submitInitEvent(bytes, READ);
+                submitEvent(bytes, READ);
                 getThread().wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();

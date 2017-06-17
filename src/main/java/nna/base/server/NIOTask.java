@@ -24,7 +24,7 @@ public class NIOTask extends AbstractTask {
     public NIOTask(String taskName,
                    Channel channel,
                    int serviceType){
-        super(taskName,1);
+        super(taskName,1,true);
         this.channel=channel;
         this.serviceType=serviceType;
     }

@@ -41,9 +41,10 @@ public class Log extends AbstractTask {
             int flushLimit,
             int closeTimeout,
             String encode,
+            boolean isWorkSeq,
             int logTimes
             ) {
-        super(logFileName,logTimes);
+        super(logFileName,logTimes,isWorkSeq);
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
@@ -52,7 +53,7 @@ public class Log extends AbstractTask {
         this.closeTimeout=closeTimeout;
         this.encode=encode;
         setTaskStatus(INIT);
-        submitInitEvent(null,INIT);
+        submitEvent(null,INIT);
     }
 
     public void log(String log,int logLevel){
@@ -94,35 +95,44 @@ public class Log extends AbstractTask {
     }
 
     protected Object init(Object object) {
-        if(isInit()){
-            return null;
-        }
-        String logPath=
-                "/"+logDir+"/"+yyMMdd.format(startTime)+"/"+logName+"/"+HHmmssSS.format(startTime)+"/";
-        String logFileName=logPath+logName;
-//        System.out.println(startTime+"-"+logFileName);
-        try {
-            File logDir=new File(logPath);
-            if(!logDir.exists()){
-                logDir.mkdirs();
+        boolean locked=false;
+        try{
+            if(!isInit()&&getInitLock().tryLock()){
+                locked=true;
+                String logPath=
+                        "/"+logDir+"/"+yyMMdd.format(startTime)+"/"+logName+"/"+HHmmssSS.format(startTime)+"/";
+                String logFileName=logPath+logName;
+//                System.out.println(startTime+"-"+logFileName);
+                try {
+                    File logDir=new File(logPath);
+                    if(!logDir.exists()){
+                        logDir.mkdirs();
+                    }
+                    int logCount=logDir.list().length;
+                    int logSeq=logCount==0?1:logCount+1;
+                    File logFile=new File(logFileName+"-"+logSeq+".log");
+                    if(!logFile.exists()){
+                        logFile.createNewFile();
+                    }
+                    writer=new BufferedWriter(
+                            new OutputStreamWriter(
+                                    new FileOutputStream(logFile),encode));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }finally {
+                    setInit(true);
+                }
             }
-            int logCount=logDir.list().length;
-            int logSeq=logCount==0?1:logCount+1;
-            File logFile=new File(logFileName+"-"+logSeq+".log");
-            if(!logFile.exists()){
-                logFile.createNewFile();
-            }
-            writer=new BufferedWriter(
-                    new OutputStreamWriter(
-                            new FileOutputStream(logFile),encode));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        }catch (Exception e){
             e.printStackTrace();
         }finally {
-            setInit(true);
+            if(locked){
+                getInitLock().unlock();
+            }
         }
         return null;
     }
@@ -147,7 +157,6 @@ public class Log extends AbstractTask {
     }
 
     public void close(){
-        System.out.println("close");
         setTaskStatus(OVER);
         submitEvent(null,OVER);
     }
@@ -158,13 +167,14 @@ public class Log extends AbstractTask {
             int appLogLevel,
             int flushLimit,
             int closeTimeout,
-            String encode,int logTime){
+            String encode,
+            int logTime){
         return new Log(
                 logDir,
                 logFileName,
                 appLogLevel,
                 flushLimit,
-                closeTimeout,encode,logTime);
+                closeTimeout,encode,true,logTime);
     }
 
     protected Object doTask(int taskType, Object attach) {
