@@ -1,10 +1,7 @@
 package nna.base.dispatch;
 
 import nna.MetaBean;
-import nna.base.bean.dbbean.PlatformApp;
-import nna.base.bean.dbbean.PlatformColumn;
-import nna.base.bean.dbbean.PlatformController;
-import nna.base.bean.dbbean.PlatformService;
+import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
 
 import java.lang.reflect.Method;
@@ -76,5 +73,25 @@ public class MetaBeanWrapper {
 
     public int getProtocolType(){
         return metaBean.getProtocolType();
+    }
+
+    public PlatformSession getPlatformSession() {
+        return metaBean.getPlatformSession();
+    }
+
+    public PlatformLog getPlatformLog() {
+        return metaBean.getPlatformLog();
+    }
+
+    public int getLogLevel() {
+        return metaBean.getLogLevel();
+    }
+
+    public int getLogTimes() {
+        return metaBean.getLogTimes();
+    }
+
+    public void setLog(Log log) {
+        metaBean.setLog(log);
     }
 }
