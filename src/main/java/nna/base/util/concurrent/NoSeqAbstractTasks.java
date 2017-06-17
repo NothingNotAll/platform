@@ -7,8 +7,8 @@ package nna.base.util.concurrent;
 
 public class NoSeqAbstractTasks extends AbstractTasks {
 
-    NoSeqAbstractTasks(int taskCount) {
-        super(taskCount);
+    NoSeqAbstractTasks(int taskCount,Long workId) {
+        super(taskCount,workId);
     }
 
     protected AbstractTask doTasks() {

@@ -7,8 +7,8 @@ package nna.base.util.concurrent;
  **/
 
 public class SeqAbstractTasks extends AbstractTasks {
-    SeqAbstractTasks(int taskCount) {
-        super(taskCount);
+    SeqAbstractTasks(int taskCount,Long workId) {
+        super(taskCount,workId);
     }
 
     protected AbstractTask doTasks() {

@@ -36,6 +36,7 @@ import java.util.concurrent.locks.ReentrantLock;
     protected volatile int[] status;
     protected volatile Object[] objects;//oom-limit : a large of
     protected ReentrantLock[] locks;
+    protected Long workId;
 
     // waste memory with null slot except that task is been worked with short time
     protected volatile Integer enQueueIndex;
@@ -49,8 +50,9 @@ import java.util.concurrent.locks.ReentrantLock;
     * only adapt for One Producer(business thread producer) and One Consumer Thread
     * */
 
-     AbstractTasks(int taskCount){
+     AbstractTasks(int taskCount,Long workId){
         startTime=System.currentTimeMillis();
+        this.workId=workId;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
@@ -181,5 +183,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
     public void setPriorLevel(Long priorLevel) {
         this.priorLevel = priorLevel;
+    }
+
+    public Long getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(Long workId) {
+        this.workId = workId;
     }
 }

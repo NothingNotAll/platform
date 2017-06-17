@@ -14,14 +14,12 @@ public abstract class AbstractTask{
     private AbstractTasks tasks;
     private int failTryTimes;
     private int workCount;
-    private Long index;//任务队列索引
     private String taskName;
     private Thread thread;
     private Long threadId;
     private String threadName;
     private volatile int taskStatus;
-//    private Integer workId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
-    private Worker worker;
+    private Integer workId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
     private volatile boolean isInit=false;
     private ReentrantLock initLock=new ReentrantLock();
     private boolean isWorkSeq;
@@ -46,14 +44,6 @@ public abstract class AbstractTask{
 
     protected abstract Object doTask(int taskType,Object attach);
 
-    public Long getIndex() {
-        return index;
-    }
-
-    public void setIndex(Long index) {
-        this.index = index;
-    }
-
     public Long getThreadId() {
         return threadId;
     }
@@ -77,14 +67,6 @@ public abstract class AbstractTask{
     public void setTaskStatus(int taskStatus) {
         this.taskStatus = taskStatus;
     }
-
-//    public Integer getWorkId() {
-//        return workId;
-//    }
-//
-//    public void setWorkId(Integer workId) {
-//        this.workId = workId;
-//    }
 
     public String getTaskName() {
         return taskName;
@@ -142,19 +124,19 @@ public abstract class AbstractTask{
         this.tasks = tasks;
     }
 
-    public Worker getWorker() {
-        return worker;
-    }
-
-    public void setWorker(Worker worker) {
-        this.worker = worker;
-    }
-
     public boolean isWorkSeq() {
         return isWorkSeq;
     }
 
     public void setWorkSeq(boolean workSeq) {
         isWorkSeq = workSeq;
+    }
+
+    public Integer getWorkId() {
+        return workId;
+    }
+
+    public void setWorkId(Integer workId) {
+        this.workId = workId;
     }
 }

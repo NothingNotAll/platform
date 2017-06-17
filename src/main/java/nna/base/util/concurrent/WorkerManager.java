@@ -87,30 +87,38 @@ import java.util.concurrent.atomic.AtomicLong;
     }
 
     void submitEvent(AbstractTask t,Object object,int taskType) {
+        AbstractTasks abstractTasks=t.getTasks();
+        Integer index=t.getWorkId();
+        Long workId;
         Worker worker;
-        AbstractTasks abstractTasks;
-        int workCount=t.getWorkCount();
-        if(t.isWorkSeq()){
-            worker=t.getWorker();
-            if(t.isInit()){
-                abstractTasks=t.getTasks();
+        if(!t.isInit()){
+            int workCount=t.getWorkCount();
+            workId=taskNo.getAndIncrement();
+            EntryDesc entryDesc=getBalanceWorker();
+            if(t.isWorkSeq()){
+                abstractTasks=new SeqAbstractTasks(workCount,workId);
+                worker=entryDesc.worker;
+                t.setWorkId(entryDesc.index);
             }else{
-                abstractTasks=new SeqAbstractTasks(workCount);
+                abstractTasks=new NoSeqAbstractTasks(workCount,workId);
+                worker=getBalanceWorker().worker;
             }
+            t.setTasks(abstractTasks);
+            monitorMap.put(workId,abstractTasks);
+            abstractTasks.setWorkId(workId);
         }else{
-            worker=getBalanceWorker();
-            if(t.isInit()){
-                abstractTasks=t.getTasks();
-            }else{
-                abstractTasks=new NoSeqAbstractTasks(workCount);
-            }
+            workId=abstractTasks.getWorkId();
+            worker=balancedWorkerList.get(index);
+        }
+        if(taskType==AbstractTask.OVER){
+            monitorMap.remove(workId);
         }
         abstractTasks.addTask(t,taskType,object);
         Runnable nonInitDispatcher =new Dispatcher(abstractTasks,worker);
         cachedService.submit(nonInitDispatcher);
     }
 
-     Worker getBalanceWorker() {
+     EntryDesc getBalanceWorker() {
         Iterator<Worker> iterator=balancedWorkerList.iterator();
         Worker worker;
         Worker minWorker=null;
@@ -137,7 +145,25 @@ import java.util.concurrent.atomic.AtomicLong;
             }
             index++;
         }
-         return minWorker;
+         return new EntryDesc(minWorker,workerIndex);
+    }
+
+    public static ConcurrentHashMap<Long, AbstractTasks> getMonitorMap() {
+        return monitorMap;
+    }
+
+    public static void setMonitorMap(ConcurrentHashMap<Long, AbstractTasks> monitorMap) {
+        WorkerManager.monitorMap = monitorMap;
+    }
+
+    private class EntryDesc{
+        private Worker worker;
+        private Integer index;
+
+        private EntryDesc(Worker worker,Integer index){
+            this.worker=worker;
+            this.index=index;
+        }
     }
 
 }
