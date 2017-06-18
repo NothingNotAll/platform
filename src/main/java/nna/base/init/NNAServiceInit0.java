@@ -64,7 +64,7 @@ public class NNAServiceInit0 {
              initObjectFactories(psts[1]);
              ResultSet rs=psts[2].executeQuery();
              rs.next();
-             PlatformLog platformLog=(PlatformLog) getBean(rs,Marco.PLATFORM_LOG);
+             PlatformLog platformLog=(PlatformLog)getBean(rs,Marco.PLATFORM_LOG);
              Log log=getPlatformLog(platformLog,4000);
              MetaBean confMeta=new MetaBean();
              confMeta.setLog(log);
@@ -121,9 +121,11 @@ public class NNAServiceInit0 {
 
     private static void initObjectFactories(PreparedStatement objectFactoryPst) throws SQLException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         ResultSet rs=objectFactoryPst.executeQuery();
+        int index=0;
         while(rs.next()){
             String dbBeanClassName=rs.getString(2);
             MetaBean.getObjectFactoryCache().insert(ObjectUtil.buildObjectFactory(dbBeanClassName),100);
+            index++;
         }
         rs.close();
         objectFactoryPst.close();

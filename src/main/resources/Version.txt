@@ -8,5 +8,15 @@
 平台的任意修改与扩展
 7:并发框架：无序并行计算；有序并行计算；按照任务优先级别进行执行，单个任务的每个任务之间的执行顺序也可按照优先级进行度量。
 the task‘s pause  控制到 具体任务执行到哪一行代码 这个是无法控制的 。也就是保存线程的快照
+8:类加载机制 根据指定目录动态加载 发现类文件内容更改也会热加载
+9:模块之间的耦合 只需要 通过 反射机制 方法对象 对象对象 方法参数 返回对象 来进行操控
+也就是说 IOC只需要提供形成 Linker的机制就行了。
+这是解决模块耦合的关键；
+public Linker{
+    private Object serviceObject;
+    private Method serviceMethod;
+    private Object[] params;
+    private Object returnObject;
+}
 
 The goal is that config with person instead of write with hand

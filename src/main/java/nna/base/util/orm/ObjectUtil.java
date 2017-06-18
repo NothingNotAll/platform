@@ -3,10 +3,14 @@ package nna.base.util.orm;
 import nna.Marco;
 import nna.base.bean.Clone;
 import nna.base.bean.dbbean.PlatformLog;
+import nna.base.init.NNAServiceInit0;
 import nna.enums.JavaValueType;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /*
  * Used as reflection util of object
@@ -186,12 +190,22 @@ public class ObjectUtil {
 	}
 	public static void main(String[] args){
         try {
-            buildObjectFactory(PlatformLog.class);
+            ObjectFactory objectFactory=buildObjectFactory(PlatformLog.class);
+            ResultSet rs=NNAServiceInit0.init().prepareStatement("Select * from platform_log").executeQuery();
+            rs.next();
+            Clone clone=ObjectFactory.getBean(rs,Marco.PLATFORM_LOG);
+
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

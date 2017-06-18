@@ -1,5 +1,6 @@
 package nna.base.init;
 
+import nna.Test;
 import nna.base.dispatch.ConfMetaSetFactory;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.sql.SQLException;
 public class NNAServiceStart {
 
     public static void main(String[] args){
-
+        System.out.println("NNAService init...");
     }
 
     static{
@@ -27,6 +28,7 @@ public class NNAServiceStart {
             NNAServiceInit2 nna2=new NNAServiceInit2();
             nna2.build();
             ConfMetaSetFactory.getConfMeta().getLog().close();
+            Test.testCon();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

@@ -11,7 +11,7 @@ import nna.base.bean.Clone;
 public class PlatformLog extends Clone {
     private static final Long serialVersionUID=19L;
 
-    private int logId;
+    private Integer logId;
     private String logDir;
     private int logBufferThreshold;
     private int logCloseTimedout;
@@ -23,11 +23,11 @@ public class PlatformLog extends Clone {
 
     }
 
-    public int getLogId() {
+    public Integer getLogId() {
         return logId;
     }
 
-    public void setLogId(int logId) {
+    public void setLogId(Integer logId) {
         this.logId = logId;
     }
 

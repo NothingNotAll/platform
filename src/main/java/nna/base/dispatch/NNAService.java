@@ -7,7 +7,6 @@ import nna.base.bean.dbbean.PlatformLog;
 import nna.base.bean.dbbean.PlatformService;
 import nna.base.bean.dbbean.PlatformSession;
 import nna.base.dispatch.protocol.Protocol;
-import nna.base.init.NNAServiceStart;
 import nna.base.log.Log;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,15 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 
 public class NNAService {
-    static {
-        try {
-            System.out.println("--------------------------------NNA Service start");
-            Class.forName(NNAServiceStart.class.getCanonicalName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
+    private NNAService(){}
     public static String dispatch(Map<String,String[]> map){
         String entryCode=map.get(Marco.HEAD_ENTRY_CODE)[0];
         MetaBean metaBean=getMetaBean(entryCode);

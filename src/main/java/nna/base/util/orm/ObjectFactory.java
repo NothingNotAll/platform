@@ -128,7 +128,6 @@ import java.util.*;
                 method.invoke(clone, DBOperType.valueOf(rs.getString(index)));
                 break;
             case Marco.PLATFORM_ENUM_PROXYTYPE:
-                System.out.println(method.getName());
                 method.invoke(clone,ProxyType.valueOf(rs.getString(index)));
                 break;
             case Marco.PLATFORM_ENUM_USERROLE:

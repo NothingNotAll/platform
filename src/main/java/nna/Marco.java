@@ -6,9 +6,9 @@ import nna.enums.DBType;
 public interface Marco {
     DBType dbType=DBType.mysql;
     String DRIVER="com.mysql.jdbc.Driver";
-    String URL="jdbc:mysql://localhost:3306/platformv2";
-    String ACCOUNT="root";
-    String PASSWORD="123";
+    String URL="jdbc:mysql://localhost:3306/nna";
+    String ACCOUNT="nna";
+    String PASSWORD="nna";
     boolean IS_DISTRIBUTED=false;
 
     String INIT_TABLENAME_PLATFORMCLAZZ="PLATFORM_CLAZZ",
@@ -19,7 +19,7 @@ public interface Marco {
             MYSQL_SELECT_TABLE_COLS="SELECT " +
                     "GROUP_CONCAT(COLUMN_NAME) " +
                     "from " +
-                    "information_schema.`COLUMNS` where TABLE_NAME=?",
+                    "information_schema.`COLUMNS` where TABLE_NAME=? AND TABLE_SCHEMA='nna'",
             MYSQL_SELECT_PRVIMARY_KEY="SELECT\n" +
                     "\tt.TABLE_NAME,\n" +
                     "\tt.CONSTRAINT_TYPE,\n" +
@@ -121,5 +121,5 @@ public interface Marco {
     String YYYYMMDD_DIR = "yyyyMMdd";
     int HTTP_PROTOCOL=0;
     int XML_PROTOCOL=1;
-    int CON_TEST_COUNT = 9;
+    int CON_TEST_COUNT = 3333;
 }

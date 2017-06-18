@@ -3,49 +3,70 @@ package nna.base.server;
 import nna.base.util.concurrent.AbstractTask;
 
 import java.io.IOException;
-import java.nio.channels.Channel;
+import java.net.InetSocketAddress;
+import java.nio.channels.*;
 
 /**
  * not support for long IO event
+ *
+ * Client Mode: connect Event
+ *              send reqStr;
+ *              read rspStr;
+ *              close;
+ * Server Mode: listen Connect Event
+ *              finish Connect and read Data and Write Data;
+ *              close;
  * @author NNA-SHUAI
  * @create 2017-06-12 0:06
  **/
 
 public class NIOTask extends AbstractTask {
-    public static final int SERVICE_IN=0;//接入其它渠道的服务
-    public static final int SERVICE_OUT=1;//接出本平台的服务；
 
-    public static final int READ=2;
-    public static final int WRITE=3;
+    private static final int READ=0;
+    private static final int WRITING=1;
+    private ReadableByteChannel readChannel;
+    private WritableByteChannel writeChannel;
+    private InetSocketAddress clientSocket;
 
-    private int serviceType;
-    private Channel channel;
-
-    public NIOTask(String taskName,
-                   Channel channel,
-                   int serviceType){
-        super(taskName,1,true);
-        this.channel=channel;
-        this.serviceType=serviceType;
+    public NIOTask(String taskName, int workCount) {
+        super(taskName, workCount, true);
     }
 
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    public int getServiceType() {
-        return serviceType;
-    }
-
-    public void setServiceType(int serviceType) {
-        this.serviceType = serviceType;
-    }
-
-    protected Object doTask(int taskStatus, Object attach) {
+    private Object read(Object attach){
         return null;
     }
+
+    private Object write(Object attach){
+        return null;
+    }
+
+    private Object close(Object attach){
+        try {
+            readChannel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            writeChannel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    protected Object doTask(int taskType, Object attach) {
+        switch (taskType){
+            case READ:
+                read(attach);
+                break;
+            case WRITING:
+                write(attach);
+                break;
+            case OVER:
+                close(attach);
+                break;
+        }
+        return null;
+    }
+
 }

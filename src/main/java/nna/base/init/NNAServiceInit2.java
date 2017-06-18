@@ -287,6 +287,9 @@ public class NNAServiceInit2 {
             entry=iterator.next();
             userId=entry.getKey();
             urList=map.get(userId);
+            if(urList==null){
+                continue;
+            }
             count=urList.size();
             for(;index< count;index++){
                 platformUserRole=urList.get(index);
@@ -326,8 +329,7 @@ public class NNAServiceInit2 {
     }
 
     private void buildPLog() {
-        PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(0);
-
+        PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(new Integer(1));
         final Log pLog=Log.getLog(
                 platformLog.getLogDir(),
                 "nna",
@@ -343,26 +345,6 @@ public class NNAServiceInit2 {
 
     private void testConFrame(boolean b) {
         if(b){
-            for(int index = 0; index < Marco.CON_TEST_COUNT; index++){
-                final Log log=Log.getLog(
-                  "TEST_CON",
-                        "TEST-CON-LOG",
-                        10,
-                        0,
-                        1000,
-                        "UTF-8",
-                        Marco.CON_TEST_COUNT
-                );
-                new Thread(new Runnable() {
-                    public void run() {
-                        int count=Marco.CON_TEST_COUNT-2;
-                        for(int index = 1; index <= count; index++){
-                            log.log(""+index,10);
-                        }
-                        log.close();
-                    }
-                }).start();
-            }
         }
     }
 }

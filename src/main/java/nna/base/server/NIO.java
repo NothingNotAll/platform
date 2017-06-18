@@ -87,7 +87,6 @@ public class NIO {
                     iterator.remove();
                     temp=iterator.next();
                     int selectionKey=temp.interestOps();
-                    NIOTask nioTask = null;
                     SelectableChannel channel=temp.channel();
                     SocketChannel socketChannel;
                     switch (selectionKey){
@@ -104,7 +103,6 @@ public class NIO {
 
                             break;
                     }
-                    nioTask.setChannel(channel);
                 }
             }
         }catch (Exception e){

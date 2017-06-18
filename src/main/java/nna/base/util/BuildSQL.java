@@ -258,14 +258,14 @@ public class BuildSQL {
 //        }
 //        System.out.println("1.33".substring("1.33".indexOf(".")+1));
         try {
-            String cols=getTableCols(NNAServiceInit0.init(),"platform_APP");
+            String cols=getTableCols(NNAServiceInit0.init(),"platform_LOG");
 			System.out.println(cols);
-			String javaCols=getJavaColFromDBCol(cols);
-            String[] jCols=javaCols.split("[,]");
-            int count=jCols.length;
-            for(int index=0;index<count;index++){
-                System.out.println(jCols[index]+";");
-            }
+//			String javaCols=getJavaColFromDBCol(cols);
+//            String[] jCols=javaCols.split("[,]");
+//            int count=jCols.length;
+//            for(int index=0;index<count;index++){
+//                System.out.println(jCols[index]+";");
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
