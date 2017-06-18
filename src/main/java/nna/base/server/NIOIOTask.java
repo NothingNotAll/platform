@@ -1,6 +1,6 @@
 package nna.base.server;
 
-import nna.base.util.concurrent.AbstractTask;
+import nna.base.util.concurrent.AbstractIOTask;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,7 +20,7 @@ import java.nio.channels.*;
  * @create 2017-06-12 0:06
  **/
 
-public class NIOTask extends AbstractTask {
+public class NIOIOTask extends AbstractIOTask {
 
     private static final int READ=0;
     private static final int WRITING=1;
@@ -28,7 +28,7 @@ public class NIOTask extends AbstractTask {
     private WritableByteChannel writeChannel;
     private InetSocketAddress clientSocket;
 
-    public NIOTask(String taskName, int workCount) {
+    public NIOIOTask(String taskName, int workCount) {
         super(taskName, workCount, true);
     }
 

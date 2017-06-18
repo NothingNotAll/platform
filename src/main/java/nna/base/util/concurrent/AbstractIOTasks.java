@@ -72,62 +72,41 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    protected abstract AbstractIOTask doTasks();
+    protected abstract boolean doTasks();
 
 
-    protected boolean lockAndExe(
+    protected abstract int lockAndExe(
             AbstractIOTask abstractIOTask,
-            int tempIndex){
-        ReentrantLock lock=locks[tempIndex];
-        boolean isLocked=false;
-        try{
-            if(lock.isLocked()){
-                isLocked=true;
-                return false;
-            }
-            lock.lock();
-            if(status[tempIndex]==START){
-               status[tempIndex]=WORKING;
-               Object attach=objects[tempIndex];
-               if(!work(abstractIOTask,attach,taskTypes[tempIndex])){
-                   status[tempIndex]=FAIL;
-               }else{
-                   status[tempIndex]=END;
-               }
-                Long endTime=System.currentTimeMillis();
-                taskEndTimes[tempIndex]=endTime;
-               setNull(tempIndex);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(!isLocked){
-                counter.getAndDecrement();
-                lock.unlock();
-                return true;
-            }else{
-                return false;
-            }
-        }
-    }
+            int tempIndex);
 
 
 
-    private void setNull(Integer workIndex) {
+    protected void setNull(Integer workIndex) {
         list[workIndex]=null;
         objects[workIndex]=null;
     }
 
-    private boolean work(AbstractIOTask abstractIOTask,
-                      Object attach,
-                      int status) {
-        boolean isSuccess=true;
-        try{
-            abstractIOTask.doTask(status,attach);
-        }catch (Exception e){
-            isSuccess=false;
+    protected int work(AbstractIOTask abstractIOTask,
+                      int tempIndex) {
+        int taskType=this.taskTypes[tempIndex];
+        if(status[tempIndex]==START){
+            status[tempIndex]=WORKING;
+            Object attach=objects[tempIndex];
+            int status=this.status[tempIndex];
+            try{
+                abstractIOTask.doTask(status,attach);
+                this.status[tempIndex]=END;
+                Long endTime=System.currentTimeMillis();
+                taskEndTimes[tempIndex]=endTime;
+            }catch (Exception e){
+                e.printStackTrace();
+                this.status[tempIndex]=FAIL;
+            }finally {
+                counter.getAndDecrement();
+            }
+            setNull(tempIndex);
         }
-        return isSuccess;
+        return taskType;
     }
 
     void addTask(

@@ -8,9 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/**时间片机制
- * 长IO机制
- * 轮询机制
+/**
+ * 时间片机制
  * 优先级机制
  * the sequence of execute task List 's alg may be customer
  * @author NNA-SHUAI
@@ -19,6 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class IOEventProcessor<T extends AbstractIOTask> extends Clone implements Runnable{
 
+    private IOTaskProcessor ioTaskProcessor=new IOTaskProcessor();
     private static final Long serialVersionUID=-1L;
     private Integer loadNo;
     /*
@@ -69,7 +69,7 @@ public class IOEventProcessor<T extends AbstractIOTask> extends Clone implements
         while(iterator.hasNext()){
             currentAbstractIOTasks =iterator.next();
             check(currentAbstractIOTasks);
-            currentAbstractIOTasks.doTasks();//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
+            ioTaskProcessor.submitIOWork(currentAbstractIOTasks);
         }
     }
 

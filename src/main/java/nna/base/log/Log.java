@@ -1,7 +1,7 @@
 package nna.base.log;
 
 import nna.Marco;
-import nna.base.util.concurrent.AbstractTask;
+import nna.base.util.concurrent.AbstractIOTask;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
  * @create 2017-06-12 21:13
  **/
 
-public class Log extends AbstractTask {
+public class Log extends AbstractIOTask {
     public static final int INIT=0;
     public static final int WRITING=1;
     public static final int NOTHING=3;
