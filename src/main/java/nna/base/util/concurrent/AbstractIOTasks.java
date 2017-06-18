@@ -2,6 +2,7 @@ package nna.base.util.concurrent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
@@ -18,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 //Single Direction Insert Task , can not make use of
 // Been Set Null ' s slot;
 // but we can solve it with recycle queue to make full use of memory and solve the oom problem
- abstract class AbstractIOTasks {
+ abstract class AbstractIOTasks implements Runnable{
      public static final int START=0;
      public static final int WORKING=1;
      public static final int END=2;
@@ -90,13 +91,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
     protected int work(AbstractIOTask abstractIOTask,
                       int tempIndex) {
-        int taskType=this.taskTypes[tempIndex];
-        if(status[tempIndex]==START){
-            status[tempIndex]=WORKING;
+        int taskType=-2;
+        int status=this.status[tempIndex];
+        if(status==START){
+            this.status[tempIndex]=WORKING;
             Object attach=objects[tempIndex];
-            int status=this.status[tempIndex];
+            taskType=this.taskTypes[tempIndex];
             try{
-                abstractIOTask.doTask(status,attach);
+                abstractIOTask.doTask(taskType,attach);
                 this.status[tempIndex]=END;
                 Long endTime=System.currentTimeMillis();
                 taskEndTimes[tempIndex]=endTime;
@@ -133,6 +135,59 @@ import java.util.concurrent.locks.ReentrantLock;
             lock.unlock();
         }
     }
+
+
+//Tasks execute design begin
+    protected volatile Thread thread;
+    protected AtomicLong inc=new AtomicLong(0L);
+    protected AtomicLong add=new AtomicLong(0L);//avoid ABA bug
+    protected ReentrantLock lock=new ReentrantLock();
+    protected ReentrantLock tInitLock=new ReentrantLock();
+
+    public void run() {
+        if(tInitLock.tryLock()){
+            thread=Thread.currentThread();
+            try{
+                while(true){
+                    if(doTasks()){
+                        park();
+                    }else{
+                        break;
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }else{
+            unPark();
+        }
+    }
+
+    private void park() {
+        LockSupport.park();
+        add.getAndIncrement();
+    }
+
+    private void unPark(){
+        while(thread==null){
+            continue;
+        }
+        try{
+            lock.lock();//性能阻塞点 避免 ABA问题 。
+            LockSupport.unpark(thread);
+            inc.getAndDecrement();
+            Long result=inc.get()+add.get();
+            while(result > 0){
+                LockSupport.unpark(thread);
+                inc.getAndDecrement();
+                result=inc.get()+add.get();
+            }
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    //Tasks execute design end
 
     public AbstractIOTask[] getList() {
         return list;

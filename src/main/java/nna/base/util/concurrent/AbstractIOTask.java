@@ -26,7 +26,7 @@ public abstract class AbstractIOTask {
 
     static{
         System.out.println("init IOEventProcessor Manager!");
-        IOEventEntry.init(null,null);
+        IOTaskEntry.init(null,null);
     }
 
     public AbstractIOTask(String taskName, int workCount, boolean isWorkSeq){
@@ -38,11 +38,11 @@ public abstract class AbstractIOTask {
     }
 
     protected void submitEvent(Object object,int taskType){
-        IOEventEntry.submitEvent(this,object,taskType);
+        IOTaskEntry.submitEvent(this,object,taskType);
     }
 
     protected void submitInitEvent(Object object,boolean isWorkSeq){
-        IOEventEntry.submitInitEvent(this,object,isWorkSeq);
+        IOTaskEntry.submitInitEvent(this,object,isWorkSeq);
     }
 
     protected abstract Object doTask(int taskType,Object attach);

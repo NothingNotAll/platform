@@ -1,5 +1,7 @@
 package nna.base.util.concurrent;
 
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**

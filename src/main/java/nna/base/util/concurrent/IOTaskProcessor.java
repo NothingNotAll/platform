@@ -3,8 +3,6 @@ package nna.base.util.concurrent;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.LockSupport;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * the real io worker
@@ -13,52 +11,16 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 public class IOTaskProcessor {
-    private ConcurrentHashMap<Long,IOWorker> taskMap=new ConcurrentHashMap<Long, IOWorker>();
+//    private ConcurrentHashMap<Long,IOTaskWorker> taskMap=new ConcurrentHashMap<Long, IOTaskWorker>();
     private ExecutorService ioTaskThreads= Executors.newCachedThreadPool();
 
     public void submitIOWork(AbstractIOTasks abstractIOTasks){
-        Long workId=abstractIOTasks.getGlobalWorkId();
-        IOWorker worker=new IOWorker(abstractIOTasks);
-        IOWorker temp;
-        temp=taskMap.putIfAbsent(workId,worker);
-        if(temp==null){
-            ioTaskThreads.submit(worker);
-        }else{
-            worker.unPark();
-        }
-    }
-
-    private class IOWorker implements Runnable{
-        private AbstractIOTasks tasks;
-        private Thread thread;
-        private boolean isInit;
-        private ReentrantLock lock=new ReentrantLock();
-        private IOWorker(AbstractIOTasks abstractIOTasks){
-            this.tasks=abstractIOTasks;
-        }
-        public void run() {
-            while(true){
-                if(!isInit){
-                    try{
-                        lock.lock();
-                        thread=Thread.currentThread();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }finally {
-                        lock.unlock();
-                        isInit=true;
-                    }
-                }
-                if(!tasks.doTasks()){
-                    LockSupport.park();
-                }else{
-                    break;
-                }
-            }
-        }
-
-        void unPark(){
-            LockSupport.unpark(thread);
-        }
+//        Long workId=abstractIOTasks.getGlobalWorkId();
+//        IOTaskWorker worker=new IOTaskWorker(abstractIOTasks);
+//        IOTaskWorker temp=taskMap.putIfAbsent(workId,worker);
+//        if(temp!=null){
+//            worker=temp;
+//        }
+        ioTaskThreads.submit(abstractIOTasks);
     }
 }

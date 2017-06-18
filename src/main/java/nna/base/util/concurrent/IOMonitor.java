@@ -2,6 +2,7 @@ package nna.base.util.concurrent;
 
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -12,6 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class IOMonitor implements Runnable {
     SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
     private IOEventProcessor[] IOEventProcessors;
+     Map map;
     /**
      * When an object implementing interface <code>Runnable</code> is used
      * to create a thread, starting the thread causes the object's
@@ -33,6 +35,7 @@ public class IOMonitor implements Runnable {
                 while(iterator.hasNext()){
                     abstractIOTasks =iterator.next();
                 }
+                System.out.println("LEFT ABSTRACT TASKS:"+map.size());
             }
             try {
                 Thread.currentThread().sleep(3000L);

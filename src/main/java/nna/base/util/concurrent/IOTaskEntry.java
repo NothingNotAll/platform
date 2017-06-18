@@ -17,7 +17,7 @@ package nna.base.util.concurrent;
 *
 * we must think of that too long IO event process's method
 * */
- class IOEventEntry {
+ class IOTaskEntry {
     static IOEventProcessorManager IOEventProcessorManager;
 
     static void init(Long maxBusinessProcessTime,Long thresholdTime){

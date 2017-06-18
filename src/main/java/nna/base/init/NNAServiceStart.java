@@ -28,7 +28,7 @@ public class NNAServiceStart {
             NNAServiceInit2 nna2=new NNAServiceInit2();
             nna2.build();
             ConfMetaSetFactory.getConfMeta().getLog().close();
-//            Test.testCon();
+            Test.testCon();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
