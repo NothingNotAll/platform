@@ -10,7 +10,7 @@ package nna.base.util.concurrent;
 public class SeqAbstractIOTasks extends AbstractIOTasks {
 
     SeqAbstractIOTasks(int taskCount, Long workId) {
-        super(taskCount,workId);
+        super(taskCount,workId,true);
     }
 
     protected boolean doTasks() {

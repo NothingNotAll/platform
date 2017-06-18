@@ -17,7 +17,7 @@ public class IOTaskProcessor {
     private ExecutorService ioTaskThreads= Executors.newCachedThreadPool();
 
     public void submitIOWork(AbstractIOTasks abstractIOTasks){
-        Long workId=abstractIOTasks.getWorkId();
+        Long workId=abstractIOTasks.getGlobalWorkId();
         IOWorker worker=new IOWorker(abstractIOTasks);
         IOWorker temp;
         temp=taskMap.putIfAbsent(workId,worker);
@@ -37,20 +37,24 @@ public class IOTaskProcessor {
             this.tasks=abstractIOTasks;
         }
         public void run() {
-            if(!isInit){
-                try{
-                    lock.lock();
-                    thread=Thread.currentThread();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }finally {
-                    lock.unlock();
-                    isInit=true;
+            while(true){
+                if(!isInit){
+                    try{
+                        lock.lock();
+                        thread=Thread.currentThread();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }finally {
+                        lock.unlock();
+                        isInit=true;
+                    }
+                }
+                if(!tasks.doTasks()){
+                    LockSupport.park();
+                }else{
+                    break;
                 }
             }
-            if(!tasks.doTasks()){
-                LockSupport.park();
-            };
         }
 
         void unPark(){

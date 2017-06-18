@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class AbstractIOTask {
     public static final int OVER=-1;//任务结束
+    public static final int INIT=0;
 
     private AbstractIOTasks tasks;
     private int failTryTimes;
@@ -19,10 +20,9 @@ public abstract class AbstractIOTask {
     private Long threadId;
     private String threadName;
     private volatile int taskStatus;
-    private Integer workId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
+    private Integer iOLoadEventProcessorId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
     private volatile boolean isInit=false;
     private ReentrantLock initLock=new ReentrantLock();
-    private boolean isWorkSeq;
 
     static{
         System.out.println("init IOEventProcessor Manager!");
@@ -35,11 +35,14 @@ public abstract class AbstractIOTask {
         threadId=thread.getId();
         threadName=thread.getName();
         this.workCount=workCount;
-        this.isWorkSeq=isWorkSeq;
     }
 
     protected void submitEvent(Object object,int taskType){
         IOTaskEntry.submitEvent(this,object,taskType);
+    }
+
+    protected void submitInitEvent(Object object,boolean isWorkSeq){
+        IOTaskEntry.submitInitEvent(this,object,isWorkSeq);
     }
 
     protected abstract Object doTask(int taskType,Object attach);
@@ -124,19 +127,11 @@ public abstract class AbstractIOTask {
         this.tasks = tasks;
     }
 
-    public boolean isWorkSeq() {
-        return isWorkSeq;
+    public Integer getiOLoadEventProcessorId() {
+        return iOLoadEventProcessorId;
     }
 
-    public void setWorkSeq(boolean workSeq) {
-        isWorkSeq = workSeq;
-    }
-
-    public Integer getWorkId() {
-        return workId;
-    }
-
-    public void setWorkId(Integer workId) {
-        this.workId = workId;
+    public void setiOLoadEventProcessorId(Integer iOLoadEventProcessorId) {
+        this.iOLoadEventProcessorId = iOLoadEventProcessorId;
     }
 }

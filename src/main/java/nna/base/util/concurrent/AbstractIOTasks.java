@@ -36,7 +36,8 @@ import java.util.concurrent.locks.ReentrantLock;
     protected volatile int[] status;
     protected volatile Object[] objects;//oom-limit : a large of
     protected ReentrantLock[] locks;
-    protected Long workId;
+    protected Long globalWorkId;
+    protected boolean isWorkSeq;
 
     // waste memory with null slot except that task is been worked with short time
     protected volatile Integer enQueueIndex;
@@ -50,9 +51,10 @@ import java.util.concurrent.locks.ReentrantLock;
     * only adapt for One Producer(business thread producer) and One Consumer Thread
     * */
 
-     AbstractIOTasks(int taskCount, Long workId){
+     AbstractIOTasks(int taskCount, Long globalWorkId,boolean isWorkSeq){
         startTime=System.currentTimeMillis();
-        this.workId=workId;
+        this.isWorkSeq=isWorkSeq;
+        this.globalWorkId=globalWorkId;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
@@ -164,11 +166,19 @@ import java.util.concurrent.locks.ReentrantLock;
         this.priorLevel = priorLevel;
     }
 
-    public Long getWorkId() {
-        return workId;
+    public Long getGlobalWorkId() {
+        return globalWorkId;
     }
 
-    public void setWorkId(Long workId) {
-        this.workId = workId;
+    public void setGlobalWorkId(Long globalWorkId) {
+        this.globalWorkId = globalWorkId;
+    }
+
+    public boolean isWorkSeq() {
+        return isWorkSeq;
+    }
+
+    public void setWorkSeq(boolean workSeq) {
+        isWorkSeq = workSeq;
     }
 }

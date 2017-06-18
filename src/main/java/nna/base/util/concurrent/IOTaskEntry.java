@@ -28,4 +28,7 @@ package nna.base.util.concurrent;
         workerManager.submitEvent(t,object,taskStatus);
     }
 
+    static void submitInitEvent(AbstractIOTask t, Object object,boolean isWorkSeq){
+        workerManager.submitInitEvent(t,object,isWorkSeq);
+    }
 }

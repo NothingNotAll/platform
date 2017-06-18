@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class NoSeqAbstractIOTasks extends AbstractIOTasks {
 
     NoSeqAbstractIOTasks(int taskCount, Long workId) {
-        super(taskCount,workId);
+        super(taskCount,workId,false);
     }
 
     protected boolean doTasks() {
