@@ -19,6 +19,7 @@ public class PlatformApp extends Clone {
     private String appCh;
     private boolean appStatus;
     private boolean appIsdistribute;
+    private String appWorkspace;
     private Timestamp appCreateTimestamp;
     private String appEncode;
     private String appUploadpath;
@@ -115,4 +116,11 @@ public class PlatformApp extends Clone {
         this.appDownloadpath = appDownloadpath;
     }
 
+    public String getAppWorkspace() {
+        return appWorkspace;
+    }
+
+    public void setAppWorkspace(String appWorkspace) {
+        this.appWorkspace = appWorkspace;
+    }
 }
