@@ -17,18 +17,18 @@ package nna.base.util.concurrent;
 *
 * we must think of that too long IO event process's method
 * */
- class IOTaskEntry {
-    static WorkerManager workerManager;
+ class IOEventEntry {
+    static IOEventProcessorManager IOEventProcessorManager;
 
     static void init(Long maxBusinessProcessTime,Long thresholdTime){
-        workerManager=WorkerManager.initWorkerManager(maxBusinessProcessTime,thresholdTime);
+        IOEventProcessorManager = IOEventProcessorManager.initWorkerManager(maxBusinessProcessTime,thresholdTime);
     }
 
     static void submitEvent(AbstractIOTask t, Object object, int taskStatus) {
-        workerManager.submitEvent(t,object,taskStatus);
+        IOEventProcessorManager.submitEvent(t,object,taskStatus);
     }
 
     static void submitInitEvent(AbstractIOTask t, Object object,boolean isWorkSeq){
-        workerManager.submitInitEvent(t,object,isWorkSeq);
+        IOEventProcessorManager.submitInitEvent(t,object,isWorkSeq);
     }
 }

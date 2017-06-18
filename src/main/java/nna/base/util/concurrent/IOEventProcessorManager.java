@@ -13,10 +13,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * @create 2017-05-30 16:40
  **/
 
- class WorkerManager {
+ class IOEventProcessorManager {
     private static AtomicLong taskNo=new AtomicLong(0L);
     private static ConcurrentHashMap<Long,AbstractIOTasks> monitorMap=new ConcurrentHashMap<Long, AbstractIOTasks>();
-    private static WorkerManager workerManager;
+    private static IOEventProcessorManager IOEventProcessorManager;
     private static volatile boolean init=false;
     private static ExecutorService cachedService= Executors.newCachedThreadPool();
 
@@ -29,9 +29,9 @@ import java.util.concurrent.atomic.AtomicLong;
     * workCount=max(time/threshold,coreSize);
     * */
 
-    synchronized static WorkerManager initWorkerManager(Long maxBusinessProcessTime,Long thresholdTime){
+    synchronized static IOEventProcessorManager initWorkerManager(Long maxBusinessProcessTime, Long thresholdTime){
         if(init){
-            return workerManager;
+            return IOEventProcessorManager;
         }
         init=true;
         int workCount=getAvlCPUCount();
@@ -39,8 +39,8 @@ import java.util.concurrent.atomic.AtomicLong;
             int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
             workCount=Math.max(count,workCount);
         }
-        workerManager=new WorkerManager(workCount);
-        return workerManager;
+        IOEventProcessorManager =new IOEventProcessorManager(workCount);
+        return IOEventProcessorManager;
     }
 
     private static int getBusinessCount(Long maxBusinessProcessTime,Long thresholdTime){
@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicLong;
     private ExecutorService fixedLogWorkerService;
     private ArrayList<IOEventProcessor> balancedIOEventProcessorList;
 
-    private WorkerManager(int workerCount){
+    private IOEventProcessorManager(int workerCount){
         init(workerCount);
     }
 
@@ -159,7 +159,7 @@ import java.util.concurrent.atomic.AtomicLong;
     }
 
     public static void setMonitorMap(ConcurrentHashMap<Long, AbstractIOTasks> monitorMap) {
-        WorkerManager.monitorMap = monitorMap;
+        IOEventProcessorManager.monitorMap = monitorMap;
     }
 
     private class EntryDesc{
