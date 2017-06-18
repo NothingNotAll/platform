@@ -10,47 +10,47 @@ import java.util.concurrent.locks.LockSupport;
  * @create 2017-06-17 7:51
  **/
 
-public class WorkerV2<T extends AbstractTasks> implements Runnable {
+public class IOEventProcessorV2<T extends AbstractIOTasks> implements Runnable {
 
     private Thread workerThread;
     private Integer loadNo;
 
-    WorkerV2(Integer loadNo){
+    IOEventProcessorV2(Integer loadNo){
         this.loadNo=loadNo;
     }
 
-    void active(AbstractTasks AbstractTasks){
-        unPark(AbstractTasks);
+    void active(AbstractIOTasks AbstractIOTasks){
+        unPark(AbstractIOTasks);
     }
 
-    private void unPark(AbstractTasks abstractTasks){
-        int index=(int)((long)abstractTasks.getPriorLevel());
-        LinkedBlockingQueue<AbstractTasks> queue=taskQueue[index];
-        queue.add(abstractTasks);
+    private void unPark(AbstractIOTasks abstractIOTasks){
+        int index=(int)((long) abstractIOTasks.getPriorLevel());
+        LinkedBlockingQueue<AbstractIOTasks> queue=taskQueue[index];
+        queue.add(abstractIOTasks);
         LockSupport.unpark(workerThread);
     }
 
     /*
         * new version: the tasksQueue is the fixed size list
-        * and tasks Map is the Long(taskSequence)-AbstractTasks key-value map
+        * and tasks Map is the Long(taskSequence)-AbstractIOTasks key-value map
         * */
-    private LinkedBlockingQueue<AbstractTasks>[] taskQueue;
+    private LinkedBlockingQueue<AbstractIOTasks>[] taskQueue;
     private volatile int maxPriorLevel;
 
-    WorkerV2(Thread wt,int maxPriorLevel){
+    IOEventProcessorV2(Thread wt, int maxPriorLevel){
         this.workerThread=wt;
         taskQueue=new LinkedBlockingQueue[maxPriorLevel];
         for(int index=0;index<maxPriorLevel;index++){
-            taskQueue[index]=new LinkedBlockingQueue<AbstractTasks>();
+            taskQueue[index]=new LinkedBlockingQueue<AbstractIOTasks>();
         }
         this.maxPriorLevel=maxPriorLevel;
     }
     private volatile int index;
-    private volatile LinkedBlockingQueue<AbstractTasks> tempConTaskList;
+    private volatile LinkedBlockingQueue<AbstractIOTasks> tempConTaskList;
     private volatile int tempBlockCount;
     private volatile int blockTotalCount;
-    private LinkedList<AbstractTasks> tempTaskList=new LinkedList<AbstractTasks>();
-    private AbstractTasks tempTasks;
+    private LinkedList<AbstractIOTasks> tempTaskList=new LinkedList<AbstractIOTasks>();
+    private AbstractIOTasks tempTasks;
     public void run() {
         try{
             while(true){
@@ -81,8 +81,8 @@ public class WorkerV2<T extends AbstractTasks> implements Runnable {
 
         }
     }
-    private void consumer(LinkedList<AbstractTasks> tempTaskList) {
-        Iterator<AbstractTasks> iterator=tempTaskList.iterator();
+    private void consumer(LinkedList<AbstractIOTasks> tempTaskList) {
+        Iterator<AbstractIOTasks> iterator=tempTaskList.iterator();
         while(iterator.hasNext()){
             tempTasks=iterator.next();
         }

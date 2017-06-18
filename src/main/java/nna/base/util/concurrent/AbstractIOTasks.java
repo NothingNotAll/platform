@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 //Single Direction Insert Task , can not make use of
 // Been Set Null ' s slot;
 // but we can solve it with recycle queue to make full use of memory and solve the oom problem
- abstract class AbstractTasks {
+ abstract class AbstractIOTasks {
      public static final int START=0;
      public static final int WORKING=1;
      public static final int END=2;
@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
     protected Long endTime;
     protected Long priorLevel;//used as exe sequence of tasks; but worker must used ArrayList as tasks container and index as the priorLevel;
      //limit we want to user container as this:can auto resize and gc non using null slot;
-    protected volatile AbstractTask[] list;//for 有序的 task
+    protected volatile AbstractIOTask[] list;//for 有序的 task
     protected volatile Long[] taskStartTimes;
     protected volatile Long[] taskEndTimes;
     protected volatile Long[] taskPriorLevels;//used as in the one task , the sequence of exe;
@@ -50,14 +50,14 @@ import java.util.concurrent.locks.ReentrantLock;
     * only adapt for One Producer(business thread producer) and One Consumer Thread
     * */
 
-     AbstractTasks(int taskCount,Long workId){
+     AbstractIOTasks(int taskCount, Long workId){
         startTime=System.currentTimeMillis();
         this.workId=workId;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
         counter=new AtomicLong(Long.valueOf(taskCount).longValue());
-        list=new AbstractTask[taskCount];
+        list=new AbstractIOTask[taskCount];
         taskTypes=new int[taskCount];
         objects=new Object[taskCount];
         status=new int[taskCount];
@@ -72,11 +72,11 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    protected abstract AbstractTask doTasks();
+    protected abstract AbstractIOTask doTasks();
 
 
     protected boolean lockAndExe(
-            AbstractTask abstractTask,
+            AbstractIOTask abstractIOTask,
             int tempIndex){
         ReentrantLock lock=locks[tempIndex];
         boolean isLocked=false;
@@ -89,7 +89,7 @@ import java.util.concurrent.locks.ReentrantLock;
             if(status[tempIndex]==START){
                status[tempIndex]=WORKING;
                Object attach=objects[tempIndex];
-               if(!work(abstractTask,attach,taskTypes[tempIndex])){
+               if(!work(abstractIOTask,attach,taskTypes[tempIndex])){
                    status[tempIndex]=FAIL;
                }else{
                    status[tempIndex]=END;
@@ -118,12 +118,12 @@ import java.util.concurrent.locks.ReentrantLock;
         objects[workIndex]=null;
     }
 
-    private boolean work(AbstractTask abstractTask,
+    private boolean work(AbstractIOTask abstractIOTask,
                       Object attach,
                       int status) {
         boolean isSuccess=true;
         try{
-            abstractTask.doTask(status,attach);
+            abstractIOTask.doTask(status,attach);
         }catch (Exception e){
             isSuccess=false;
         }
@@ -131,7 +131,7 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     void addTask(
-            AbstractTask abstractTask,
+            AbstractIOTask abstractIOTask,
             int taskType,
             Object attach){
         Long startTime=System.currentTimeMillis();
@@ -141,7 +141,7 @@ import java.util.concurrent.locks.ReentrantLock;
             lock=locks[seq];
             lock.lock();
             taskStartTimes[seq]=startTime;
-            list[seq]=abstractTask;//一定可以保证有序，当前只有业务线程来处理
+            list[seq]= abstractIOTask;//一定可以保证有序，当前只有业务线程来处理
             taskTypes[seq]=taskType;
 //            System.out.println(taskType+"-"+seq);
             objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
@@ -153,11 +153,11 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    public AbstractTask[] getList() {
+    public AbstractIOTask[] getList() {
         return list;
     }
 
-    public void setList(AbstractTask[] list) {
+    public void setList(AbstractIOTask[] list) {
         this.list = list;
     }
 

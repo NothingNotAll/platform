@@ -8,10 +8,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * @create 2017-05-29 18:50
  **/
 
-public abstract class AbstractTask{
+public abstract class AbstractIOTask {
     public static final int OVER=-1;//任务结束
 
-    private AbstractTasks tasks;
+    private AbstractIOTasks tasks;
     private int failTryTimes;
     private int workCount;
     private String taskName;
@@ -25,11 +25,11 @@ public abstract class AbstractTask{
     private boolean isWorkSeq;
 
     static{
-        System.out.println("init Worker Manager!");
-        WorkerEntry.init(null,null);
+        System.out.println("init IOEventProcessor Manager!");
+        IOTaskEntry.init(null,null);
     }
 
-    public AbstractTask(String taskName,int workCount,boolean isWorkSeq){
+    public AbstractIOTask(String taskName, int workCount, boolean isWorkSeq){
         this.taskName=taskName;
         this.thread=Thread.currentThread();
         threadId=thread.getId();
@@ -39,7 +39,7 @@ public abstract class AbstractTask{
     }
 
     protected void submitEvent(Object object,int taskType){
-        WorkerEntry.submitEvent(this,object,taskType);
+        IOTaskEntry.submitEvent(this,object,taskType);
     }
 
     protected abstract Object doTask(int taskType,Object attach);
@@ -116,11 +116,11 @@ public abstract class AbstractTask{
         this.initLock = initLock;
     }
 
-    public AbstractTasks getTasks() {
+    public AbstractIOTasks getTasks() {
         return tasks;
     }
 
-    public void setTasks(AbstractTasks tasks) {
+    public void setTasks(AbstractIOTasks tasks) {
         this.tasks = tasks;
     }
 

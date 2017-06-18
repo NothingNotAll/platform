@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @create 2017-06-13 10:12
  **/
 
-public class Worker<T extends AbstractTask> extends Clone implements Runnable{
+public class IOEventProcessor<T extends AbstractIOTask> extends Clone implements Runnable{
 
     private static final Long serialVersionUID=-1L;
     private Integer loadNo;
@@ -25,13 +25,13 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
     //in the future this must be replaced of ArrayListBlockingQueue;and used index as the priorLevel;
-    private volatile LinkedBlockingQueue<AbstractTasks> workQueue=new LinkedBlockingQueue<AbstractTasks>();
+    private volatile LinkedBlockingQueue<AbstractIOTasks> workQueue=new LinkedBlockingQueue<AbstractIOTasks>();
 
     private int tempWorkCount;
-    private AbstractTasks blockAbstractTasks;
-    private LinkedList<AbstractTasks> tempWorkList=new LinkedList<AbstractTasks>();
-    private Iterator<AbstractTasks> iterator;
-    private AbstractTasks currentAbstractTasks;
+    private AbstractIOTasks blockAbstractIOTasks;
+    private LinkedList<AbstractIOTasks> tempWorkList=new LinkedList<AbstractIOTasks>();
+    private Iterator<AbstractIOTasks> iterator;
+    private AbstractIOTasks currentAbstractIOTasks;
 
     public void run() {
         try{
@@ -41,8 +41,8 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
                     //性能瓶頸點
                     tempWorkCount=workQueue.drainTo(tempWorkList,tempWorkCount);
                 }else{
-                    blockAbstractTasks =workQueue.take();
-                    tempWorkList.add(blockAbstractTasks);
+                    blockAbstractIOTasks =workQueue.take();
+                    tempWorkList.add(blockAbstractIOTasks);
                     tempWorkCount=1;
                 }
                 try{
@@ -58,22 +58,22 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
     }
 
     private void destroy() {
-        tempWorkList=new LinkedList<AbstractTasks>();
-        blockAbstractTasks =null;
+        tempWorkList=new LinkedList<AbstractIOTasks>();
+        blockAbstractIOTasks =null;
         tempWorkCount=0;
-        currentAbstractTasks =null;
+        currentAbstractIOTasks =null;
     }
 
-    private void consumer(LinkedList<AbstractTasks> tempWorkList) throws IOException {
+    private void consumer(LinkedList<AbstractIOTasks> tempWorkList) throws IOException {
         iterator=tempWorkList.iterator();
         while(iterator.hasNext()){
-            currentAbstractTasks =iterator.next();
-            check(currentAbstractTasks);
-            currentAbstractTasks.doTasks();//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
+            currentAbstractIOTasks =iterator.next();
+            check(currentAbstractIOTasks);
+            currentAbstractIOTasks.doTasks();//这里 IO 阻塞越短越好，CPU利用率越高。吞吐量就越大。
         }
     }
 
-    private void check(AbstractTasks currentAbstractTasks) {
+    private void check(AbstractIOTasks currentAbstractIOTasks) {
     }
 
     public int getTempWorkCount() {
@@ -92,11 +92,11 @@ public class Worker<T extends AbstractTask> extends Clone implements Runnable{
         this.loadNo = loadNo;
     }
 
-    public LinkedBlockingQueue<AbstractTasks> getWorkQueue() {
+    public LinkedBlockingQueue<AbstractIOTasks> getWorkQueue() {
         return workQueue;
     }
 
-    public void setWorkQueue(LinkedBlockingQueue<AbstractTasks> workQueue) {
+    public void setWorkQueue(LinkedBlockingQueue<AbstractIOTasks> workQueue) {
         this.workQueue = workQueue;
     }
 }

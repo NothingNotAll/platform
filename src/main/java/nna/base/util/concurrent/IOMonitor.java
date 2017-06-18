@@ -9,9 +9,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @create 2017-06-15 21:53
  **/
 
-public class Monitor implements Runnable {
+public class IOMonitor implements Runnable {
     SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
-    private Worker[] workers;
+    private IOEventProcessor[] IOEventProcessors;
     /**
      * When an object implementing interface <code>Runnable</code> is used
      * to create a thread, starting the thread causes the object's
@@ -25,13 +25,13 @@ public class Monitor implements Runnable {
      */
     public void run() {
         while(true){
-            for(Worker worker:workers){
-                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+worker.getLoadNo()+"-"+worker.getWorkQueue().size());
-                LinkedBlockingQueue<AbstractTasks> queue=worker.getWorkQueue();
-                Iterator<AbstractTasks> iterator=queue.iterator();
-                AbstractTasks abstractTasks;
+            for(IOEventProcessor IOEventProcessor : IOEventProcessors){
+                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+ IOEventProcessor.getLoadNo()+"-"+ IOEventProcessor.getWorkQueue().size());
+                LinkedBlockingQueue<AbstractIOTasks> queue= IOEventProcessor.getWorkQueue();
+                Iterator<AbstractIOTasks> iterator=queue.iterator();
+                AbstractIOTasks abstractIOTasks;
                 while(iterator.hasNext()){
-                    abstractTasks=iterator.next();
+                    abstractIOTasks =iterator.next();
                 }
             }
             try {
@@ -43,11 +43,11 @@ public class Monitor implements Runnable {
         }
     }
 
-    public Worker[] getWorkers() {
-        return workers;
+    public IOEventProcessor[] getIOEventProcessors() {
+        return IOEventProcessors;
     }
 
-    public void setWorkers(Worker[] workers) {
-        this.workers = workers;
+    public void setIOEventProcessors(IOEventProcessor[] IOEventProcessors) {
+        this.IOEventProcessors = IOEventProcessors;
     }
 }
