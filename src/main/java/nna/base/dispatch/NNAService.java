@@ -75,7 +75,7 @@ public class NNAService {
     }
 
     private static MetaBean getMetaBean(String entryCode) {
-        MetaBean metaBean=null;
+        MetaBean metaBean;
         ConcurrentHashMap<String,Integer> map=MetaBean.getSrvEnNmToId();
         Integer mbID=map.get(entryCode);
         metaBean=MetaBean.getConfMetaCache().get(mbID);
