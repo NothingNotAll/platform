@@ -340,11 +340,5 @@ public class NNAServiceInit2 {
                 4000
         );
         MetaBean.setpLog(pLog);
-        testConFrame(true);
-    }
-
-    private void testConFrame(boolean b) {
-        if(b){
-        }
     }
 }
