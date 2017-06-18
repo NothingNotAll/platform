@@ -20,7 +20,7 @@ public abstract class AbstractIOTask {
     private Long threadId;
     private String threadName;
     private volatile int taskStatus;
-    private Integer iOLoadEventProcessorId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
+    private volatile Integer iOLoadEventProcessorId;//所属工作组 负载均衡 是由具体哪个worker 来处理任务
     private volatile boolean isInit=false;
     private ReentrantLock initLock=new ReentrantLock();
 

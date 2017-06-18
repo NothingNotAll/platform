@@ -89,13 +89,18 @@ import java.util.concurrent.atomic.AtomicLong;
     void submitEvent(AbstractIOTask t, Object object, int taskType) {
         AbstractIOTasks abstractIOTasks =t.getTasks();
         Integer index=t.getiOLoadEventProcessorId();
-        IOEventProcessor IOEventProcessor=balancedIOEventProcessorList.get(index);;
+        IOEventProcessor ioEventProcessor=balancedIOEventProcessorList.get(index);;
         Long workId= abstractIOTasks.getGlobalWorkId();
         if(taskType== AbstractIOTask.OVER){
             monitorMap.remove(workId);
         }
+        if(!abstractIOTasks.isWorkSeq){
+            EntryDesc entryDesc=getBalanceWorker();
+            ioEventProcessor=entryDesc.IOEventProcessor;
+            t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
+        }
         abstractIOTasks.addTask(t,taskType,object);
-        Runnable nonInitDispatcher =new IODispatcher(abstractIOTasks, IOEventProcessor);
+        Runnable nonInitDispatcher =new IODispatcher(abstractIOTasks, ioEventProcessor);
         cachedService.submit(nonInitDispatcher);
     }
 
@@ -107,10 +112,10 @@ import java.util.concurrent.atomic.AtomicLong;
         IOEventProcessor ioEventProcessor=entryDesc.IOEventProcessor;
         if(isWorkSeq){
             abstractIOTasks =new SeqAbstractIOTasks(workCount,workId);
-            t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
         }else{
             abstractIOTasks =new NoSeqAbstractIOTasks(workCount,workId);
         }
+        t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
         t.setTasks(abstractIOTasks);
         monitorMap.put(workId, abstractIOTasks);
         abstractIOTasks.setGlobalWorkId(workId);
