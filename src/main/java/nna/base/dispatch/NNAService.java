@@ -9,9 +9,12 @@ import nna.base.bean.dbbean.PlatformSession;
 import nna.base.dispatch.protocol.Protocol;
 import nna.base.log.Log;
 
+import static nna.base.dispatch.Dispatch.dispatch;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * @author NNA-SHUAI
@@ -21,14 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NNAService {
 
     private NNAService(){}
-    public static String dispatch(Map<String,String[]> map){
+    public static String service(Map<String,String[]> map){
         String entryCode=map.get(Marco.HEAD_ENTRY_CODE)[0];
         MetaBean metaBean=getMetaBean(entryCode);
         MetaBeanWrapper metaBeanWrapper=new MetaBeanWrapper(metaBean);
         getAndSetLog(metaBeanWrapper);
         String rspStr="";
         try {
-            Dispatch.dispatch(metaBeanWrapper);
+            dispatch(metaBeanWrapper);
             rspStr=getRspStr(metaBeanWrapper);
         } catch (Exception e) {
             e.printStackTrace();
