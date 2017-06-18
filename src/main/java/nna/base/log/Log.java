@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
  **/
 
 public class Log extends AbstractIOTask {
-    public static final int INIT=0;
     public static final int WRITING=1;
     public static final int NOTHING=3;
 
@@ -53,7 +52,7 @@ public class Log extends AbstractIOTask {
         this.closeTimeout=closeTimeout;
         this.encode=encode;
         setTaskStatus(INIT);
-        submitEvent(null,INIT);
+        submitInitEvent(null,true);
     }
 
     public void log(String log,int logLevel){
