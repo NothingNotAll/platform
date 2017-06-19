@@ -21,6 +21,7 @@ public class NIOClientTask extends AbstractNIOTask {
 
     private ByteBuffer requestBytes;
     protected SocketChannel channel;
+    protected ClientConfig endConfig;
     public NIOClientTask(ByteBuffer requestBytes,
                          EndConfig endConfig,
                          Object object,

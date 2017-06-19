@@ -19,13 +19,14 @@ public class NIOServerTask extends AbstractNIOTask {
     private static final int SERVER_CONNECT=6;
 
     protected ServerSocketChannel channel;
+    protected ServerConfig endConfig;
     public NIOServerTask( EndConfig endConfig, Object object, Method method) throws IOException {
         super("NIO Server", 10, endConfig, object, method);
     }
 
     protected void register() throws IOException {
         NIOSelector.registerChannel(channel, SelectionKey.OP_CONNECT,this);
-        channel.bind(socketAddress,((ServerConfig)endConfig).getBackLog());
+        channel.bind(socketAddress,(endConfig).getBackLog());
     }
 
     protected void setChannel() throws IOException {
