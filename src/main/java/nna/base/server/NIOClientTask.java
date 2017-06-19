@@ -14,10 +14,10 @@ import java.nio.channels.*;
  **/
 
 public class NIOClientTask extends AbstractNIOTask {
-    private static final int CLIENT_ACCEPT = 4;
-    private static final int CLIENT_READ=5;
-    private static final int CLIENT_CONNECT=9;
-    private static final int CLIENT_WRITE = 10;
+    private static final int CLIENT_ACCEPT = SelectionKey.OP_ACCEPT;
+    private static final int CLIENT_READ=SelectionKey.OP_READ;
+    private static final int CLIENT_CONNECT=SelectionKey.OP_CONNECT;
+    private static final int CLIENT_WRITE = SelectionKey.OP_WRITE;
 
     private ByteBuffer requestBytes;
     protected SocketChannel channel;
@@ -66,7 +66,8 @@ public class NIOClientTask extends AbstractNIOTask {
         return null;
     }
 
-    private void close(Object attach) {
+    private void close(Object attach) throws IOException {
+        channel.close();
     }
 
     protected void register() throws ClosedChannelException {

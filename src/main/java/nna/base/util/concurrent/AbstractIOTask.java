@@ -46,7 +46,7 @@ public abstract class AbstractIOTask {
         IOTaskEntry.startTask(this,object,isWorkSeq);
     }
 
-    protected abstract Object doTask(int taskType,Object attach) throws IOException, InvocationTargetException, IllegalAccessException;
+    protected abstract Object doTask(int taskType,Object attach) throws Exception;
 
     public Long getThreadId() {
         return threadId;

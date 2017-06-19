@@ -93,7 +93,7 @@ public class Log extends AbstractIOTask {
         return isInit()&&logStrBuilder.toString().getBytes().length >= flushLimit;
     }
 
-    protected Object init(Object object) {
+    protected Object init(Object object) throws Exception {
         boolean locked=false;
         try{
             if(!isInit()&&getInitLock().tryLock()){
@@ -102,7 +102,6 @@ public class Log extends AbstractIOTask {
                         "/"+logDir+"/"+yyMMdd.format(startTime)+"/"+logName+"/"+HHmmssSS.format(startTime)+"/";
                 String logFileName=logPath+logName;
 //                System.out.println(startTime+"-"+logFileName);
-                try {
                     File logDir=new File(logPath);
                     if(!logDir.exists()){
                         logDir.mkdirs();
@@ -116,43 +115,28 @@ public class Log extends AbstractIOTask {
                     writer=new BufferedWriter(
                             new OutputStreamWriter(
                                     new FileOutputStream(logFile),encode));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }finally {
-                    setInit(true);
-                }
             }
         }catch (Exception e){
             e.printStackTrace();
+            throw new Exception(e);
         }finally {
             if(locked){
                 getInitLock().unlock();
             }
+            setInit(true);
         }
         return null;
     }
 
-    protected Object work(Object object) {
-        try {
-            writer.write(object==null?"null":object.toString());
-            writer.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected Object work(Object object) throws IOException {
+        writer.write(object==null?"null":object.toString());
+        writer.flush();
         return null;
     }
 
-    protected Object destroy(Object object) {
-        try {
+    protected Object destroy(Object object) throws IOException {
 //            System.out.println(writer==null);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writer.close();
         return null;
     }
 
@@ -177,7 +161,7 @@ public class Log extends AbstractIOTask {
                 closeTimeout,encode,true,logTime);
     }
 
-    protected Object doTask(int taskType, Object attach) {
+    protected Object doTask(int taskType, Object attach) throws Exception {
         switch (taskType){
             case INIT:
                 init(attach);

@@ -14,9 +14,9 @@ import java.nio.channels.*;
 
 public class NIOServerTask extends AbstractNIOTask {
 
-    private static final Object SERVER_READ = 11;
-    private static final int SERVER_WRITE = 12;
-    private static final int SERVER_CONNECT=6;
+    private static final int SERVER_READ = SelectionKey.OP_READ;
+    private static final int SERVER_WRITE = SelectionKey.OP_WRITE;
+    private static final int SERVER_CONNECT=SelectionKey.OP_CONNECT;
 
     protected ServerSocketChannel channel;
     protected ServerConfig endConfig;
@@ -56,6 +56,7 @@ public class NIOServerTask extends AbstractNIOTask {
         method.invoke(object,channel,protocolType,SERVER_READ);
     }
 
-    private void close(Object attach) {
+    private void close(Object attach) throws IOException {
+        channel.close();
     }
 }
