@@ -20,4 +20,8 @@ public Linker{
     private Object returnObject;
 }
 
+
+brain Storm 随机数算法 与 人工智能 人的意识不可以用人能够知道的东西或者可预测的东西来创造，
+只可以用人无法预料的事情去创造。所以可以用人无法预料的随机数去构建人的意识，
+当然其中肯定要借鉴很多已经成熟的人工智能的概念。
 The goal is that config with person instead of write with hand
