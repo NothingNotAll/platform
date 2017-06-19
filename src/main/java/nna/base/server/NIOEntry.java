@@ -14,12 +14,12 @@ import java.nio.ByteBuffer;
 public class NIOEntry {
     private NIOTask nioTask;
 
-    public NIOEntry(ServerConfig endConfig,Object object,Method method) throws IOException {
-        nioTask=new NIOTask(endConfig,object,method);
+    public NIOEntry(ServerConfig endConfig,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
+        nioTask=new NIOTask(endConfig,protocolProcessObject,protocolProcessMethod);
     }
 
-    public NIOEntry(ClientConfig clientConfig,ByteBuffer requestBytes,Object object,Method method) throws IOException {
-        nioTask=new NIOTask(clientConfig,requestBytes,object,method);
+    public NIOEntry(ClientConfig clientConfig,ByteBuffer requestBytes,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
+        nioTask=new NIOTask(clientConfig,requestBytes,protocolProcessObject,protocolProcessMethod);
     }
 
     public NIOTask getNioTask() {
