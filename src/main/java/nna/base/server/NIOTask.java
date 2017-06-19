@@ -59,13 +59,13 @@ public class NIOTask extends AbstractIOTask {
         InetSocketAddress socket=new InetSocketAddress(ip,port);
         this.socketAddress=socket;
         setSocketOption(socketChannel,clientConfig);
-        NIOServer.registerChannel(socketChannel,SelectionKey.OP_ACCEPT,this);
+        NIOSelector.registerChannel(socketChannel,SelectionKey.OP_ACCEPT,this);
     }
 
     public NIOTask(ServerConfig serverConfig,
                    Object object,
                    Method method) throws IOException {
-        super("NIOServer",10);
+        super("NIOSelector",10);
         this.object=object;
         this.method=method;
         this.serverConfig=serverConfig;
@@ -75,7 +75,7 @@ public class NIOTask extends AbstractIOTask {
         int port=serverConfig.getPort();
         this.socketAddress=new InetSocketAddress(ip,port);
         setSocketOption(serverSocketChannel,serverConfig);
-        NIOServer.registerChannel(serverSocketChannel,SelectionKey.OP_CONNECT,this);
+        NIOSelector.registerChannel(serverSocketChannel,SelectionKey.OP_CONNECT,this);
         serverSocketChannel.bind(socketAddress,serverConfig.getBackLog());
     }
 
@@ -140,11 +140,11 @@ public class NIOTask extends AbstractIOTask {
             socketChannel.finishConnect();
         }
         method.invoke(object,socketChannel,requestBytes,CLIENT_WRITE);
-        NIOServer.registerChannel(socketChannel,SelectionKey.OP_READ,this);
+        NIOSelector.registerChannel(socketChannel,SelectionKey.OP_READ,this);
     }
 
     private void clientConnect(Object attach) throws IOException {
         socketChannel.connect(socketAddress);
-        NIOServer.registerChannel(socketChannel,SelectionKey.OP_ACCEPT,this);
+        NIOSelector.registerChannel(socketChannel,SelectionKey.OP_ACCEPT,this);
     }
 }

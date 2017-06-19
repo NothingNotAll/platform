@@ -9,14 +9,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * NIOServer
+ * NIOSelector
  * do not care the protocol of app;
  * only responsible for IO Event ;
  * @author NNA-SHUAI
  * @create 2017-06-19 11:37
  **/
 
-public class NIOServer implements Runnable{
+public class NIOSelector implements Runnable{
      static Selector selector = null;
      static ExecutorService executorService= Executors.newFixedThreadPool(1);
      static IOEventProcessor ioEventProcessor=new IOEventProcessor();
@@ -24,7 +24,7 @@ public class NIOServer implements Runnable{
     static {
         try {
             selector = SelectorProvider.provider().openSelector();
-            executorService.submit(new NIOServer());
+            executorService.submit(new NIOSelector());
             isInit=true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class NIOServer implements Runnable{
         selectableChannel.register(selector,ops,att);
     }
 
-    private NIOServer(){}
+    private NIOSelector(){}
     private Set<SelectionKey> set;
     private int ioEventCount;
     private Iterator<SelectionKey> iterator;
