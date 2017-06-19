@@ -20,8 +20,12 @@ public class Protocol {
 
     private Protocol(){}
 
-    public static void process(SocketChannel socketChannel, ByteBuffer byteBuffer,int type){}
-    public static void process(SocketChannel socketChannel,int type){}
+    public static void process(SocketChannel socketChannel, ByteBuffer byteBuffer,int type){
+
+    }
+    public static void process(SocketChannel socketChannel,int type){
+
+    }
 
     public static String protocolAdapter(MetaBeanWrapper metaBeanWrapper, int protocolType) throws InvocationTargetException, IllegalAccessException {
         switch (protocolType){

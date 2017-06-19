@@ -1,4 +1,4 @@
-package nna.base.server;
+package nna.base.dispatch;
 
 import java.util.concurrent.locks.ReentrantLock;
 
