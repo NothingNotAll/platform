@@ -1,6 +1,5 @@
 package nna.base.init;
 
-import nna.Marco;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.db.DBCon;

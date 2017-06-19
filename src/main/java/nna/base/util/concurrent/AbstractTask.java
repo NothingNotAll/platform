@@ -1,8 +1,6 @@
 package nna.base.util.concurrent;
 
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -10,11 +8,11 @@ import java.util.concurrent.locks.ReentrantLock;
  * @create 2017-05-29 18:50
  **/
 
-public abstract class AbstractIOTask {
+public abstract class AbstractTask {
     public static final int OVER=-1;//任务结束
     public static final int INIT=0;
 
-    private AbstractIOTasks tasks;
+    private AbstractTasks tasks;
     private int failTryTimes;
     private int workCount;
     private String taskName;
@@ -26,11 +24,11 @@ public abstract class AbstractIOTask {
     private ReentrantLock initLock=new ReentrantLock();
 
     static{
-        System.out.println("init IOEventProcessor Manager!");
-        IOTaskEntry.init(null,null);
+        System.out.println("init EventProcessor Manager!");
+        TaskEntry.init(null,null);
     }
 
-    public AbstractIOTask(String taskName, int workCount){
+    public AbstractTask(String taskName, int workCount){
         this.taskName=taskName;
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
@@ -39,11 +37,11 @@ public abstract class AbstractIOTask {
     }
 
     protected void addNewTask(Object object,int taskType){
-        IOTaskEntry.addNewTask(this,object,taskType);
+        TaskEntry.addNewTask(this,object,taskType);
     }
 
     protected void startTask(Object object,boolean isWorkSeq){
-        IOTaskEntry.startTask(this,object,isWorkSeq);
+        TaskEntry.startTask(this,object,isWorkSeq);
     }
 
     protected abstract Object doTask(int taskType,Object attach) throws Exception;
@@ -112,11 +110,11 @@ public abstract class AbstractIOTask {
         this.initLock = initLock;
     }
 
-    public AbstractIOTasks getTasks() {
+    public AbstractTasks getTasks() {
         return tasks;
     }
 
-    public void setTasks(AbstractIOTasks tasks) {
+    public void setTasks(AbstractTasks tasks) {
         this.tasks = tasks;
     }
 

@@ -19,8 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 //Single Direction Insert Task , can not make use of
 // Been Set Null ' s slot;
 // but we can solve it with recycle queue to make full use of memory and solve the oom problem
- abstract class AbstractIOTasks implements Runnable{
-    public static final int INIT=0;
+ abstract class AbstractTasks implements Runnable{
     public static final int START=1;
     public static final int WORKING=2;
     public static final int END=3;
@@ -30,16 +29,14 @@ import java.util.concurrent.locks.ReentrantLock;
     protected Long endTime;
     protected Long priorLevel;//used as exe sequence of tasks; but worker must used ArrayList as tasks container and index as the priorLevel;
      //limit we want to user container as this:can auto resize and gc non using null slot;
-    protected volatile AbstractIOTask[] list;//for 有序的 task
+    protected volatile AbstractTask[] list;//for 有序的 task
     protected volatile Long[] taskStartTimes;
     protected volatile Long[] taskEndTimes;
     protected volatile Long[] taskPriorLevels;//used as in the one task , the sequence of exe;
     protected volatile int[] taskTypes;//任务类型
     protected volatile int[] status;//任务状态 未进队 初始化 工作中 结束
     protected volatile Object[] objects;//oom-limit : a large of
-    protected ReentrantLock[] locks;//for NoSeqTasks
     protected Long globalWorkId;//集群唯一id；
-    protected boolean isWorkSeq;//是否
 
     // waste memory with null slot except that task is been worked with short time
     protected volatile Integer enQueueIndex;
@@ -53,25 +50,22 @@ import java.util.concurrent.locks.ReentrantLock;
     * only adapt for One Producer(business thread producer) and One Consumer Thread
     * */
 
-     AbstractIOTasks(int taskCount, Long globalWorkId,boolean isWorkSeq){
+     AbstractTasks(int taskCount, Long globalWorkId){
         startTime=System.currentTimeMillis();
-        this.isWorkSeq=isWorkSeq;
         this.globalWorkId=globalWorkId;
         enQueueIndex=0;
         workCount=taskCount;
         workIndex=0;
         counter=new AtomicLong(Long.valueOf(taskCount).longValue());
-        list=new AbstractIOTask[taskCount];
+        list=new AbstractTask[taskCount];
         taskTypes=new int[taskCount];
         objects=new Object[taskCount];
         status=new int[taskCount];
-        locks=new ReentrantLock[taskCount];
         taskPriorLevels=new Long[taskCount];
         taskEndTimes=new Long[taskCount];
         taskStartTimes=new Long[taskCount];
         for(int index=0;index < taskCount;index++){
-            locks[index]=new ReentrantLock();
-            status[index]=INIT;
+            status[index]=AbstractTask.INIT;
             taskPriorLevels[index]=0L;
         }
     }
@@ -87,60 +81,56 @@ import java.util.concurrent.locks.ReentrantLock;
         list[workIndex]=null;
         objects[workIndex]=null;
     }
-
+    /*
+    * return 0: 任务还未进队
+    * -1：任务结束：
+    *
+    * */
     protected int work(int tempIndex) {
         int currentStatus=status[tempIndex];
-        if(currentStatus==INIT){
-            return INIT;
+        int taskType=taskTypes[tempIndex];
+        if(currentStatus==AbstractTask.INIT){
+            return AbstractTask.INIT;
         }
         if(currentStatus==START){
             status[tempIndex]=WORKING;
             Object attach=objects[tempIndex];
-            AbstractIOTask abstractIOTask=list[tempIndex];
-            int taskType=taskTypes[tempIndex];
+            AbstractTask abstractTask =list[tempIndex];
             try{
-                abstractIOTask.doTask(taskType,attach);
+                abstractTask.doTask(taskType,attach);
                 status[tempIndex]=END;
+                return -2;
             }catch (Exception e){
                 status[tempIndex]=FAIL;
                 e.printStackTrace();
-            }finally {
-
-            }
-            if(taskType==AbstractIOTask.OVER){
-                return AbstractIOTask.OVER;
             }
         }
-        return currentStatus;
+        return taskType;//
     }
 
-    void addTask(
-            AbstractIOTask abstractIOTask,
+    boolean addTask(
+            AbstractTask abstractTask,
             int taskType,
             Object attach){
         Long startTime=System.currentTimeMillis();
         int seq=sequenceGen.getAndIncrement();
-        ReentrantLock lock=null;
-        try{
-            lock=locks[seq];
-            lock.lock();
-            taskStartTimes[seq]=startTime;
-            list[seq]= abstractIOTask;//一定可以保证有序，当前只有业务线程来处理
-            taskTypes[seq]=taskType;
+        setNonNull(seq,startTime,abstractTask,taskType,attach);
+        enQueueIndex=seq+1;
+        unPark();
+        return true;
+    }
+
+    protected void setNonNull(int seq, Long startTime, AbstractTask abstractTask, int taskType, Object attach) {
+        taskStartTimes[seq]=startTime;
+        list[seq]= abstractTask;//一定可以保证有序，当前只有业务线程来处理
+        taskTypes[seq]=taskType;
 //            System.out.println(taskType+"-"+seq);
-            objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
-            status[seq]=START;
-            enQueueIndex=seq+1;
-            unPark();
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            lock.unlock();
-        }
+        objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
+        status[seq]=START;
     }
 
 
-////Tasks execute design begin
+    ////Tasks execute design begin
     protected volatile Thread thread;
     protected AtomicLong inc=new AtomicLong(0L);
     protected AtomicLong add=new AtomicLong(0L);//avoid ABA bug
@@ -152,9 +142,10 @@ import java.util.concurrent.locks.ReentrantLock;
             thread=Thread.currentThread();
             try{
                 while(true){
-                    if(doTasks()!=AbstractIOTask.OVER){
+                    if(doTasks()!= AbstractTask.OVER){
                         park();
                     }else{
+                        System.out.println("OVER");
                         break;
                     }
                 }
@@ -192,11 +183,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
     //Tasks execute design end
 
-    public AbstractIOTask[] getList() {
+    public AbstractTask[] getList() {
         return list;
     }
 
-    public void setList(AbstractIOTask[] list) {
+    public void setList(AbstractTask[] list) {
         this.list = list;
     }
 
@@ -232,11 +223,4 @@ import java.util.concurrent.locks.ReentrantLock;
         this.globalWorkId = globalWorkId;
     }
 
-    public boolean isWorkSeq() {
-        return isWorkSeq;
-    }
-
-    public void setWorkSeq(boolean workSeq) {
-        isWorkSeq = workSeq;
-    }
 }

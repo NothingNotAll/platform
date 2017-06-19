@@ -11,28 +11,28 @@ import java.nio.channels.SocketChannel;
 
 public class IOEventProcessor {
     private void processAcceptEvent(SelectionKey acceptSK,
-                                    SocketChannel socketChannel,
+                                    SelectableChannel socketChannel,
                                     NIOEntry att,
                                     int ioEventType){
         //there can do other thing
     }
 
     private void processConnectEvent(SelectionKey acceptSK,
-                                     SocketChannel socketChannel,
+                                     SelectableChannel socketChannel,
                                      NIOEntry att,
                                      int ioEventType){
         //there can do other thing
     }
 
     private void processReadEvent(SelectionKey acceptSK,
-                                  SocketChannel socketChannel,
+                                  SelectableChannel socketChannel,
                                   NIOEntry att,
                                   int ioEventType){
         //there can do other thing
     }
 
     private void processWriteEvent(SelectionKey acceptSK,
-                                   SocketChannel socketChannel,
+                                   SelectableChannel socketChannel,
                                    NIOEntry att,
                                    int ioEventType){
         //there can do other thing
@@ -52,7 +52,7 @@ public class IOEventProcessor {
                 /*
                 * for log record
                 * */;
-                processAcceptEvent(selectionKey,(SocketChannel) selectableChannel,att,ioEventType);
+                processAcceptEvent(selectionKey,selectableChannel,att,ioEventType);
                 break;
             case SelectionKey.OP_CONNECT:
                 /*
@@ -62,21 +62,21 @@ public class IOEventProcessor {
                 * then over
                 * for server
                 * */;
-                processConnectEvent(selectionKey,(SocketChannel) selectableChannel,att,ioEventType);
+                processConnectEvent(selectionKey,selectableChannel,att,ioEventType);
                 break;
             case SelectionKey.OP_READ:
                 /*
                 * read immediately
                 * */;
-                processReadEvent(selectionKey,(SocketChannel) selectableChannel,att,ioEventType);
+                processReadEvent(selectionKey,selectableChannel,att,ioEventType);
                 break;
             case SelectionKey.OP_WRITE:
                 /*
                 * write immediately
                 * */;
-                processWriteEvent(selectionKey,(SocketChannel) selectableChannel,att,ioEventType);
+                processWriteEvent(selectionKey,selectableChannel,att,ioEventType);
                 break;
         }
-        nioTask.submitNIOEvent(null,ioEventType);
+        nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
 }

@@ -18,7 +18,6 @@ public class NIOServerTask extends AbstractNIOTask {
     private static final int SERVER_WRITE = SelectionKey.OP_WRITE;
     private static final int SERVER_CONNECT=SelectionKey.OP_CONNECT;
 
-    protected ServerSocketChannel channel;
     protected ServerConfig endConfig;
     public NIOServerTask(EndConfig endConfig,
                           Object object,
@@ -27,36 +26,36 @@ public class NIOServerTask extends AbstractNIOTask {
     }
 
     protected void register() throws IOException {
+        ServerSocketChannel channel=ServerSocketChannel.open();
+        channel.configureBlocking(false);
+        setSocketOption(channel);
         NIOSelector.registerChannel(channel, SelectionKey.OP_CONNECT,this);
         channel.bind(socketAddress,(endConfig).getBackLog());
     }
 
-    protected void setChannel() throws IOException {
-        channel=ServerSocketChannel.open();
-        channel.configureBlocking(false);
-    }
 
     protected Object doTask(int taskType, Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
+        SelectableChannel selectableChannel=(SelectableChannel) attach;
         switch (taskType){
             case OVER:
-                close(attach);
+                close(selectableChannel);
             case SERVER_CONNECT:
-                serverRead(attach);
+                serverRead(selectableChannel);
             case SERVER_WRITE:
-                serverWrite(attach);
+                serverWrite(selectableChannel);
         }
         return null;
     }
 
-    private void serverWrite(Object attach) throws InvocationTargetException, IllegalAccessException {
+    private void serverWrite(SelectableChannel channel) throws InvocationTargetException, IllegalAccessException {
         method.invoke(object,channel,protocolType,SERVER_WRITE);
     }
 
-    private void serverRead(Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
+    private void serverRead(SelectableChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
         method.invoke(object,channel,protocolType,SERVER_READ);
     }
 
-    private void close(Object attach) throws IOException {
+    private void close(SelectableChannel channel) throws IOException {
         channel.close();
     }
 }

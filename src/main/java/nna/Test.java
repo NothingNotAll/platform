@@ -47,6 +47,5 @@ public class Test {
                     }
                 }).start();
             }
-            System.out.println(System.getenv("user.home"));
     }
 }

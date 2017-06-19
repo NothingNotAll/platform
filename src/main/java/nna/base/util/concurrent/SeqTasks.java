@@ -7,22 +7,22 @@ package nna.base.util.concurrent;
  * @create 2017-06-15 11:34
  **/
 
-public class SeqAbstractIOTasks extends AbstractIOTasks {
+public class SeqTasks extends AbstractTasks {
 
-    SeqAbstractIOTasks(int taskCount, Long workId) {
-        super(taskCount,workId,true);
+    SeqTasks(int taskCount, Long workId) {
+        super(taskCount,workId);
     }
 
     protected int doTasks() {
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
-        int taskType=AbstractIOTasks.INIT;
+        int taskType= AbstractTask.INIT;
         for(;workIndex < temp;workIndex++){
             taskType=work(workIndex);
             switch (taskType){
-                case AbstractIOTask.OVER:
+                case AbstractTask.OVER:
                     return taskType;
-                case AbstractIOTasks.INIT:
-                    return taskType;
+                case 0:
+                    return 0;
             }
         }
         return taskType;

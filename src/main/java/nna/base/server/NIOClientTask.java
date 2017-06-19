@@ -20,7 +20,6 @@ public class NIOClientTask extends AbstractNIOTask {
     private static final int CLIENT_WRITE = SelectionKey.OP_WRITE;
 
     private ByteBuffer requestBytes;
-    protected SocketChannel channel;
     protected ClientConfig endConfig;
     public NIOClientTask(ByteBuffer requestBytes,
                          EndConfig endConfig,
@@ -31,11 +30,11 @@ public class NIOClientTask extends AbstractNIOTask {
     }
 
 
-    private void clientRead(Object attach) throws InvocationTargetException, IllegalAccessException {
+    private void clientRead(SocketChannel channel) throws InvocationTargetException, IllegalAccessException {
         method.invoke(object,protocolType,channel,CLIENT_READ);
     }
 
-    private void clientWrite(Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
+    private void clientWrite(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
         SocketChannel socketChannel=channel;
         if(!socketChannel.isConnected()){
             socketChannel.finishConnect();
@@ -44,38 +43,39 @@ public class NIOClientTask extends AbstractNIOTask {
         NIOSelector.registerChannel(socketChannel, SelectionKey.OP_READ,this);
     }
 
-    private void clientConnect(Object attach) throws IOException {
+    private void clientConnect(SocketChannel channel) throws IOException {
         SocketChannel socketChannel= channel;
         socketChannel.connect(socketAddress);
         NIOSelector.registerChannel(socketChannel,SelectionKey.OP_ACCEPT,this);
     }
 
     protected Object doTask(int taskType, Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
+        SocketChannel socketChannel=(SocketChannel)attach;
         switch (taskType){
             case CLIENT_CONNECT:
-                clientConnect(attach);
+                clientConnect(socketChannel);
                 break;
             case CLIENT_ACCEPT:
-                clientWrite(attach);
+                clientWrite(socketChannel);
             case CLIENT_READ:
-                clientRead(attach);
+                clientRead(socketChannel);
             case OVER:
-                close(attach);
+                close(socketChannel);
 
         }
         return null;
     }
 
-    private void close(Object attach) throws IOException {
+    private void close(SocketChannel channel) throws IOException {
         channel.close();
     }
 
-    protected void register() throws ClosedChannelException {
+    protected void register() throws IOException {
+        SocketChannel channel=SocketChannel.open();
+        setSocketOption(channel);
+        channel.configureBlocking(false);
         NIOSelector.registerChannel(channel,SelectionKey.OP_ACCEPT,this);
+        channel.connect(socketAddress);
     }
 
-    protected void setChannel() throws IOException {
-        channel=SocketChannel.open();
-        channel.configureBlocking(false);
-    }
 }

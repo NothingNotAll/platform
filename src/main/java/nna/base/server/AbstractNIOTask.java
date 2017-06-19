@@ -1,6 +1,6 @@
 package nna.base.server;
 
-import nna.base.util.concurrent.AbstractIOTask;
+import nna.base.util.concurrent.AbstractTask;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -15,11 +15,10 @@ import java.nio.channels.*;
  * @create 2017-06-19 15:01
  **/
 
-public abstract class AbstractNIOTask extends AbstractIOTask {
+public abstract class AbstractNIOTask extends AbstractTask {
 
     protected int protocolType;
     protected EndConfig endConfig;
-    protected Channel channel;
     protected Object object;
     protected Method method;
     protected Selector selector;
@@ -38,17 +37,13 @@ public abstract class AbstractNIOTask extends AbstractIOTask {
         String ip=endConfig.getIp();
         int port=endConfig.getPort();
         this.socketAddress=new InetSocketAddress(ip,port);
-        setChannel();
-        setSocketOption();
         register();
     }
 
     protected abstract void register() throws IOException;
 
-    protected abstract void setChannel() throws IOException;
 
-    protected void setSocketOption() throws IOException {
-        NetworkChannel networkChannel= (NetworkChannel) channel;
+    protected void setSocketOption(NetworkChannel networkChannel) throws IOException {
         SocketOption[] socketOptions=endConfig.getSocketOptions();
         Object[] objects=endConfig.getOptions();
         int count=socketOptions.length;
@@ -61,8 +56,12 @@ public abstract class AbstractNIOTask extends AbstractIOTask {
         }
     }
 
-     void submitNIOEvent(Object attach,int taskType){
+     void addNewNIOTask(Object attach,int taskType){
         addNewTask(attach,taskType);
+    }
+
+    void startNIOTask(Object att){
+         startTask(att,false);
     }
 
     public InetSocketAddress getSocketAddress() {

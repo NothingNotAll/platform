@@ -1,7 +1,6 @@
 package nna.base.util.concurrent;
 
 import java.text.SimpleDateFormat;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -10,19 +9,19 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @create 2017-06-15 21:53
  **/
 
-public class IOMonitor implements Runnable {
+public class Monitor implements Runnable {
     SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
-    private IOEventProcessor[] IOEventProcessors;
+    private EventProcessor[] EventProcessors;
     private Map map;
     private int index=0;
     public void run() {
         while(true){
             System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-TOTAL TASKS'S WAIT SIZE:"+map.size());
             index=0;
-            for(IOEventProcessor IOEventProcessor : IOEventProcessors){
-                LinkedBlockingQueue<AbstractIOTasks> queue= IOEventProcessor.getWorkQueue();
-//                Iterator<AbstractIOTasks> iterator=queue.iterator();
-//                AbstractIOTasks abstractIOTasks;
+            for(EventProcessor EventProcessor : EventProcessors){
+                LinkedBlockingQueue<AbstractTasks> queue= EventProcessor.getWorkQueue();
+//                Iterator<AbstractTasks> iterator=queue.iterator();
+//                AbstractTasks abstractIOTasks;
 //                while(iterator.hasNext()){
 //                    abstractIOTasks =iterator.next();
 //                }
@@ -34,16 +33,15 @@ public class IOMonitor implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("--");
         }
     }
 
-    public IOEventProcessor[] getIOEventProcessors() {
-        return IOEventProcessors;
+    public EventProcessor[] getEventProcessors() {
+        return EventProcessors;
     }
 
-    public void setIOEventProcessors(IOEventProcessor[] IOEventProcessors) {
-        this.IOEventProcessors = IOEventProcessors;
+    public void setEventProcessors(EventProcessor[] eventProcessors) {
+        this.EventProcessors = eventProcessors;
     }
 
     public void setMap(Map map) {
