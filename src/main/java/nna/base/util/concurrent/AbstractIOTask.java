@@ -38,12 +38,12 @@ public abstract class AbstractIOTask {
         this.workCount=workCount;
     }
 
-    protected void submitEvent(Object object,int taskType){
-        IOTaskEntry.submitEvent(this,object,taskType);
+    protected void addNewTask(Object object,int taskType){
+        IOTaskEntry.addNewTask(this,object,taskType);
     }
 
-    protected void submitInitEvent(Object object,boolean isWorkSeq){
-        IOTaskEntry.submitInitEvent(this,object,isWorkSeq);
+    protected void startTask(Object object,boolean isWorkSeq){
+        IOTaskEntry.startTask(this,object,isWorkSeq);
     }
 
     protected abstract Object doTask(int taskType,Object attach) throws IOException, InvocationTargetException, IllegalAccessException;

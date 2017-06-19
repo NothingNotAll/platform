@@ -14,11 +14,14 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
  class IOEventProcessorManager {
-//    private static AtomicLong taskNo=new AtomicLong(0L);
-//    private static ConcurrentHashMap<Long,AbstractIOTasks> monitorMap=new ConcurrentHashMap<Long, AbstractIOTasks>();
+    private static AtomicLong taskNo=new AtomicLong(0L);
+    private static ConcurrentHashMap<Long,AbstractIOTasks> monitorMap=new ConcurrentHashMap<Long, AbstractIOTasks>();
     private static IOEventProcessorManager IOEventProcessorManager;
     private static volatile boolean init=false;
-    private static ExecutorService cachedService= Executors.newCachedThreadPool();
+    private static ExecutorService cachedService = Executors.newCachedThreadPool();
+
+    private ExecutorService fixedLogWorkerService;
+    private ArrayList<IOEventProcessor> balancedIOEventProcessorList;
 
     /*
     * workCount:we should think of that the time of every IO task,
@@ -54,29 +57,26 @@ import java.util.concurrent.atomic.AtomicLong;
         return coreCount<=1?1:coreCount-1;
     }
 
-//    private ExecutorService fixedLogWorkerService;
-    private ArrayList<IOEventProcessor> balancedIOEventProcessorList;
-
     private IOEventProcessorManager(int workerCount){
-        init(workerCount);
+        init(workerCount*10);
     }
 
     private void init(int workerCount) {
-//        IOMonitor IOMonitor =new IOMonitor();
-//        IOEventProcessor[] IOEventProcessors =new IOEventProcessor[workerCount];
-//        balancedIOEventProcessorList =new ArrayList<IOEventProcessor>(workerCount);
-//        fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
-//        IOEventProcessor tempIOEventProcessor;
-//        for(int index=0;index < workerCount;index++){
-//            tempIOEventProcessor =new IOEventProcessor();
-//            tempIOEventProcessor.setLoadNo(index);
-//            balancedIOEventProcessorList.add(tempIOEventProcessor);
-//            fixedLogWorkerService.submit(tempIOEventProcessor);
-//            IOEventProcessors[index]= tempIOEventProcessor;
-//        }
-//        IOMonitor.setIOEventProcessors(IOEventProcessors);
-//        IOMonitor.map=monitorMap;
-//        new Thread(IOMonitor).start();
+        IOMonitor IOMonitor =new IOMonitor();
+        IOEventProcessor[] IOEventProcessors =new IOEventProcessor[workerCount];
+        balancedIOEventProcessorList =new ArrayList<IOEventProcessor>(workerCount);
+        fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
+        IOEventProcessor tempIOEventProcessor;
+        for(int index=0;index < workerCount;index++){
+            tempIOEventProcessor =new IOEventProcessor();
+            tempIOEventProcessor.setLoadNo(index);
+            balancedIOEventProcessorList.add(tempIOEventProcessor);
+            fixedLogWorkerService.submit(tempIOEventProcessor);
+            IOEventProcessors[index]= tempIOEventProcessor;
+        }
+        IOMonitor.setIOEventProcessors(IOEventProcessors);
+        IOMonitor.setMap(monitorMap);
+        new Thread(IOMonitor).start();
     }
 
     void addWorker(IOEventProcessor IOEventProcessor){
@@ -87,99 +87,141 @@ import java.util.concurrent.atomic.AtomicLong;
 
     }
 
+    private boolean loadAlg(){
+        return true;
+    }
+
+    void startTask(AbstractIOTask t, Object object,boolean isWorkSeq){
+        if(loadAlg()){
+            submitInitEvent(t,object,isWorkSeq);
+        }else{
+            submitQuickInitEvcent(t,object,isWorkSeq);
+        }
+    }
+
+    void addNewTask(AbstractIOTask t, Object object, int taskType){
+        if(loadAlg()){
+            submitEvent(t,object,taskType);
+        }else{
+            submitQuickEvent(t,object,taskType);
+        }
+    }
+
     void submitEvent(AbstractIOTask t, Object object, int taskType) {
         AbstractIOTasks abstractIOTasks =t.getTasks();
-//        Integer index=t.getiOLoadEventProcessorId();
-//        IOEventProcessor ioEventProcessor=balancedIOEventProcessorList.get(index);;
-//        Long workId= abstractIOTasks.getGlobalWorkId();
-        if(taskType== AbstractIOTask.OVER){
-//            monitorMap.remove(workId);
-        }
-//        if(!abstractIOTasks.isWorkSeq){
-//            EntryDesc entryDesc=getBalanceWorker();
-//            ioEventProcessor=entryDesc.IOEventProcessor;
-//            t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
-//        }
+//        remove(abstractIOTasks,taskType);
         abstractIOTasks.addTask(t,taskType,object);
-//        Runnable nonInitDispatcher =new IODispatcher(abstractIOTasks, ioEventProcessor);
-//        cachedService.submit(nonInitDispatcher);
-//        cachedService.submit(abstractIOTasks);
-//        IOTaskWorker ioTaskWorker=new IOTaskWorker(abstractIOTasks);
-//        cachedService.submit(ioTaskWorker);
+    }
+
+    private void remove(AbstractIOTasks abstractIOTasks,int taskType) {
+        Long workId= abstractIOTasks.getGlobalWorkId();
+        if(taskType== AbstractIOTask.OVER){
+            monitorMap.remove(workId);
+        }
+    }
+
+    void submitQuickEvent(AbstractIOTask t, Object object,int taskType){
+        AbstractIOTasks abstractIOTasks =t.getTasks();
+        Integer index=t.getiOLoadEventProcessorId();
+        IOEventProcessor ioEventProcessor=balancedIOEventProcessorList.get(index);;
+        if(!abstractIOTasks.isWorkSeq){
+            EntryDesc entryDesc=getBalanceWorker();
+            ioEventProcessor=entryDesc.IOEventProcessor;
+            t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
+        }
+//      remove(abstractIOTasks,taskType);
+        Runnable nonInitDispatcher =new IODispatcher(abstractIOTasks, ioEventProcessor);
+        cachedService.submit(nonInitDispatcher);
+        cachedService.submit(abstractIOTasks);
+        IOTaskWorker ioTaskWorker=new IOTaskWorker(abstractIOTasks);
+        cachedService.submit(ioTaskWorker);
+    }
+
+    void submitQuickInitEvcent(AbstractIOTask t, Object object,boolean isWorkSeq){
+        AbstractIOTasks abstractIOTasks;
+        int workCount=t.getWorkCount();
+        EntryDesc entryDesc=getBalanceWorker();
+        IOEventProcessor ioEventProcessor=entryDesc.IOEventProcessor;
+        t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
+        if(isWorkSeq){
+            abstractIOTasks =new SeqAbstractIOTasks(workCount,null);
+        }else{
+            abstractIOTasks =new NoSeqAbstractIOTasks(workCount,null);
+        }
+      //enWorkMap(abstractIOTasks);
+        Runnable nonInitDispatcher =new IODispatcher(abstractIOTasks, ioEventProcessor);
+        cachedService.submit(nonInitDispatcher);
+        IOTaskWorker ioTaskWorker=new IOTaskWorker(abstractIOTasks);
+        cachedService.submit(abstractIOTasks);
+        cachedService.submit(ioTaskWorker);
     }
 
     void submitInitEvent(AbstractIOTask t, Object object,boolean isWorkSeq){
         int workCount=t.getWorkCount();
         AbstractIOTasks abstractIOTasks;
-//        Long workId=taskNo.getAndIncrement();
-//        EntryDesc entryDesc=getBalanceWorker();
-//        IOEventProcessor ioEventProcessor=entryDesc.IOEventProcessor;
         if(isWorkSeq){
-//            abstractIOTasks =new SeqAbstractIOTasks(workCount,workId);
             abstractIOTasks =new SeqAbstractIOTasks(workCount,null);
         }else{
-//            abstractIOTasks =new NoSeqAbstractIOTasks(workCount,workId);
             abstractIOTasks =new NoSeqAbstractIOTasks(workCount,null);
         }
-//        t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
+//        enWorkMap(abstractIOTasks);
         t.setTasks(abstractIOTasks);
-//        monitorMap.put(workId, abstractIOTasks);
-//        abstractIOTasks.setGlobalWorkId(workId);
-//        Runnable nonInitDispatcher =new IODispatcher(abstractIOTasks, ioEventProcessor);
-//        cachedService.submit(nonInitDispatcher);
-//        IOTaskWorker ioTaskWorker=new IOTaskWorker(abstractIOTasks);
-//        cachedService.submit(abstractIOTasks);
-        new Thread(abstractIOTasks).start();
+        cachedService.submit(abstractIOTasks);
         abstractIOTasks.addTask(t,AbstractIOTask.INIT,object);
-//        cachedService.submit(ioTaskWorker);
     }
 
-//     EntryDesc getBalanceWorker() {
-//        Iterator<IOEventProcessor> iterator= balancedIOEventProcessorList.iterator();
-//        IOEventProcessor IOEventProcessor;
-//        IOEventProcessor minIOEventProcessor =null;
-//        int count;
-//        Integer minCount=null;
-//        Integer workerIndex=null;
-//        int index=0;
-//        while(iterator.hasNext()){
-//            IOEventProcessor =iterator.next();
-//            count= IOEventProcessor.getTempWorkCount();
-//            if(minCount==null){
-//                minIOEventProcessor = IOEventProcessor;
-//                minCount=count;
-//                workerIndex=index;
-//            }else{
-//                if(minCount>count){
-//                    minIOEventProcessor = IOEventProcessor;
-//                    workerIndex=index;
-//                    minCount=count;
-//                }
-//            }
-//            if(minCount==0){
-//                break;
-//            }
-//            index++;
-//        }
-//         return new EntryDesc(minIOEventProcessor,workerIndex);
-//    }
+    private void enWorkMap(AbstractIOTasks abstractIOTasks) {
+        Long workId=taskNo.getAndIncrement();
+        abstractIOTasks.setGlobalWorkId(workId);
+        monitorMap.put(workId, abstractIOTasks);
+    }
 
-//    public static ConcurrentHashMap<Long, AbstractIOTasks> getMonitorMap() {
-//        return monitorMap;
-//    }
+    EntryDesc getBalanceWorker() {
+        Iterator<IOEventProcessor> iterator= balancedIOEventProcessorList.iterator();
+        IOEventProcessor IOEventProcessor;
+        IOEventProcessor minIOEventProcessor =null;
+        int count;
+        Integer minCount=null;
+        Integer workerIndex=null;
+        int index=0;
+        while(iterator.hasNext()){
+            IOEventProcessor =iterator.next();
+            count= IOEventProcessor.getTempWorkCount();
+            if(minCount==null){
+                minIOEventProcessor = IOEventProcessor;
+                minCount=count;
+                workerIndex=index;
+            }else{
+                if(minCount>count){
+                    minIOEventProcessor = IOEventProcessor;
+                    workerIndex=index;
+                    minCount=count;
+                }
+            }
+            if(minCount==0){
+                break;
+            }
+            index++;
+        }
+         return new EntryDesc(minIOEventProcessor,workerIndex);
+    }
 
-//    public static void setMonitorMap(ConcurrentHashMap<Long, AbstractIOTasks> monitorMap) {
-//        IOEventProcessorManager.monitorMap = monitorMap;
-//    }
+    private class EntryDesc{
+        private IOEventProcessor IOEventProcessor;
+        private Integer iOLoadEventProcessorId;
 
-//    private class EntryDesc{
-//        private IOEventProcessor IOEventProcessor;
-//        private Integer iOLoadEventProcessorId;
-//
-//        private EntryDesc(IOEventProcessor IOEventProcessor, Integer iOLoadEventProcessorId){
-//            this.IOEventProcessor = IOEventProcessor;
-//            this.iOLoadEventProcessorId=iOLoadEventProcessorId;
-//        }
-//    }
+        private EntryDesc(IOEventProcessor IOEventProcessor, Integer iOLoadEventProcessorId){
+            this.IOEventProcessor = IOEventProcessor;
+            this.iOLoadEventProcessorId=iOLoadEventProcessorId;
+        }
+    }
+
+    public static ConcurrentHashMap<Long, AbstractIOTasks> getMonitorMap() {
+        return monitorMap;
+    }
+
+    public static void setMonitorMap(ConcurrentHashMap<Long, AbstractIOTasks> monitorMap) {
+        IOEventProcessorManager.monitorMap = monitorMap;
+    }
 
 }

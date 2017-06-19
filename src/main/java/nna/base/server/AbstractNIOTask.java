@@ -62,7 +62,7 @@ public abstract class AbstractNIOTask extends AbstractIOTask {
     }
 
      void submitNIOEvent(Object attach,int taskType){
-        submitEvent(attach,taskType);
+        addNewTask(attach,taskType);
     }
 
     public InetSocketAddress getSocketAddress() {

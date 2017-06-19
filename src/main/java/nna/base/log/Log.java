@@ -52,7 +52,7 @@ public class Log extends AbstractIOTask {
         this.closeTimeout=closeTimeout;
         this.encode=encode;
         setTaskStatus(INIT);
-        submitInitEvent(null,true);
+        startTask(null,true);
     }
 
     public void log(String log,int logLevel){
@@ -81,7 +81,7 @@ public class Log extends AbstractIOTask {
                 if(canFlush()){
                     Long start=System.currentTimeMillis();
                     setTaskStatus(WRITING);
-                    submitEvent(logStr,WRITING);
+                    addNewTask(logStr,WRITING);
                     logStrBuilder=new StringBuilder("");
 //                    System.out.println("日志路径:"+logDir+" 线程 id:"+getThreadId()+" 名称:"+getThreadName()+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
                 }
@@ -158,7 +158,7 @@ public class Log extends AbstractIOTask {
 
     public void close(){
         setTaskStatus(OVER);
-        submitEvent(null,OVER);
+        addNewTask(null,OVER);
     }
 
     public static Log getLog(

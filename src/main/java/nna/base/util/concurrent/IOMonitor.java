@@ -13,31 +13,22 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class IOMonitor implements Runnable {
     SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
     private IOEventProcessor[] IOEventProcessors;
-     Map map;
-    /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
-     * @see Thread#run()
-     */
+    private Map map;
+    private int index=0;
     public void run() {
         while(true){
-            System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-LEFT ABSTRACT TASKS:"+map.size());
-//            for(IOEventProcessor IOEventProcessor : IOEventProcessors){
-//                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+ IOEventProcessor.getLoadNo()+"-"+ IOEventProcessor.getWorkQueue().size());
-//                LinkedBlockingQueue<AbstractIOTasks> queue= IOEventProcessor.getWorkQueue();
+            System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-TOTAL TASKS'S WAIT SIZE:"+map.size());
+            index=0;
+            for(IOEventProcessor IOEventProcessor : IOEventProcessors){
+                LinkedBlockingQueue<AbstractIOTasks> queue= IOEventProcessor.getWorkQueue();
 //                Iterator<AbstractIOTasks> iterator=queue.iterator();
 //                AbstractIOTasks abstractIOTasks;
 //                while(iterator.hasNext()){
 //                    abstractIOTasks =iterator.next();
 //                }
-//                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-LEFT ABSTRACT TASKS:"+map.size());
-//            }
+                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-No ["+index+"]-BLOCKING QUEUE TASK'S WAIT SIZE:"+queue.size());
+                index++;
+            }
             try {
                 Thread.currentThread().sleep(3000L);
             } catch (InterruptedException e) {
@@ -53,5 +44,9 @@ public class IOMonitor implements Runnable {
 
     public void setIOEventProcessors(IOEventProcessor[] IOEventProcessors) {
         this.IOEventProcessors = IOEventProcessors;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
     }
 }
