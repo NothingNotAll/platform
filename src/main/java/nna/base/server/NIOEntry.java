@@ -12,21 +12,21 @@ import java.nio.ByteBuffer;
  **/
 
 public class NIOEntry {
-    private NIOTask nioTask;
+    private AbstractNIOTask nioTask;
 
     public NIOEntry(ServerConfig endConfig,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
-        nioTask=new NIOTask(endConfig,protocolProcessObject,protocolProcessMethod);
+        nioTask=new NIOServerTask(endConfig,protocolProcessObject,protocolProcessMethod);
     }
 
     public NIOEntry(ClientConfig clientConfig,ByteBuffer requestBytes,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
-        nioTask=new NIOTask(clientConfig,requestBytes,protocolProcessObject,protocolProcessMethod);
+        nioTask=new NIOClientTask(requestBytes,clientConfig,protocolProcessObject,protocolProcessMethod);
     }
 
-    public NIOTask getNioTask() {
+    public AbstractNIOTask getNioTask() {
         return nioTask;
     }
 
-    public void setNioTask(NIOTask nioTask) {
+    public void setNioTask(AbstractNIOTask nioTask) {
         this.nioTask = nioTask;
     }
 

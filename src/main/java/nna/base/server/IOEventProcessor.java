@@ -41,7 +41,7 @@ public class IOEventProcessor {
     private SelectableChannel selectableChannel;
     private int ioEventType;
     private NIOEntry att;
-    private NIOTask nioTask;
+    private AbstractNIOTask nioTask;
     public void doIOEvent(SelectionKey selectionKey) {
         ioEventType=selectionKey.interestOps();
         selectableChannel=selectionKey.channel();
