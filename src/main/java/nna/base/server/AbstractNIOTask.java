@@ -17,6 +17,7 @@ import java.nio.channels.*;
 
 public abstract class AbstractNIOTask extends AbstractIOTask {
 
+    protected int protocolType;
     protected EndConfig endConfig;
     protected Channel channel;
     protected Object object;
@@ -30,6 +31,7 @@ public abstract class AbstractNIOTask extends AbstractIOTask {
                            Object object,
                            Method method) throws IOException {
         super(taskName, workCount);
+        this.protocolType=endConfig.getProtocolType();
         this.object=object;
         this.method=method;
         this.endConfig=endConfig;
@@ -77,5 +79,13 @@ public abstract class AbstractNIOTask extends AbstractIOTask {
 
     public void setSelector(Selector selector) {
         this.selector = selector;
+    }
+
+    public int getProtocolType() {
+        return protocolType;
+    }
+
+    public void setProtocolType(int protocolType) {
+        this.protocolType = protocolType;
     }
 }

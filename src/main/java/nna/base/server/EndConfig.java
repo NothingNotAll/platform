@@ -10,6 +10,7 @@ import java.net.SocketOption;
 
 public abstract class EndConfig {
 
+    protected int protocolType;
     protected static String pid;
     protected static String jvmName;
     protected String ip="127.0.0.1";
@@ -75,5 +76,13 @@ public abstract class EndConfig {
 
     public void setOptions(Object[] options) {
         this.options = options;
+    }
+
+    public int getProtocolType() {
+        return protocolType;
+    }
+
+    public void setProtocolType(int protocolType) {
+        this.protocolType = protocolType;
     }
 }

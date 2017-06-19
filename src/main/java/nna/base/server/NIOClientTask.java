@@ -32,20 +32,20 @@ public class NIOClientTask extends AbstractNIOTask {
 
 
     private void clientRead(Object attach) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(object,channel,CLIENT_READ);
+        method.invoke(object,protocolType,channel,CLIENT_READ);
     }
 
     private void clientWrite(Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
-        SocketChannel socketChannel=(SocketChannel) channel;
+        SocketChannel socketChannel=channel;
         if(!socketChannel.isConnected()){
             socketChannel.finishConnect();
         }
-        method.invoke(object,socketChannel,requestBytes,CLIENT_WRITE);
+        method.invoke(object,socketChannel,requestBytes,protocolType,CLIENT_WRITE);
         NIOSelector.registerChannel(socketChannel, SelectionKey.OP_READ,this);
     }
 
     private void clientConnect(Object attach) throws IOException {
-        SocketChannel socketChannel=(SocketChannel) channel;
+        SocketChannel socketChannel= channel;
         socketChannel.connect(socketAddress);
         NIOSelector.registerChannel(socketChannel,SelectionKey.OP_ACCEPT,this);
     }

@@ -20,7 +20,9 @@ public class NIOServerTask extends AbstractNIOTask {
 
     protected ServerSocketChannel channel;
     protected ServerConfig endConfig;
-    public NIOServerTask( EndConfig endConfig, Object object, Method method) throws IOException {
+    public NIOServerTask(EndConfig endConfig,
+                          Object object,
+                          Method method) throws IOException {
         super("NIO Server", 10, endConfig, object, method);
     }
 
@@ -47,11 +49,11 @@ public class NIOServerTask extends AbstractNIOTask {
     }
 
     private void serverWrite(Object attach) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(object,channel,SERVER_WRITE);
+        method.invoke(object,channel,protocolType,SERVER_WRITE);
     }
 
     private void serverRead(Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
-        method.invoke(object,channel,SERVER_READ);
+        method.invoke(object,channel,protocolType,SERVER_READ);
     }
 
     private void close(Object attach) {

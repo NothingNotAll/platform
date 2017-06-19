@@ -20,10 +20,10 @@ public class Protocol {
 
     private Protocol(){}
 
-    public static void process(SocketChannel socketChannel, ByteBuffer byteBuffer,int type){
+    public static void process(SocketChannel socketChannel, ByteBuffer byteBuffer,int protocolType,int ioType){
 
     }
-    public static void process(SocketChannel socketChannel,int type){
+    public static void process(SocketChannel socketChannel,int protocolType,int ioType){
 
     }
 
