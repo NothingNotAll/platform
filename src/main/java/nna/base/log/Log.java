@@ -43,7 +43,7 @@ public class Log extends AbstractIOTask {
             boolean isWorkSeq,
             int logTimes
             ) {
-        super(logFileName,logTimes,isWorkSeq);
+        super(logFileName,logTimes);
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
@@ -148,6 +148,7 @@ public class Log extends AbstractIOTask {
 
     protected Object destroy(Object object) {
         try {
+//            System.out.println(writer==null);
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

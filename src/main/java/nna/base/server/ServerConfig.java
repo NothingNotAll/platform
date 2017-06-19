@@ -6,7 +6,7 @@ package nna.base.server;
  * @create 2017-06-11 13:08
  **/
 
-public class ServerConfig<T> extends EndConfig {
+public class ServerConfig extends EndConfig {
 
     private int backLog;
 

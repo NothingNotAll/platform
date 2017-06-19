@@ -25,7 +25,7 @@ public class IOEventProcessor<T extends AbstractIOTask> extends Clone implements
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
     //in the future this must be replaced of ArrayListBlockingQueue;and used index as the priorLevel;
-    private volatile LinkedBlockingQueue<AbstractIOTasks> workQueue=new LinkedBlockingQueue<AbstractIOTasks>();
+    private LinkedBlockingQueue<AbstractIOTasks> workQueue=new LinkedBlockingQueue<AbstractIOTasks>();
 
     private int tempWorkCount;
     private AbstractIOTasks blockAbstractIOTasks;

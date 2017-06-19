@@ -1,7 +1,6 @@
 package nna.base.server;
 
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Method;
 import java.net.SocketOption;
 
 /**
@@ -9,17 +8,14 @@ import java.net.SocketOption;
  * @create 2017-06-11 23:19
  **/
 
-public abstract class EndConfig<T> {
+public abstract class EndConfig {
 
     protected static String pid;
     protected static String jvmName;
     protected String ip="127.0.0.1";
     protected int port;
-    protected SocketOption<Object>[] socketOptions;
-    protected T attach;
-    protected Object selectionKeyAttach;
-    protected Method serviceMethod;
-    protected Object serviceObject;
+    protected SocketOption[] socketOptions;
+    protected Object[] options;
 
     static {
         setJVMCfg();
@@ -65,43 +61,19 @@ public abstract class EndConfig<T> {
         ServerConfig.pid = pid;
     }
 
-    public Method getServerMethod() {
-        return serviceMethod;
-    }
-
-    public void setServerMethod(Method serverMethod) {
-        this.serviceMethod = serverMethod;
-    }
-
-    public Object getServerObject() {
-        return serviceObject;
-    }
-
-    public void setServerObject(Object serverObject) {
-        this.serviceObject = serverObject;
-    }
-
-    public SocketOption<Object>[] getSocketOptions() {
+    public SocketOption[] getSocketOptions() {
         return socketOptions;
     }
 
-    public void setSocketOptions(SocketOption<Object>[] socketOptions) {
+    public void setSocketOptions(SocketOption[] socketOptions) {
         this.socketOptions = socketOptions;
     }
 
-    public T getAttach() {
-        return attach;
+    public Object[] getOptions() {
+        return options;
     }
 
-    public void setAttach(T attach) {
-        this.attach = attach;
-    }
-
-    public Object getSelectionKeyAttach() {
-        return selectionKeyAttach;
-    }
-
-    public void setSelectionKeyAttach(Object selectionKeyAttach) {
-        this.selectionKeyAttach = selectionKeyAttach;
+    public void setOptions(Object[] options) {
+        this.options = options;
     }
 }

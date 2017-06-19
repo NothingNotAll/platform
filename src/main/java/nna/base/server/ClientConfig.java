@@ -5,6 +5,6 @@ package nna.base.server;
  * @create 2017-06-11 23:18
  **/
 
-public class ClientConfig<T> extends EndConfig {
+public class ClientConfig extends EndConfig {
 
 }

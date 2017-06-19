@@ -27,16 +27,17 @@ public class IOMonitor implements Runnable {
      */
     public void run() {
         while(true){
-            for(IOEventProcessor IOEventProcessor : IOEventProcessors){
-                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+ IOEventProcessor.getLoadNo()+"-"+ IOEventProcessor.getWorkQueue().size());
-                LinkedBlockingQueue<AbstractIOTasks> queue= IOEventProcessor.getWorkQueue();
-                Iterator<AbstractIOTasks> iterator=queue.iterator();
-                AbstractIOTasks abstractIOTasks;
-                while(iterator.hasNext()){
-                    abstractIOTasks =iterator.next();
-                }
-                System.out.println("LEFT ABSTRACT TASKS:"+map.size());
-            }
+            System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-LEFT ABSTRACT TASKS:"+map.size());
+//            for(IOEventProcessor IOEventProcessor : IOEventProcessors){
+//                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-"+ IOEventProcessor.getLoadNo()+"-"+ IOEventProcessor.getWorkQueue().size());
+//                LinkedBlockingQueue<AbstractIOTasks> queue= IOEventProcessor.getWorkQueue();
+//                Iterator<AbstractIOTasks> iterator=queue.iterator();
+//                AbstractIOTasks abstractIOTasks;
+//                while(iterator.hasNext()){
+//                    abstractIOTasks =iterator.next();
+//                }
+//                System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-LEFT ABSTRACT TASKS:"+map.size());
+//            }
             try {
                 Thread.currentThread().sleep(3000L);
             } catch (InterruptedException e) {

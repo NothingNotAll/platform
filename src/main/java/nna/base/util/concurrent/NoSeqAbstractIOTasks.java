@@ -1,7 +1,5 @@
 package nna.base.util.concurrent;
 
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -15,7 +13,7 @@ public class NoSeqAbstractIOTasks extends AbstractIOTasks {
         super(taskCount,workId,false);
     }
 
-    protected boolean doTasks() {
+    protected int doTasks() {
         AbstractIOTask abstractIOTask;
         int tempIndex=0;
 //        int taskType;
@@ -25,14 +23,14 @@ public class NoSeqAbstractIOTasks extends AbstractIOTasks {
                 // for 乐观锁 ; for performance
                 if(status[tempIndex]==START){
 //                  taskType=lockAndExe(abstractIOTask,tempIndex);
-                    lockAndExe(abstractIOTask,tempIndex);
+                    lockAndExe(tempIndex);
                 }
             }
         }
-        return false;
+        return -5;
     }
 
-    protected int lockAndExe(AbstractIOTask abstractIOTask, int tempIndex) {
+    protected int lockAndExe(int tempIndex) {
                 ReentrantLock lock=locks[tempIndex];
         boolean isLocked=false;
         try{
@@ -40,7 +38,7 @@ public class NoSeqAbstractIOTasks extends AbstractIOTasks {
                 isLocked=true;
             }
             lock.lock();
-            return work(abstractIOTask,tempIndex);
+            return work(tempIndex);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -48,6 +46,6 @@ public class NoSeqAbstractIOTasks extends AbstractIOTasks {
                 lock.unlock();
             }
         }
-        return -2;
+        return -5;
     }
 }

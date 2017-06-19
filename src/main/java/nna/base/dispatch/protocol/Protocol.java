@@ -6,6 +6,8 @@ import nna.base.util.CharUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -17,6 +19,9 @@ import java.util.Map;
 public class Protocol {
 
     private Protocol(){}
+
+    public static void process(SocketChannel socketChannel, ByteBuffer byteBuffer,int type){}
+    public static void process(SocketChannel socketChannel,int type){}
 
     public static String protocolAdapter(MetaBeanWrapper metaBeanWrapper, int protocolType) throws InvocationTargetException, IllegalAccessException {
         switch (protocolType){

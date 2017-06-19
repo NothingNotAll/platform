@@ -20,10 +20,11 @@ import java.util.concurrent.locks.ReentrantLock;
 // Been Set Null ' s slot;
 // but we can solve it with recycle queue to make full use of memory and solve the oom problem
  abstract class AbstractIOTasks implements Runnable{
-     public static final int START=0;
-     public static final int WORKING=1;
-     public static final int END=2;
-     public static final int FAIL=3;
+    public static final int INIT=0;
+    public static final int START=1;
+    public static final int WORKING=2;
+    public static final int END=3;
+    public static final int FAIL=4;
 
     protected Long startTime;
     protected Long endTime;
@@ -33,12 +34,12 @@ import java.util.concurrent.locks.ReentrantLock;
     protected volatile Long[] taskStartTimes;
     protected volatile Long[] taskEndTimes;
     protected volatile Long[] taskPriorLevels;//used as in the one task , the sequence of exe;
-    protected volatile int[] taskTypes;//
-    protected volatile int[] status;
+    protected volatile int[] taskTypes;//任务类型
+    protected volatile int[] status;//任务状态 未进队 初始化 工作中 结束
     protected volatile Object[] objects;//oom-limit : a large of
-    protected ReentrantLock[] locks;
-    protected Long globalWorkId;
-    protected boolean isWorkSeq;
+    protected ReentrantLock[] locks;//for NoSeqTasks
+    protected Long globalWorkId;//集群唯一id；
+    protected boolean isWorkSeq;//是否
 
     // waste memory with null slot except that task is been worked with short time
     protected volatile Integer enQueueIndex;
@@ -70,17 +71,15 @@ import java.util.concurrent.locks.ReentrantLock;
         taskStartTimes=new Long[taskCount];
         for(int index=0;index < taskCount;index++){
             locks[index]=new ReentrantLock();
-            status[index]=START;
+            status[index]=INIT;
             taskPriorLevels[index]=0L;
         }
     }
 
-    protected abstract boolean doTasks();
+    protected abstract int doTasks();
 
 
-    protected abstract int lockAndExe(
-            AbstractIOTask abstractIOTask,
-            int tempIndex);
+    protected abstract int lockAndExe(int tempIndex);
 
 
 
@@ -89,28 +88,30 @@ import java.util.concurrent.locks.ReentrantLock;
         objects[workIndex]=null;
     }
 
-    protected int work(AbstractIOTask abstractIOTask,
-                      int tempIndex) {
-        int taskType=-2;
-        int status=this.status[tempIndex];
-        if(status==START){
-            this.status[tempIndex]=WORKING;
+    protected int work(int tempIndex) {
+        int currentStatus=status[tempIndex];
+        if(currentStatus==INIT){
+            return INIT;
+        }
+        if(currentStatus==START){
+            status[tempIndex]=WORKING;
             Object attach=objects[tempIndex];
-            taskType=this.taskTypes[tempIndex];
+            AbstractIOTask abstractIOTask=list[tempIndex];
+            int taskType=taskTypes[tempIndex];
             try{
                 abstractIOTask.doTask(taskType,attach);
-                this.status[tempIndex]=END;
-                Long endTime=System.currentTimeMillis();
-                taskEndTimes[tempIndex]=endTime;
+                status[tempIndex]=END;
             }catch (Exception e){
+                status[tempIndex]=FAIL;
                 e.printStackTrace();
-                this.status[tempIndex]=FAIL;
             }finally {
-                counter.getAndDecrement();
+
             }
-            setNull(tempIndex);
+            if(taskType==AbstractIOTask.OVER){
+                return AbstractIOTask.OVER;
+            }
         }
-        return taskType;
+        return currentStatus;
     }
 
     void addTask(
@@ -128,7 +129,9 @@ import java.util.concurrent.locks.ReentrantLock;
             taskTypes[seq]=taskType;
 //            System.out.println(taskType+"-"+seq);
             objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
+            status[seq]=START;
             enQueueIndex=seq+1;
+            unPark();
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -137,7 +140,7 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
 
-//Tasks execute design begin
+////Tasks execute design begin
     protected volatile Thread thread;
     protected AtomicLong inc=new AtomicLong(0L);
     protected AtomicLong add=new AtomicLong(0L);//avoid ABA bug
@@ -149,7 +152,7 @@ import java.util.concurrent.locks.ReentrantLock;
             thread=Thread.currentThread();
             try{
                 while(true){
-                    if(doTasks()){
+                    if(doTasks()!=AbstractIOTask.OVER){
                         park();
                     }else{
                         break;
@@ -164,8 +167,8 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     private void park() {
-        LockSupport.park();
         add.getAndIncrement();
+        LockSupport.park();
     }
 
     private void unPark(){

@@ -13,20 +13,23 @@ public class SeqAbstractIOTasks extends AbstractIOTasks {
         super(taskCount,workId,true);
     }
 
-    protected boolean doTasks() {
-        AbstractIOTask abstractIOTask = null;
+    protected int doTasks() {
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
-        int taskType=-2;
+        int taskType=AbstractIOTasks.INIT;
         for(;workIndex < temp;workIndex++){
-            abstractIOTask =list[workIndex];
-            // for 乐观锁 ; for performance
-            taskType=lockAndExe(abstractIOTask,workIndex);
+            taskType=work(workIndex);
+            switch (taskType){
+                case AbstractIOTask.OVER:
+                    return taskType;
+                case AbstractIOTasks.INIT:
+                    return taskType;
+            }
         }
-        return taskType==AbstractIOTask.OVER;
+        return taskType;
     }
 
-    protected int lockAndExe(AbstractIOTask abstractIOTask, int tempIndex) {
-        return work(abstractIOTask,tempIndex);
+    protected int lockAndExe(int tempIndex) {
+        return work(tempIndex);
     }
 
     public static void main(String[] args){

@@ -1,6 +1,8 @@
 package nna.base.util.concurrent;
 
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -16,7 +18,6 @@ public abstract class AbstractIOTask {
     private int failTryTimes;
     private int workCount;
     private String taskName;
-    private Thread thread;
     private Long threadId;
     private String threadName;
     private volatile int taskStatus;
@@ -29,9 +30,9 @@ public abstract class AbstractIOTask {
         IOTaskEntry.init(null,null);
     }
 
-    public AbstractIOTask(String taskName, int workCount, boolean isWorkSeq){
+    public AbstractIOTask(String taskName, int workCount){
         this.taskName=taskName;
-        this.thread=Thread.currentThread();
+        Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
         this.workCount=workCount;
@@ -45,7 +46,7 @@ public abstract class AbstractIOTask {
         IOTaskEntry.submitInitEvent(this,object,isWorkSeq);
     }
 
-    protected abstract Object doTask(int taskType,Object attach);
+    protected abstract Object doTask(int taskType,Object attach) throws IOException, InvocationTargetException, IllegalAccessException;
 
     public Long getThreadId() {
         return threadId;
@@ -101,14 +102,6 @@ public abstract class AbstractIOTask {
 
     public void setFailTryTimes(int failTryTimes) {
         this.failTryTimes = failTryTimes;
-    }
-
-    public Thread getThread() {
-        return thread;
-    }
-
-    public void setThread(Thread thread) {
-        this.thread = thread;
     }
 
     public ReentrantLock getInitLock() {

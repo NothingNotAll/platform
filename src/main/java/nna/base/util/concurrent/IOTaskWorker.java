@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
             thread=Thread.currentThread();
             try{
                 while(true){
-                    if(!tasks.doTasks()){
+                    if(tasks.doTasks()!=AbstractIOTask.OVER){
                         park();
                     }else{
                         break;
@@ -48,8 +48,8 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     private void park() {
-            LockSupport.park();
-            add.getAndIncrement();
+        add.getAndIncrement();
+        LockSupport.park();
     }
 
     private void unPark(){
@@ -57,7 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
             continue;
         }
         try{
-            lock.lock();//性能阻塞点 避免 ABA问题 。
+            lock.lock();
             LockSupport.unpark(thread);
             inc.getAndDecrement();
             Long result=inc.get()+add.get();
