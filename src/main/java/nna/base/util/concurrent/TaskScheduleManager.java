@@ -110,7 +110,7 @@ import java.util.concurrent.atomic.AtomicLong;
         if(loadAlg()){
             submitInitEvent(t,object,containerType);
         }else{
-//            submitAsyInitEvcent(t,object,tasksType);
+
         }
     }
 
@@ -118,7 +118,7 @@ import java.util.concurrent.atomic.AtomicLong;
         if(loadAlg()){
             submitEvent(t,object,taskType);
         }else{
-            submitAsyEvent(t,object,taskType);
+
         }
     }
 
@@ -129,38 +129,6 @@ import java.util.concurrent.atomic.AtomicLong;
         if(abstractTasks instanceof NoSeqFixSizeTasks){
             cachedService.submit(abstractTasks);
         }
-    }
-
-    void submitAsyEvent(AbstractTask t, Object object, int taskType){
-        AbstractTasks abstractTasks =t.getTasks();
-        Integer index=t.getiOLoadEventProcessorId();
-        TaskSchedule taskSchedule = balancedTaskScheduleList.get(index);;
-        if(abstractTasks instanceof NoSeqFixSizeTasks){
-            EntryDesc entryDesc=getBalanceWorker();
-            taskSchedule =entryDesc.TaskSchedule;
-            t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
-        }
-//      remove(abstractTasks,taskType);
-        abstractTasks.addTask(t,taskType,object);
-//        Runnable dispatcher =new Dispatcher(abstractTasks);
-//        cachedService.submit(dispatcher);
-    }
-
-    void submitAsyInitEvcent(AbstractTask t, Object object, boolean isWorkSeq){
-        AbstractTasks abstractTasks;
-        int workCount=t.getWorkCount();
-        EntryDesc entryDesc=getBalanceWorker();
-        TaskSchedule taskSchedule =entryDesc.TaskSchedule;
-        t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
-        if(isWorkSeq){
-            abstractTasks =new SeqFixSizeTasks(workCount,null);
-        }else{
-            abstractTasks =new NoSeqFixSizeTasks(workCount,null);
-        }
-      //enWorkMap(abstractTasks);
-//        Runnable dispatcher =new Dispatcher(abstractTasks, taskSchedule,object,AbstractTask.INIT);
-//        cachedService.submit(dispatcher);
-        abstractTasks.addTask(t, AbstractTask.INIT,object);
     }
 
     void submitInitEvent(AbstractTask t, Object object, int tasksType){
