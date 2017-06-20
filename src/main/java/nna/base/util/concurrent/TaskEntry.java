@@ -28,7 +28,7 @@ package nna.base.util.concurrent;
         TaskScheduleManager.addNewTask(t,object,taskStatus);
     }
 
-    static void startTask(AbstractTask t, Object object, boolean isWorkSeq){
-        TaskScheduleManager.startTask(t,object,isWorkSeq);
+    static void startTask(AbstractTask t, Object object, int containerType){
+        TaskScheduleManager.startTask(t,object,containerType);
     }
 }

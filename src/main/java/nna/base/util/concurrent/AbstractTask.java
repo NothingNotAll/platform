@@ -40,8 +40,8 @@ public abstract class AbstractTask {
         TaskEntry.addNewTask(this,object,taskType);
     }
 
-    protected void startTask(Object object,boolean isWorkSeq){
-        TaskEntry.startTask(this,object,isWorkSeq);
+    protected void startTask(Object object,int containerType){
+        TaskEntry.startTask(this,object,containerType);
     }
 
     protected abstract Object doTask(int taskType,Object attach) throws Exception;

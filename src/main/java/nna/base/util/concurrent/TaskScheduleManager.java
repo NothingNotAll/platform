@@ -1,6 +1,8 @@
 package nna.base.util.concurrent;
 
 
+import nna.Marco;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,6 +11,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ *
+ * workCount:we should think of that the time of every IO task,
+ * if time is too short ,the workCount can be set only by CPU's Core size;
+ *
+ * if time is too Long , we can set the workCount with the Core Size of Cpu and
+ * think of :
+ * workCount=max(time/threshold,coreSize);
+ *
  * @author NNA-SHUAI
  * @create 2017-05-30 16:40
  **/
@@ -22,15 +32,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
     private ExecutorService fixedLogWorkerService;
     private ArrayList<TaskSchedule> balancedTaskScheduleList;
-
-    /*
-    * workCount:we should think of that the time of every IO task,
-    * if time is too short ,the workCount can be set only by CPU's Core size;
-    *
-    * if time is too Long , we can set the workCount with the Core Size of Cpu and
-    * think of :
-    * workCount=max(time/threshold,coreSize);
-    * */
 
     synchronized static TaskScheduleManager initWorkerManager(Long maxBusinessProcessTime, Long thresholdTime){
         if(init){
@@ -87,15 +88,29 @@ import java.util.concurrent.atomic.AtomicLong;
 
     }
 
+    private void enWorkMap(AbstractTasks abstractTasks) {
+        Long workId=taskNo.getAndIncrement();
+        abstractTasks.setGlobalWorkId(workId);
+        monitorMap.put(workId, abstractTasks);
+    }
+
+    private void remove(AbstractTasks abstractTasks, int taskType) {
+        Long workId= abstractTasks.getGlobalWorkId();
+        if(taskType== AbstractTask.OVER){
+            monitorMap.remove(workId);
+        }
+    }
+
     private boolean loadAlg(){
+        //根据当前服务器负载情况决定采取策略。
         return true;
     }
 
-    void startTask(AbstractTask t, Object object, boolean isWorkSeq){
+    void startTask(AbstractTask t, Object object, int containerType){
         if(loadAlg()){
-            submitInitEvent(t,object,isWorkSeq);
+            submitInitEvent(t,object,containerType);
         }else{
-            submitAsyInitEvcent(t,object,isWorkSeq);
+//            submitAsyInitEvcent(t,object,tasksType);
         }
     }
 
@@ -111,12 +126,8 @@ import java.util.concurrent.atomic.AtomicLong;
         AbstractTasks abstractTasks =t.getTasks();
 //        remove(abstractTasks,taskType);
         abstractTasks.addTask(t,taskType,object);
-    }
-
-    private void remove(AbstractTasks abstractTasks, int taskType) {
-        Long workId= abstractTasks.getGlobalWorkId();
-        if(taskType== AbstractTask.OVER){
-            monitorMap.remove(workId);
+        if(abstractTasks instanceof NoSeqFixSizeTasks){
+            cachedService.submit(abstractTasks);
         }
     }
 
@@ -135,6 +146,7 @@ import java.util.concurrent.atomic.AtomicLong;
     }
 
     void submitAsyInitEvcent(AbstractTask t, Object object, boolean isWorkSeq){
+        int tasksType;
         AbstractTasks abstractTasks;
         int workCount=t.getWorkCount();
         EntryDesc entryDesc=getBalanceWorker();
@@ -151,27 +163,42 @@ import java.util.concurrent.atomic.AtomicLong;
         abstractTasks.addTask(t, AbstractTask.INIT,object);
     }
 
-    void submitInitEvent(AbstractTask t, Object object, boolean isWorkSeq){
+    void submitInitEvent(AbstractTask t, Object object, int tasksType){
         int workCount=t.getWorkCount();
         AbstractTasks abstractTasks;
-        if(isWorkSeq){
-            abstractTasks =new SeqFixSizeTasks(workCount,null);
-            t.setTasks(abstractTasks);
-            cachedService.submit(abstractTasks);
-            abstractTasks.addTask(t, AbstractTask.INIT,object);
-        }else{
-            abstractTasks =new NoSeqFixSizeTasks(workCount,null);
-            t.setTasks(abstractTasks);
-            abstractTasks.addTask(t, AbstractTask.INIT,object);
-            cachedService.submit(abstractTasks);
+        switch (tasksType){
+            case Marco.NO_SEQ_FIX_SIZE_TASK:
+                abstractTasks =new NoSeqFixSizeTasks(workCount,null);
+                t.setTasks(abstractTasks);
+                abstractTasks.addTask(t, AbstractTask.INIT,object);
+                cachedService.submit(abstractTasks);
+                break;
+            case Marco.NO_SEQ_LINKED_SIZE_TASK:
+                abstractTasks =new NoSeqFixSizeTasks(workCount,null);
+                t.setTasks(abstractTasks);
+                abstractTasks.addTask(t, AbstractTask.INIT,object);
+                cachedService.submit(abstractTasks);
+                break;
+            case Marco.SEQ_FIX_SIZE_TASK:
+                abstractTasks =new SeqFixSizeTasks(workCount,null);
+                t.setTasks(abstractTasks);
+                cachedService.submit(abstractTasks);
+                abstractTasks.addTask(t, AbstractTask.INIT,object);
+                break;
+            case Marco.ONE_TASK:
+                abstractTasks =new NoSeqFixSizeTasks(workCount,null);
+                t.setTasks(abstractTasks);
+                abstractTasks.addTask(t, AbstractTask.INIT,object);
+                cachedService.submit(abstractTasks);
+                break;
+            case Marco.NO_SEQ_LINKEDV2_SIZE_TASK:
+                abstractTasks =new NoSeqFixSizeTasks(workCount,null);
+                t.setTasks(abstractTasks);
+                abstractTasks.addTask(t, AbstractTask.INIT,object);
+                cachedService.submit(abstractTasks);
+                break;
         }
 //        enWorkMap(abstractTasks);
-    }
-
-    private void enWorkMap(AbstractTasks abstractTasks) {
-        Long workId=taskNo.getAndIncrement();
-        abstractTasks.setGlobalWorkId(workId);
-        monitorMap.put(workId, abstractTasks);
     }
 
     EntryDesc getBalanceWorker() {
