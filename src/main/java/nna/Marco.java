@@ -123,4 +123,10 @@ public interface Marco {
     int XML_PROTOCOL=1;
     int CON_TEST_COUNT = 1;
     int CON_WORK_COUNT=11900;
+
+    int ONE_TASK=0;
+    int NO_SEQ_FIX_SIZE_TASK=1;
+    int NO_SEQ_LINKED_SIZE_TASK=2;
+    int NO_SEQ_LINKEDV2_SIZE_TASK=3;
+    int SEQ_FIX_SIZE_TASK=4;
 }
