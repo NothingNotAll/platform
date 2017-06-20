@@ -11,15 +11,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Monitor implements Runnable {
     SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
-    private EventProcessor[] EventProcessors;
+    private TaskSchedule[] taskSchedules;
     private Map map;
     private int index=0;
     public void run() {
         while(true){
             System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-TOTAL TASKS'S WAIT SIZE:"+map.size());
             index=0;
-            for(EventProcessor EventProcessor : EventProcessors){
-                LinkedBlockingQueue<AbstractTasks> queue= EventProcessor.getWorkQueue();
+            for(TaskSchedule TaskSchedule : taskSchedules){
+                LinkedBlockingQueue<AbstractTasks> queue= TaskSchedule.getWorkQueue();
 //                Iterator<AbstractTasks> iterator=queue.iterator();
 //                AbstractTasks abstractIOTasks;
 //                while(iterator.hasNext()){
@@ -36,12 +36,12 @@ public class Monitor implements Runnable {
         }
     }
 
-    public EventProcessor[] getEventProcessors() {
-        return EventProcessors;
+    public TaskSchedule[] getTaskSchedules() {
+        return taskSchedules;
     }
 
-    public void setEventProcessors(EventProcessor[] eventProcessors) {
-        this.EventProcessors = eventProcessors;
+    public void setTaskSchedules(TaskSchedule[] taskSchedules) {
+        this.taskSchedules = taskSchedules;
     }
 
     public void setMap(Map map) {

@@ -1,5 +1,7 @@
 package nna.base.util.concurrent;
 
+import nna.base.server.AbstractNIOTask;
+
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -47,12 +49,12 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
         int loopCount=0;
         for(int index=0;index < workCount;){
             sta=status[index];
-            if(sta==END||sta==FAIL){
+            if(sta== AbstractTask.INIT||sta==END||sta==FAIL){
                 lock=locks[index];
                 try{
                     if(lock.tryLock()){
                         isLocked=true;
-                        if((sta==END||sta==FAIL)){
+                        if(sta== AbstractTask.INIT||sta==END||sta==FAIL){
                             setNonNull(index,startTime, abstractTask,taskType,attach);
                             return true;
                         }

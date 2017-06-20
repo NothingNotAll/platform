@@ -18,7 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @create 2017-06-13 10:12
  **/
 
-public class EventProcessor<T extends AbstractTask> extends Clone implements Runnable{
+public class TaskSchedule<T extends AbstractTask> extends Clone implements Runnable{
 
     private static final Long serialVersionUID=-1L;
     private ExecutorService service= Executors.newCachedThreadPool();

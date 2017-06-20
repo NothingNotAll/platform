@@ -9,17 +9,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Dispatcher implements Runnable {
     private AbstractTasks temp;
-    private EventProcessor EventProcessor;
+    private TaskSchedule TaskSchedule;
 
     public void run() {
-        LinkedBlockingQueue<AbstractTasks> queue= EventProcessor.getWorkQueue();
+        LinkedBlockingQueue<AbstractTasks> queue= TaskSchedule.getWorkQueue();
         //性能瓶頸點
         queue.add(temp);
     }
 
     public Dispatcher(AbstractTasks abstractTasks,
-                      EventProcessor EventProcessor){
+                      TaskSchedule TaskSchedule){
         this.temp= abstractTasks;
-        this.EventProcessor = EventProcessor;
+        this.TaskSchedule = TaskSchedule;
     }
 }

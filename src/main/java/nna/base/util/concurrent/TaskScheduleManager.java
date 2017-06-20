@@ -13,15 +13,15 @@ import java.util.concurrent.atomic.AtomicLong;
  * @create 2017-05-30 16:40
  **/
 
- class EventProcessorManager {
+ class TaskScheduleManager {
     private static AtomicLong taskNo=new AtomicLong(0L);
     private static ConcurrentHashMap<Long,AbstractTasks> monitorMap=new ConcurrentHashMap<Long, AbstractTasks>();
-    private static EventProcessorManager EventProcessorManager;
+    private static TaskScheduleManager TaskScheduleManager;
     private static volatile boolean init=false;
     private static ExecutorService cachedService = Executors.newCachedThreadPool();
 
     private ExecutorService fixedLogWorkerService;
-    private ArrayList<EventProcessor> balancedEventProcessorList;
+    private ArrayList<TaskSchedule> balancedTaskScheduleList;
 
     /*
     * workCount:we should think of that the time of every IO task,
@@ -32,9 +32,9 @@ import java.util.concurrent.atomic.AtomicLong;
     * workCount=max(time/threshold,coreSize);
     * */
 
-    synchronized static EventProcessorManager initWorkerManager(Long maxBusinessProcessTime, Long thresholdTime){
+    synchronized static TaskScheduleManager initWorkerManager(Long maxBusinessProcessTime, Long thresholdTime){
         if(init){
-            return EventProcessorManager;
+            return TaskScheduleManager;
         }
         init=true;
         int workCount=getAvlCPUCount();
@@ -42,8 +42,8 @@ import java.util.concurrent.atomic.AtomicLong;
             int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
             workCount=Math.max(count,workCount);
         }
-        EventProcessorManager =new EventProcessorManager(workCount);
-        return EventProcessorManager;
+        TaskScheduleManager =new TaskScheduleManager(workCount);
+        return TaskScheduleManager;
     }
 
     private static int getBusinessCount(Long maxBusinessProcessTime,Long thresholdTime){
@@ -57,29 +57,29 @@ import java.util.concurrent.atomic.AtomicLong;
         return coreCount<=1?1:coreCount-1;
     }
 
-    private EventProcessorManager(int workerCount){
+    private TaskScheduleManager(int workerCount){
         init(workerCount*10);
     }
 
     private void init(int workerCount) {
         Monitor Monitor =new Monitor();
-        EventProcessor[] EventProcessors =new EventProcessor[workerCount];
-        balancedEventProcessorList =new ArrayList<EventProcessor>(workerCount);
+        TaskSchedule[] taskSchedules =new TaskSchedule[workerCount];
+        balancedTaskScheduleList =new ArrayList<TaskSchedule>(workerCount);
         fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
-        EventProcessor tempEventProcessor;
+        TaskSchedule tempTaskSchedule;
         for(int index=0;index < workerCount;index++){
-            tempEventProcessor =new EventProcessor();
-            tempEventProcessor.setLoadNo(index);
-            balancedEventProcessorList.add(tempEventProcessor);
-            fixedLogWorkerService.submit(tempEventProcessor);
-            EventProcessors[index]= tempEventProcessor;
+            tempTaskSchedule =new TaskSchedule();
+            tempTaskSchedule.setLoadNo(index);
+            balancedTaskScheduleList.add(tempTaskSchedule);
+            fixedLogWorkerService.submit(tempTaskSchedule);
+            taskSchedules[index]= tempTaskSchedule;
         }
-        Monitor.setEventProcessors(EventProcessors);
+        Monitor.setTaskSchedules(taskSchedules);
         Monitor.setMap(monitorMap);
-        new Thread(Monitor).start();
+//        new Thread(Monitor).start();
     }
 
-    void addWorker(EventProcessor EventProcessor){
+    void addWorker(TaskSchedule TaskSchedule){
 
     }
 
@@ -123,14 +123,14 @@ import java.util.concurrent.atomic.AtomicLong;
     void submitAsyEvent(AbstractTask t, Object object, int taskType){
         AbstractTasks abstractTasks =t.getTasks();
         Integer index=t.getiOLoadEventProcessorId();
-        EventProcessor eventProcessor = balancedEventProcessorList.get(index);;
+        TaskSchedule taskSchedule = balancedTaskScheduleList.get(index);;
         if(abstractTasks instanceof NoSeqFixSizeTasks){
             EntryDesc entryDesc=getBalanceWorker();
-            eventProcessor =entryDesc.EventProcessor;
+            taskSchedule =entryDesc.TaskSchedule;
             t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
         }
 //      remove(abstractTasks,taskType);
-        Runnable dispatcher =new Dispatcher(abstractTasks, eventProcessor);
+        Runnable dispatcher =new Dispatcher(abstractTasks, taskSchedule);
         cachedService.submit(dispatcher);
     }
 
@@ -138,7 +138,7 @@ import java.util.concurrent.atomic.AtomicLong;
         AbstractTasks abstractTasks;
         int workCount=t.getWorkCount();
         EntryDesc entryDesc=getBalanceWorker();
-        EventProcessor eventProcessor =entryDesc.EventProcessor;
+        TaskSchedule taskSchedule =entryDesc.TaskSchedule;
         t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
         if(isWorkSeq){
             abstractTasks =new SeqFixSizeTasks(workCount,null);
@@ -146,7 +146,7 @@ import java.util.concurrent.atomic.AtomicLong;
             abstractTasks =new NoSeqFixSizeTasks(workCount,null);
         }
       //enWorkMap(abstractTasks);
-        Runnable dispatcher =new Dispatcher(abstractTasks, eventProcessor);
+        Runnable dispatcher =new Dispatcher(abstractTasks, taskSchedule);
         cachedService.submit(dispatcher);
         abstractTasks.addTask(t, AbstractTask.INIT,object);
     }
@@ -156,13 +156,16 @@ import java.util.concurrent.atomic.AtomicLong;
         AbstractTasks abstractTasks;
         if(isWorkSeq){
             abstractTasks =new SeqFixSizeTasks(workCount,null);
+            t.setTasks(abstractTasks);
+            cachedService.submit(abstractTasks);
+            abstractTasks.addTask(t, AbstractTask.INIT,object);
         }else{
             abstractTasks =new NoSeqFixSizeTasks(workCount,null);
+            t.setTasks(abstractTasks);
+            abstractTasks.addTask(t, AbstractTask.INIT,object);
+            cachedService.submit(abstractTasks);
         }
 //        enWorkMap(abstractTasks);
-        t.setTasks(abstractTasks);
-        cachedService.submit(abstractTasks);
-        abstractTasks.addTask(t, AbstractTask.INIT,object);
     }
 
     private void enWorkMap(AbstractTasks abstractTasks) {
@@ -172,23 +175,23 @@ import java.util.concurrent.atomic.AtomicLong;
     }
 
     EntryDesc getBalanceWorker() {
-        Iterator<EventProcessor> iterator= balancedEventProcessorList.iterator();
-        EventProcessor EventProcessor;
-        EventProcessor minEventProcessor =null;
+        Iterator<TaskSchedule> iterator= balancedTaskScheduleList.iterator();
+        TaskSchedule TaskSchedule;
+        TaskSchedule minTaskSchedule =null;
         int count;
         Integer minCount=null;
         Integer workerIndex=null;
         int index=0;
         while(iterator.hasNext()){
-            EventProcessor =iterator.next();
-            count= EventProcessor.getTempWorkCount();
+            TaskSchedule =iterator.next();
+            count= TaskSchedule.getTempWorkCount();
             if(minCount==null){
-                minEventProcessor = EventProcessor;
+                minTaskSchedule = TaskSchedule;
                 minCount=count;
                 workerIndex=index;
             }else{
                 if(minCount>count){
-                    minEventProcessor = EventProcessor;
+                    minTaskSchedule = TaskSchedule;
                     workerIndex=index;
                     minCount=count;
                 }
@@ -198,15 +201,15 @@ import java.util.concurrent.atomic.AtomicLong;
             }
             index++;
         }
-         return new EntryDesc(minEventProcessor,workerIndex);
+         return new EntryDesc(minTaskSchedule,workerIndex);
     }
 
     private class EntryDesc{
-        private EventProcessor EventProcessor;
+        private TaskSchedule TaskSchedule;
         private Integer iOLoadEventProcessorId;
 
-        private EntryDesc(EventProcessor EventProcessor, Integer iOLoadEventProcessorId){
-            this.EventProcessor = EventProcessor;
+        private EntryDesc(TaskSchedule TaskSchedule, Integer iOLoadEventProcessorId){
+            this.TaskSchedule = TaskSchedule;
             this.iOLoadEventProcessorId=iOLoadEventProcessorId;
         }
     }

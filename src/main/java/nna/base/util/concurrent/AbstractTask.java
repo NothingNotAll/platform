@@ -24,7 +24,7 @@ public abstract class AbstractTask {
     private ReentrantLock initLock=new ReentrantLock();
 
     static{
-        System.out.println("init EventProcessor Manager!");
+        System.out.println("init TaskSchedule Manager!");
         TaskEntry.init(null,null);
     }
 
