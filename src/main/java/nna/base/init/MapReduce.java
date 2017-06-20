@@ -61,7 +61,7 @@ import static nna.base.util.orm.ObjectFactory.getBean;
             Clone clone= getBean(rs,serializableId);
             method= ObjectUtil.loadMethodFromObjectAndMethodName(clone,getMethodName);
             map.put((Integer)method.invoke(clone),clone);
-            test(clone,serializableId);
+//            test(clone,serializableId);
         }
         rs.close();
         pst.close();
