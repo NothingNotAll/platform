@@ -157,6 +157,9 @@ import java.util.*;
             case Marco.PLATFORM_ENUM_SERVICEMETHODTYPE:
                 method.invoke(clone,ServiceMethodType.valueOf(rs.getString(index)));
                 break;
+            case Marco.PLATFORM_ENUM_PROTOTCOLTYPE:
+                method.invoke(clone,ProtocolType.valueOf(rs.getString(index)));
+                break;
         }
     }
 

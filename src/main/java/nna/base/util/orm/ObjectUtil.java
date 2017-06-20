@@ -164,6 +164,8 @@ public class ObjectUtil {
                 return Marco.JAVA_INTEGER;
             case SERVICEMETHODTYPE:
                 return Marco.PLATFORM_ENUM_SERVICEMETHODTYPE;
+            case PROTOCOLTYPE:
+                return Marco.PLATFORM_ENUM_PROTOTCOLTYPE;
         }
         return -1;
     }

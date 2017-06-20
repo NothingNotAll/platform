@@ -21,19 +21,17 @@ public class NIOClientTask extends AbstractNIOTask {
     private static final int CLIENT_CONNECT=SelectionKey.OP_CONNECT;
     private static final int CLIENT_WRITE = SelectionKey.OP_WRITE;
 
-    private ByteBuffer requestBytes;
-    public NIOClientTask(ByteBuffer requestBytes,
+    public NIOClientTask(
                          EndConfig endConfig,
                          Object object,
                          Method method) throws IOException {
         super("NIO Client", 10, endConfig,object,method);
-        this.requestBytes=requestBytes;
         startTask(null, Marco.SEQ_FIX_SIZE_TASK);
     }
 
 
     private void clientRead(SocketChannel channel) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(object,protocolType,channel,CLIENT_READ);
+        method.invoke(object,channel,protocolType,CLIENT_READ);
         addNewNIOTask(channel,OVER);
     }
 
@@ -41,7 +39,7 @@ public class NIOClientTask extends AbstractNIOTask {
         if(!channel.isConnected()){
             channel.finishConnect();
         }
-        method.invoke(object,channel,requestBytes,protocolType,CLIENT_WRITE);
+        method.invoke(object,channel,protocolType,CLIENT_WRITE);
         NIOSelector.registerChannel(channel, SelectionKey.OP_READ,this);
     }
 

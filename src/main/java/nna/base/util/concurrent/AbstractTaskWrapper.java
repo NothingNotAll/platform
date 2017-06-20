@@ -22,7 +22,7 @@ package nna.base.util.concurrent;
         this.object=object;
         this.taskStatus=taskType;
         taskStatus=AbstractTask.INIT;
-        this.taskStartTimes=taskStartTimes;
+        this.taskType=taskType;
     }
 
     AbstractTaskWrapper(){

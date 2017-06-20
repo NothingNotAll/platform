@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
     private static ExecutorService cachedService = Executors.newCachedThreadPool();
 
     private ExecutorService fixedLogWorkerService;
-    private ArrayList<TaskSchedule> balancedTaskScheduleList;
+//    private ArrayList<TaskSchedule> balancedTaskScheduleList=new ArrayList<TaskSchedule>();
 
     synchronized static TaskScheduleManager initWorkerManager(Long maxBusinessProcessTime, Long thresholdTime){
         if(init){
@@ -56,49 +56,40 @@ import java.util.concurrent.atomic.AtomicLong;
     private static int getAvlCPUCount(){
         int coreCount=Runtime.getRuntime().availableProcessors();
         return coreCount<=1?1:coreCount-1;
-    }
-
-    private TaskScheduleManager(int workerCount){
-        init(workerCount*10);
-    }
-
-    private void init(int workerCount) {
-        Monitor Monitor =new Monitor();
-        TaskSchedule[] taskSchedules =new TaskSchedule[workerCount];
-        balancedTaskScheduleList =new ArrayList<TaskSchedule>(workerCount);
-        fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
-        TaskSchedule tempTaskSchedule;
-        for(int index=0;index < workerCount;index++){
-            tempTaskSchedule =new TaskSchedule();
-            tempTaskSchedule.setLoadNo(index);
-            balancedTaskScheduleList.add(tempTaskSchedule);
-            fixedLogWorkerService.submit(tempTaskSchedule);
-            taskSchedules[index]= tempTaskSchedule;
         }
-        Monitor.setTaskSchedules(taskSchedules);
-        Monitor.setMap(monitorMap);
-//        new Thread(Monitor).start();
-    }
 
-    void addWorker(TaskSchedule TaskSchedule){
-
-    }
-
-    void deleteWorker(){
-
-    }
-
-    private void enWorkMap(AbstractTasks abstractTasks) {
-        Long workId=taskNo.getAndIncrement();
-        abstractTasks.setGlobalWorkId(workId);
-        monitorMap.put(workId, abstractTasks);
-    }
-
-    private void remove(AbstractTasks abstractTasks, int taskType) {
-        Long workId= abstractTasks.getGlobalWorkId();
-        if(taskType== AbstractTask.OVER){
-            monitorMap.remove(workId);
+        private TaskScheduleManager(int workerCount){
+    //        init(workerCount*10);
         }
+    //
+        private void init(int workerCount) {
+            Monitor Monitor =new Monitor();
+    //        TaskSchedule[] taskSchedules =new TaskSchedule[workerCount];
+    //        balancedTaskScheduleList =new ArrayList<TaskSchedule>(workerCount);
+    //        fixedLogWorkerService=Executors.newFixedThreadPool(workerCount);
+    //        TaskSchedule tempTaskSchedule;
+    //        for(int index=0;index < workerCount;index++){
+    //            tempTaskSchedule =new TaskSchedule();
+    //            tempTaskSchedule.setLoadNo(index);
+    //            balancedTaskScheduleList.add(tempTaskSchedule);
+    //            fixedLogWorkerService.submit(tempTaskSchedule);
+    //            taskSchedules[index]= tempTaskSchedule;
+    //        }
+    //        Monitor.setTaskSchedules(taskSchedules);
+    //        Monitor.setMap(monitorMap);
+        }
+
+        private void enWorkMap(AbstractTasks abstractTasks) {
+            Long workId=taskNo.getAndIncrement();
+            abstractTasks.setGlobalWorkId(workId);
+            monitorMap.put(workId, abstractTasks);
+        }
+
+        private void remove(AbstractTasks abstractTasks, int taskType) {
+            Long workId= abstractTasks.getGlobalWorkId();
+            if(taskType== AbstractTask.OVER){
+                monitorMap.remove(workId);
+            }
     }
 
     private boolean loadAlg(){
@@ -126,9 +117,6 @@ import java.util.concurrent.atomic.AtomicLong;
         AbstractTasks abstractTasks =t.getTasks();
 //        remove(abstractTasks,taskType);
         abstractTasks.addTask(t,taskType,object);
-        if(abstractTasks instanceof NoSeqFixSizeTasks){
-            cachedService.submit(abstractTasks);
-        }
     }
 
     void submitInitEvent(AbstractTask t, Object object, int tasksType){
@@ -142,10 +130,9 @@ import java.util.concurrent.atomic.AtomicLong;
                 cachedService.submit(abstractTasks);
                 break;
             case Marco.NO_SEQ_LINKED_SIZE_TASK:
-                abstractTasks =new NoSeqLinkedTasks(10,10,null);
+                abstractTasks =new NoSeqLinkedTasks(1,1,null);
                 t.setTasks(abstractTasks);
                 abstractTasks.addTask(t, AbstractTask.INIT,object);
-                cachedService.submit(abstractTasks);
                 break;
             case Marco.SEQ_FIX_SIZE_TASK:
                 abstractTasks =new SeqFixSizeTasks(workCount,null);
@@ -163,43 +150,43 @@ import java.util.concurrent.atomic.AtomicLong;
 //        enWorkMap(abstractTasks);
     }
 
-    EntryDesc getBalanceWorker() {
-        Iterator<TaskSchedule> iterator= balancedTaskScheduleList.iterator();
-        TaskSchedule TaskSchedule;
-        TaskSchedule minTaskSchedule =null;
-        int count;
-        Integer minCount=null;
-        Integer workerIndex=null;
-        int index=0;
-        while(iterator.hasNext()){
-            TaskSchedule =iterator.next();
-            count= TaskSchedule.getTempWorkCount();
-            if(minCount==null){
-                minTaskSchedule = TaskSchedule;
-                minCount=count;
-                workerIndex=index;
-            }else{
-                if(minCount>count){
-                    minTaskSchedule = TaskSchedule;
-                    workerIndex=index;
-                    minCount=count;
-                }
-            }
-            if(minCount==0){
-                break;
-            }
-            index++;
-        }
-         return new EntryDesc(minTaskSchedule,workerIndex);
-    }
+//    EntryDesc getBalanceWorker() {
+//        Iterator<TaskSchedule> iterator= balancedTaskScheduleList.iterator();
+//        TaskSchedule TaskSchedule;
+//        TaskSchedule minTaskSchedule =null;
+//        int count;
+//        Integer minCount=null;
+//        Integer workerIndex=null;
+//        int index=0;
+//        while(iterator.hasNext()){
+//            TaskSchedule =iterator.next();
+//            count= TaskSchedule.getTempWorkCount();
+//            if(minCount==null){
+//                minTaskSchedule = TaskSchedule;
+//                minCount=count;
+//                workerIndex=index;
+//            }else{
+//                if(minCount>count){
+//                    minTaskSchedule = TaskSchedule;
+//                    workerIndex=index;
+//                    minCount=count;
+//                }
+//            }
+//            if(minCount==0){
+//                break;
+//            }
+//            index++;
+//        }
+//         return new EntryDesc(minTaskSchedule,workerIndex);
+//    }
 
-    private class EntryDesc{
-        private TaskSchedule TaskSchedule;
-        private Integer iOLoadEventProcessorId;
-
-        private EntryDesc(TaskSchedule TaskSchedule, Integer iOLoadEventProcessorId){
-            this.TaskSchedule = TaskSchedule;
-            this.iOLoadEventProcessorId=iOLoadEventProcessorId;
-        }
-    }
+//    private class EntryDesc{
+//        private TaskSchedule TaskSchedule;
+//        private Integer iOLoadEventProcessorId;
+//
+//        private EntryDesc(TaskSchedule TaskSchedule, Integer iOLoadEventProcessorId){
+//            this.TaskSchedule = TaskSchedule;
+//            this.iOLoadEventProcessorId=iOLoadEventProcessorId;
+//        }
+//    }
 }

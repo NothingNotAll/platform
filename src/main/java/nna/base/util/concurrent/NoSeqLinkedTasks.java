@@ -13,6 +13,14 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
+    public LinkedBlockingQueue<AbstractTaskWrapper>[] getList() {
+        return list;
+    }
+
+    public void setList(LinkedBlockingQueue<AbstractTaskWrapper>[] list) {
+        this.list = list;
+    }
+
     //next step is solve the hungry lock;
     protected LinkedBlockingQueue<AbstractTaskWrapper>[] list;
     protected ReentrantLock[] locks;
@@ -22,12 +30,16 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
     NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId) {
         super(0, workId);
         this.linkedListCount=linkedListCount;
+        list=new LinkedBlockingQueue[linkedListCount];
+        locks=new ReentrantLock[linkedListCount];
         threadCount=threadCount>linkedListCount?linkedListCount:threadCount;
         service=Executors.newFixedThreadPool(threadCount);
         for(int index=0;index<linkedListCount;index++){
-            if(index < threadCount){
-                service.submit(this);
-            }
+            list[index]=new LinkedBlockingQueue<AbstractTaskWrapper>();
+            locks[index]=new ReentrantLock();
+        }
+        for(int index=0;index < threadCount;index++){
+            service.submit(this);
         }
     }
 
@@ -49,6 +61,8 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
                     tempCount=temp.drainTo(temps,tempCount);
                     totalCount+=tempCount;
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }finally {
                 if(locked){
                     locked=false;
@@ -76,12 +90,26 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
     }
 
     public void run(){
-        doTasks();
+        try{
+            while(true){
+                try{
+                    doTasks();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+
+        }
     }
 
     boolean addTask(
             AbstractTask abstractTask,
-            int taskType,
+            Integer taskType,
             Object attach){
         AbstractTaskWrapper abstractTaskWrapper=new AbstractTaskWrapper(abstractTask,attach,taskType);
         LinkedBlockingQueue<AbstractTaskWrapper> loadBalance=getLoadBalacer();

@@ -21,8 +21,8 @@ public class NIOEntry {
         nioTask=new NIOServerTask(endConfig,protocolProcessObject,protocolProcessMethod);
     }
 
-    public NIOEntry(ClientConfig clientConfig,ByteBuffer requestBytes,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
-        nioTask=new NIOClientTask(requestBytes,clientConfig,protocolProcessObject,protocolProcessMethod);
+    public NIOEntry(ClientConfig clientConfig,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
+        nioTask=new NIOClientTask(clientConfig,protocolProcessObject,protocolProcessMethod);
     }
 
     public AbstractNIOTask getNioTask() {

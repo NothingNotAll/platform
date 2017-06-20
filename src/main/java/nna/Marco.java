@@ -103,6 +103,7 @@ public interface Marco {
     int JAVA_FLOAT = 20;
     int JAVA_INTEGER =21 ;
     int PLATFORM_ENUM_SERVICEMETHODTYPE=22;
+    int PLATFORM_ENUM_PROTOTCOLTYPE=23;
 
     //total confMeta
     int LOGIN=1;
@@ -127,6 +128,5 @@ public interface Marco {
     int ONE_TASK=0;
     int NO_SEQ_FIX_SIZE_TASK=1;
     int NO_SEQ_LINKED_SIZE_TASK=2;
-    int NO_SEQ_LINKEDV2_SIZE_TASK=3;
     int SEQ_FIX_SIZE_TASK=4;
 }

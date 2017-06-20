@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.SocketOption;
-import java.net.SocketOptions;
 import java.net.StandardSocketOptions;
 import java.sql.SQLException;
 import java.util.*;
@@ -246,24 +245,24 @@ public class NNAServiceInit2 {
             endConfig.setPort(platformProtocol.getProtocolPort());
             setOpVals(endConfig,platformProtocol);
             Object[] os=new Object[2];
-//            switch (platformProtocol.getProtocolType()){
-//                case XML:
-//                    os=Util.getProtocolProcessConfig(Marco.XML_PROTOCOL);
-//                    break;
-//                case HTTP:
-//                    os=Util.getProtocolProcessConfig(Marco.HTTP_PROTOCOL);
-//                    break;
-//            }
+            switch (platformProtocol.getProtocolType()){
+                case XML:
+                    os=Util.getProtocolProcessConfig(Marco.XML_PROTOCOL);
+                    break;
+                case HTTP:
+                    os=Util.getProtocolProcessConfig(Marco.HTTP_PROTOCOL);
+                    break;
+            }
             if(platformProtocol.isServer()){
                 ((ServerConfig)endConfig).setBackLog(platformProtocol.getBacklog());
                 try {
-                    NIOEntry nioEntry=new NIOEntry((ServerConfig) endConfig,null,null);
+                    NIOEntry nioEntry=new NIOEntry((ServerConfig) endConfig,os[0],(Method) os[1]);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }else{
                 try {
-                    NIOEntry nioEntry=new NIOEntry((ClientConfig) endConfig,null,null,null);
+                    NIOEntry nioEntry=new NIOEntry((ClientConfig) endConfig,os[0],(Method) os[1]);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

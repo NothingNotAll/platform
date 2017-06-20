@@ -1,6 +1,5 @@
 package nna.base.dispatch;
 
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author NNA-SHUAI
@@ -22,6 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
         currentIndex=0;
         this.reSizeLimit=reSizeLimit;
         this.incrementSize=incrementSize;
+        bytes=new byte[length];
     }
 
      void add(byte t){

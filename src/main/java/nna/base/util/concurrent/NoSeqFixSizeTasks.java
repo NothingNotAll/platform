@@ -42,7 +42,7 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
 
     boolean addTask(
             AbstractTask abstractTask,
-            int taskType,
+            Integer taskType,
             Object attach){
         Long startTime=System.currentTimeMillis();
         ReentrantLock lock;

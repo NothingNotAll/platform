@@ -1,14 +1,14 @@
-package nna.base.dispatch.protocol;
+package nna.base.dispatch;
 
 import nna.Marco;
-import nna.base.dispatch.MetaBeanWrapper;
 import nna.base.util.CharUtil;
 import nna.base.util.orm.ObjectUtil;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.nio.channels.ByteChannel;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Map;
@@ -87,11 +87,36 @@ public class Protocol {
         }
     }
 
-    public static String processHttp(int protocolType,SocketChannel channel,int CLIENT_READ){
+    public static String processHttp(SocketChannel channel,int protocolType,int eventType){
+        ZeroCopy zeroCopy=new ZeroCopy(1024,100,100);
+        ByteBuffer byteBuffer=ByteBuffer.allocate(1024);
+        try {
+            channel.finishConnect();
+            int readCount=channel.read(byteBuffer);
+            while(readCount!=-1){
+                byte[] bytes=new byte[readCount];
+                byteBuffer.get(bytes,0,readCount);
+                zeroCopy.add(bytes);
+                byteBuffer.clear();
+                readCount=channel.read(byteBuffer);
+            }
+            System.out.println(zeroCopy.toBytes().length);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        switch (eventType){
+            case SelectionKey.OP_READ:
+                ;
+                break;
+            case SelectionKey.OP_WRITE:
+                ;
+                break;
+        }
         return null;
     }
 
-    public static String processXml(int protocolType, SocketChannel channel, int CLIENT_READ){
+    public static String processXml(SocketChannel channel,int protocolType,int eventType){
+
         return null;
     }
 

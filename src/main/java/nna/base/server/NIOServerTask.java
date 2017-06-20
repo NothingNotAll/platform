@@ -35,7 +35,7 @@ public class NIOServerTask extends AbstractNIOTask {
         this.selector=NIOSelector.registerChannel(serverSocketChannel, SelectionKey.OP_ACCEPT,this);
         serverSocketChannel.bind(socketAddress,((ServerConfig)endConfig).getBackLog());
         System.out.println("nio Server init @"+endConfig.getIp()+":"+endConfig.getPort());
-        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
+        startTask(null, Marco.NO_SEQ_LINKED_SIZE_TASK);
     }
 
 
@@ -59,7 +59,6 @@ public class NIOServerTask extends AbstractNIOTask {
 
     private void serverRead(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
         method.invoke(object,channel,protocolType,SERVER_READ);
-        System.out.println("read...");
         channel.register(selector,SelectionKey.OP_WRITE,this);
     }
 

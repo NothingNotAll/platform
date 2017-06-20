@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author NNA-SHUAI
  * @create 2017-06-15 11:40
  **/
-
+@Deprecated
 public class Dispatcher implements Runnable {
     private AbstractTaskWrapper temp;
     private TaskSchedule TaskSchedule;
@@ -18,9 +18,7 @@ public class Dispatcher implements Runnable {
         queue.add(temp);
     }
 
-    public Dispatcher(
-                      TaskSchedule TaskSchedule,
-                      AbstractTaskWrapper abstractTaskWrapper){
+    public Dispatcher(TaskSchedule TaskSchedule,AbstractTaskWrapper abstractTaskWrapper){
         this.temp= abstractTaskWrapper;
         this.TaskSchedule = TaskSchedule;
     }

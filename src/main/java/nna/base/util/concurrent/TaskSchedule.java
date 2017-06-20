@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author NNA-SHUAI
  * @create 2017-06-13 10:12
  **/
-
+@Deprecated
 public class TaskSchedule<T extends AbstractTasks> extends Clone implements Runnable{
 
     private static final Long serialVersionUID=-1L;

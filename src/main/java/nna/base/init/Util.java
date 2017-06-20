@@ -2,7 +2,7 @@ package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.dbbean.PlatformSql;
-import nna.base.dispatch.protocol.Protocol;
+import nna.base.dispatch.Protocol;
 import nna.base.log.Log;
 import nna.base.dispatch.AppUtil;
 import nna.base.server.NIOEntry;

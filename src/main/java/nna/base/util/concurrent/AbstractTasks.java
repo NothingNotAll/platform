@@ -101,7 +101,7 @@ import java.util.concurrent.locks.ReentrantLock;
         return taskType;//
     }
 
-    boolean addTask(AbstractTask abstractTask, int taskType,Object attach){
+    boolean addTask(AbstractTask abstractTask, Integer taskType,Object attach){
         Long startTime=System.currentTimeMillis();
         int seq=sequenceGen.getAndIncrement();
         setNonNull(seq,startTime,abstractTask,taskType,attach);

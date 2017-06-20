@@ -6,7 +6,6 @@ import nna.base.bean.dbbean.PlatformApp;
 import nna.base.bean.dbbean.PlatformLog;
 import nna.base.bean.dbbean.PlatformService;
 import nna.base.bean.dbbean.PlatformSession;
-import nna.base.dispatch.protocol.Protocol;
 import nna.base.log.Log;
 
 import static nna.base.dispatch.Dispatch.dispatch;
