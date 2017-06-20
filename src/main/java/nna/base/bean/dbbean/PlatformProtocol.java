@@ -11,7 +11,10 @@ import nna.enums.ProtocolType;
 public class PlatformProtocol extends Clone{
     private static final Long serialVersionUID=23L;
     private int protocolId;
+    private boolean isServer;
+    private String protocolIp;
     private int protocolPort;
+    private Integer backlog;
     private ProtocolType protocolType;
     private String ipMulticastIf;
     private Boolean ipMulticastLoop;
@@ -135,5 +138,29 @@ public class PlatformProtocol extends Clone{
 
     public void setTcpNodelay(Boolean tcpNodelay) {
         this.tcpNodelay = tcpNodelay;
+    }
+
+    public boolean isServer() {
+        return isServer;
+    }
+
+    public void setServer(boolean server) {
+        isServer = server;
+    }
+
+    public String getProtocolIp() {
+        return protocolIp;
+    }
+
+    public void setProtocolIp(String protocolIp) {
+        this.protocolIp = protocolIp;
+    }
+
+    public Integer getBacklog() {
+        return backlog;
+    }
+
+    public void setBacklog(Integer backlog) {
+        this.backlog = backlog;
     }
 }

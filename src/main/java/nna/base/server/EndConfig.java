@@ -85,4 +85,5 @@ public abstract class EndConfig {
     public void setProtocolType(int protocolType) {
         this.protocolType = protocolType;
     }
+
 }

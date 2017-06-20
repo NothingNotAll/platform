@@ -20,7 +20,6 @@ public class NIOClientTask extends AbstractNIOTask {
     private static final int CLIENT_WRITE = SelectionKey.OP_WRITE;
 
     private ByteBuffer requestBytes;
-    protected ClientConfig endConfig;
     public NIOClientTask(ByteBuffer requestBytes,
                          EndConfig endConfig,
                          Object object,
@@ -74,7 +73,7 @@ public class NIOClientTask extends AbstractNIOTask {
         SocketChannel channel=SocketChannel.open();
         setSocketOption(channel);
         channel.configureBlocking(false);
-        NIOSelector.registerChannel(channel,SelectionKey.OP_ACCEPT,this);
+        NIOSelector.registerChannel(channel,SelectionKey.OP_CONNECT,this);
         channel.connect(socketAddress);
     }
 

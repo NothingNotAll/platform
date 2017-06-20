@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author NNA-SHUAI
@@ -14,6 +15,12 @@ import java.util.Enumeration;
 
 public class Test {
     public static void main(String[] args){
+        AtomicInteger atomicInteger=new AtomicInteger();
+        atomicInteger.getAndIncrement();
+        System.out.println(atomicInteger.get());
+        atomicInteger.set(-1);
+        atomicInteger.getAndIncrement();
+        System.out.println(atomicInteger.get());
         try {
             NetworkInterface networkInterface=NetworkInterface.getByName("eth0");
             Enumeration<NetworkInterface> enumeration=networkInterface.getSubInterfaces();

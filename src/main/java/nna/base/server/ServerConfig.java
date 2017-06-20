@@ -8,13 +8,13 @@ package nna.base.server;
 
 public class ServerConfig extends EndConfig {
 
-    private int backLog;
+    private Integer backLog;
 
-    public int getBackLog() {
+    public Integer getBackLog() {
         return backLog;
     }
 
-    public void setBackLog(int backLog) {
+    public void setBackLog(Integer backLog) {
         this.backLog = backLog;
     }
 

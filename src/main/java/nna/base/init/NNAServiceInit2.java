@@ -6,12 +6,17 @@ import nna.base.db.DBCon;
 import nna.base.db.DBMeta;
 import nna.base.log.Log;
 import nna.base.proxy.ProxyFactory;
+import nna.base.server.ClientConfig;
+import nna.base.server.EndConfig;
+import nna.base.server.NIOEntry;
+import nna.base.server.ServerConfig;
 import nna.base.util.List;
 import nna.enums.DBSQLConValType;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.SocketOption;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -220,6 +225,40 @@ public class NNAServiceInit2 {
         buildPlatformUserResource();
         buildMetaBeanList();
         buildPlatformProtocols();
+        buildNIOServers();
+    }
+
+    private void buildNIOServers() {
+        Iterator<Map.Entry<Integer,PlatformProtocol>> iterator=NNAServiceInit1.platformProtocols.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<Integer,PlatformProtocol> entry=iterator.next();
+            PlatformProtocol platformProtocol=entry.getValue();
+            EndConfig endConfig;
+            if(platformProtocol.isServer()){
+                endConfig=new ServerConfig();
+            }else{
+                endConfig=new ClientConfig();
+            }
+            endConfig.setIp(platformProtocol.getProtocolIp());
+            endConfig.setPort(platformProtocol.getProtocolPort());
+            SocketOption[] socketOptions=new SocketOption[0];
+            endConfig.setSocketOptions(socketOptions);
+            endConfig.setOptions(new Object[0]);
+            if(platformProtocol.isServer()){
+                ((ServerConfig)endConfig).setBackLog(platformProtocol.getBacklog());
+                try {
+                    NIOEntry nioEntry=new NIOEntry((ServerConfig) endConfig,null,null);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                try {
+                    NIOEntry nioEntry=new NIOEntry((ClientConfig) endConfig,null,null,null);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void buildPlatformProtocols() {

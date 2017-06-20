@@ -7,9 +7,9 @@ package nna.base.util.concurrent;
  * @create 2017-06-15 11:34
  **/
 
-public class SeqTasks extends AbstractTasks {
+public class SeqFixSizeTasks extends AbstractTasks {
 
-    SeqTasks(int taskCount, Long workId) {
+    SeqFixSizeTasks(int taskCount, Long workId) {
         super(taskCount,workId);
     }
 

@@ -18,7 +18,6 @@ public class NIOServerTask extends AbstractNIOTask {
     private static final int SERVER_WRITE = SelectionKey.OP_WRITE;
     private static final int SERVER_CONNECT=SelectionKey.OP_CONNECT;
 
-    protected ServerConfig endConfig;
     public NIOServerTask(EndConfig endConfig,
                           Object object,
                           Method method) throws IOException {
@@ -29,8 +28,9 @@ public class NIOServerTask extends AbstractNIOTask {
         ServerSocketChannel channel=ServerSocketChannel.open();
         channel.configureBlocking(false);
         setSocketOption(channel);
-        NIOSelector.registerChannel(channel, SelectionKey.OP_CONNECT,this);
-        channel.bind(socketAddress,(endConfig).getBackLog());
+        NIOSelector.registerChannel(channel, SelectionKey.OP_ACCEPT,this);
+        channel.bind(socketAddress,((ServerConfig)endConfig).getBackLog());
+        System.out.println("nio Server init @"+endConfig.getIp()+":"+endConfig.getPort());
     }
 
 

@@ -141,7 +141,7 @@ import java.util.concurrent.atomic.AtomicLong;
         EventProcessor eventProcessor =entryDesc.EventProcessor;
         t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
         if(isWorkSeq){
-            abstractTasks =new SeqTasks(workCount,null);
+            abstractTasks =new SeqFixSizeTasks(workCount,null);
         }else{
             abstractTasks =new NoSeqFixSizeTasks(workCount,null);
         }
@@ -155,7 +155,7 @@ import java.util.concurrent.atomic.AtomicLong;
         int workCount=t.getWorkCount();
         AbstractTasks abstractTasks;
         if(isWorkSeq){
-            abstractTasks =new SeqTasks(workCount,null);
+            abstractTasks =new SeqFixSizeTasks(workCount,null);
         }else{
             abstractTasks =new NoSeqFixSizeTasks(workCount,null);
         }
