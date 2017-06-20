@@ -15,21 +15,22 @@ public class OneTask extends NoSeqFixSizeTasks {
     }
 
     protected int doTasks() {
-        AbstractTask abstractTask=list[0];
-        Object att=objects[0];
-        int taskType=taskTypes[0];
+        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[0];
+        AbstractTask abstractTask=abstractTaskWrapper.getAbstractTask();
+        Object att=abstractTaskWrapper.getObject();
+        int taskType=abstractTaskWrapper.getTaskType();
         ReentrantLock lock=locks[0];
         boolean locked=false;
         try{
             if(lock.tryLock()){
                 locked=true;
                 try {
-                    status[0]=WORKING;
+                    abstractTaskWrapper.setTaskStatus(WORKING);
                     abstractTask.doTask(taskType,att);
-                    status[0]=END;
+                    abstractTaskWrapper.setTaskStatus(END);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    status[0]=FAIL;
+                    abstractTaskWrapper.setTaskStatus(FAIL);
                 }
             }
         }finally {

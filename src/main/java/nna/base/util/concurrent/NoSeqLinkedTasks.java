@@ -8,98 +8,110 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * for Danamic
- * when tasks's count is 1,it seems like to be AbstractAsks;
- *
  * @author NNA-SHUAI
- * @create 2017-06-19 21:31
+ * @create 2017-06-20 1:15
  **/
 
-public class NoSeqLinkedTasks<T extends AbstractTasks> extends NoSeqFixSizeTasks {
+public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
+    //next step is solve the hungry lock;
+    protected LinkedBlockingQueue<AbstractTaskWrapper>[] list;
+    protected ReentrantLock[] locks;
+    protected ExecutorService service;
+    protected int linkedListCount;
 
-    private LinkedBlockingQueue<AbstractTasks>[] abstractTasksList;
-    private ReentrantLock[] locks;
-    private ExecutorService executorService;
-    private int listSize;
-
-    NoSeqLinkedTasks(int listSize, Integer threadSize, Long globalWorkId) {
-        super(0,globalWorkId);
-        threadSize=threadSize>listSize?listSize:threadSize;
-        this.listSize=listSize;
-        abstractTasksList=new LinkedBlockingQueue[listSize];
-        executorService= Executors.newFixedThreadPool(threadSize);
-        locks=new ReentrantLock[threadSize];
-        for(int index=0;index < listSize;index++){
-            abstractTasksList[index]=new LinkedBlockingQueue<AbstractTasks>();
-            if(index<threadSize){
-                locks[index]=new ReentrantLock();
-                executorService.submit(this);
+    NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId) {
+        super(0, workId);
+        this.linkedListCount=linkedListCount;
+        threadCount=threadCount>linkedListCount?linkedListCount:threadCount;
+        service=Executors.newFixedThreadPool(threadCount);
+        for(int index=0;index<linkedListCount;index++){
+            if(index < threadCount){
+                service.submit(this);
             }
         }
+    }
+
+    protected int doTasks(){
+        LinkedList<AbstractTaskWrapper> temps=new LinkedList<AbstractTaskWrapper>();
+        ReentrantLock lock;
+        int tempCount;
+        int totalCount=0;
+        boolean locked=false;
+        int index=0;
+        LinkedBlockingQueue<AbstractTaskWrapper> temp;
+        for(;index<linkedListCount;index++){
+            lock=locks[index];
+            try{
+                if(lock.tryLock()){
+                    locked=true;
+                    temp=list[index];
+                    tempCount=temp.size();
+                    tempCount=temp.drainTo(temps,tempCount);
+                    totalCount+=tempCount;
+                }
+            }finally {
+                if(locked){
+                    locked=false;
+                    lock.unlock();
+                }
+            }
+        }
+        Iterator<AbstractTaskWrapper> iterator=temps.iterator();
+        Object att;
+        int taskType;
+        AbstractTask abstractTask;
+        AbstractTaskWrapper abstractTaskWrapper;
+        while(iterator.hasNext()){
+            abstractTaskWrapper=iterator.next();
+            abstractTask=abstractTaskWrapper.getAbstractTask();
+            taskType=abstractTaskWrapper.getTaskType();
+            att=abstractTaskWrapper.getObject();
+            try {
+                abstractTask.doTask(taskType,att);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return -1;
+    }
+
+    public void run(){
+        doTasks();
     }
 
     boolean addTask(
             AbstractTask abstractTask,
             int taskType,
             Object attach){
-        //负载算法
-        AbstractTasks abstractTasks;
-        LinkedBlockingQueue<AbstractTasks> temp;
-        Iterator<AbstractTasks> iterator;
-        boolean addSuccess;
-        temp=abstractTasksList[blockIndex];
-        iterator=temp.iterator();
-        while(iterator.hasNext()){
-            abstractTasks=iterator.next();
-            addSuccess=abstractTasks.addTask(abstractTask,taskType,attach);
-            if(addSuccess){
-                return true;
-            }
-        }
-        return false;
+        AbstractTaskWrapper abstractTaskWrapper=new AbstractTaskWrapper(abstractTask,attach,taskType);
+        LinkedBlockingQueue<AbstractTaskWrapper> loadBalance=getLoadBalacer();
+        loadBalance.add(abstractTaskWrapper);
+        return true;
     }
-    private volatile Integer blockIndex=null;
-    protected int doTasks() {
-        LinkedList<AbstractTasks> linkedList=new LinkedList<AbstractTasks>();
-        int tempCount;
-        int totalCount=0;
-        LinkedBlockingQueue<AbstractTasks> temp;
-        int index=0;
-        ReentrantLock lock;
-        boolean locked=false;
-        for(;index<listSize;index++){
-            lock=locks[index];
-            try{
-                if(lock.tryLock()){
-                    locked=true;
-                    temp=abstractTasksList[index];
+
+    private LinkedBlockingQueue<AbstractTaskWrapper> getLoadBalacer() {
+        LinkedBlockingQueue temp;
+        Integer tempCount;
+        Integer minCount = null;
+        Integer minIndex = null;
+        for(int index=0;index < linkedListCount;index++){
+            temp=list[index];
+            if(temp.size()==0){
+                return temp;
+            }else {
+                if(minIndex==null){
+                    minIndex=index;
+                    minCount=temp.size();
+                }else{
                     tempCount=temp.size();
-                    blockIndex=index;
-                    tempCount=temp.drainTo(linkedList,tempCount);
-                    totalCount+=tempCount;
-                }
-            }finally {
-                if(locked){
-                    lock.unlock();
-                    locked=false;
+                    if(minCount>tempCount){
+                        minIndex=index;
+                        minCount=tempCount;
+                    }
                 }
             }
         }
-        AbstractTasks abstractTasks;
-        Iterator<AbstractTasks> iterator=linkedList.iterator();
-        while(iterator.hasNext()){
-            abstractTasks=iterator.next();
-            abstractTasks.doTasks();
-        }
-        return 0;
+        return list[minIndex];
     }
 
-
-    protected int lockAndExe(int tempIndex) {
-        return 0;
-    }
-
-    public void run(){
-        doTasks();
-    }
 }

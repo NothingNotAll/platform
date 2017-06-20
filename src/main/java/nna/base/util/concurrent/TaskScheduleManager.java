@@ -141,12 +141,12 @@ import java.util.concurrent.atomic.AtomicLong;
             t.setiOLoadEventProcessorId(entryDesc.iOLoadEventProcessorId);
         }
 //      remove(abstractTasks,taskType);
-        Runnable dispatcher =new Dispatcher(abstractTasks, taskSchedule);
-        cachedService.submit(dispatcher);
+        abstractTasks.addTask(t,taskType,object);
+//        Runnable dispatcher =new Dispatcher(abstractTasks);
+//        cachedService.submit(dispatcher);
     }
 
     void submitAsyInitEvcent(AbstractTask t, Object object, boolean isWorkSeq){
-        int tasksType;
         AbstractTasks abstractTasks;
         int workCount=t.getWorkCount();
         EntryDesc entryDesc=getBalanceWorker();
@@ -158,8 +158,8 @@ import java.util.concurrent.atomic.AtomicLong;
             abstractTasks =new NoSeqFixSizeTasks(workCount,null);
         }
       //enWorkMap(abstractTasks);
-        Runnable dispatcher =new Dispatcher(abstractTasks, taskSchedule);
-        cachedService.submit(dispatcher);
+//        Runnable dispatcher =new Dispatcher(abstractTasks, taskSchedule,object,AbstractTask.INIT);
+//        cachedService.submit(dispatcher);
         abstractTasks.addTask(t, AbstractTask.INIT,object);
     }
 
@@ -174,7 +174,7 @@ import java.util.concurrent.atomic.AtomicLong;
                 cachedService.submit(abstractTasks);
                 break;
             case Marco.NO_SEQ_LINKED_SIZE_TASK:
-                abstractTasks =new NoSeqFixSizeTasks(workCount,null);
+                abstractTasks =new NoSeqLinkedTasks(10,10,null);
                 t.setTasks(abstractTasks);
                 abstractTasks.addTask(t, AbstractTask.INIT,object);
                 cachedService.submit(abstractTasks);
@@ -186,13 +186,7 @@ import java.util.concurrent.atomic.AtomicLong;
                 abstractTasks.addTask(t, AbstractTask.INIT,object);
                 break;
             case Marco.ONE_TASK:
-                abstractTasks =new NoSeqFixSizeTasks(workCount,null);
-                t.setTasks(abstractTasks);
-                abstractTasks.addTask(t, AbstractTask.INIT,object);
-                cachedService.submit(abstractTasks);
-                break;
-            case Marco.NO_SEQ_LINKEDV2_SIZE_TASK:
-                abstractTasks =new NoSeqFixSizeTasks(workCount,null);
+                abstractTasks =new OneTask(null);
                 t.setTasks(abstractTasks);
                 abstractTasks.addTask(t, AbstractTask.INIT,object);
                 cachedService.submit(abstractTasks);

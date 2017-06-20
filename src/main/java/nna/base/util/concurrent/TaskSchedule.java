@@ -18,7 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @create 2017-06-13 10:12
  **/
 
-public class TaskSchedule<T extends AbstractTask> extends Clone implements Runnable{
+public class TaskSchedule<T extends AbstractTasks> extends Clone implements Runnable{
 
     private static final Long serialVersionUID=-1L;
     private ExecutorService service= Executors.newCachedThreadPool();
@@ -27,13 +27,13 @@ public class TaskSchedule<T extends AbstractTask> extends Clone implements Runna
         * 为了业务线程的尽可能的不阻塞，将锁竞争降低到 单条线程之间的竞争：Worker线程与业务线程之间的锁竞争。
         * */
     //in the future this must be replaced of ArrayListBlockingQueue;and used index as the priorLevel;
-    private LinkedBlockingQueue<AbstractTasks> workQueue=new LinkedBlockingQueue<AbstractTasks>();
+    private LinkedBlockingQueue<AbstractTaskWrapper> workQueue=new LinkedBlockingQueue<AbstractTaskWrapper>();
 
     private int tempWorkCount;
-    private AbstractTasks blockAbstractTasks;
-    private LinkedList<AbstractTasks> tempWorkList=new LinkedList<AbstractTasks>();
-    private Iterator<AbstractTasks> iterator;
-    private AbstractTasks currentAbstractTasks;
+    private AbstractTaskWrapper blockAbstractTasks;
+    private LinkedList<AbstractTaskWrapper> tempWorkList=new LinkedList<AbstractTaskWrapper>();
+    private Iterator<AbstractTaskWrapper> iterator;
+    private AbstractTaskWrapper currentAbstractTasks;
 
     public void run() {
         try{
@@ -60,22 +60,22 @@ public class TaskSchedule<T extends AbstractTask> extends Clone implements Runna
     }
 
     private void destroy() {
-        tempWorkList=new LinkedList<AbstractTasks>();
+        tempWorkList=new LinkedList<AbstractTaskWrapper>();
         blockAbstractTasks =null;
         tempWorkCount=0;
         currentAbstractTasks =null;
     }
 
-    private void consumer(LinkedList<AbstractTasks> tempWorkList) throws IOException {
+    private void consumer(LinkedList<AbstractTaskWrapper> tempWorkList) throws IOException {
         iterator=tempWorkList.iterator();
         while(iterator.hasNext()){
             currentAbstractTasks =iterator.next();
             check(currentAbstractTasks);
-            service.submit(currentAbstractTasks);
+            service.submit(currentAbstractTasks.getAbstractTask().getTasks());
         }
     }
 
-    private void check(AbstractTasks currentAbstractTasks) {
+    private void check(AbstractTaskWrapper currentAbstractTasks) {
     }
 
     public int getTempWorkCount() {
@@ -94,11 +94,7 @@ public class TaskSchedule<T extends AbstractTask> extends Clone implements Runna
         this.loadNo = loadNo;
     }
 
-    public LinkedBlockingQueue<AbstractTasks> getWorkQueue() {
+    public LinkedBlockingQueue<AbstractTaskWrapper> getWorkQueue() {
         return workQueue;
-    }
-
-    public void setWorkQueue(LinkedBlockingQueue<AbstractTasks> workQueue) {
-        this.workQueue = workQueue;
     }
 }

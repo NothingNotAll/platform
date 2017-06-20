@@ -1,5 +1,6 @@
 package nna.base.util.concurrent;
 
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
@@ -29,13 +30,8 @@ import java.util.concurrent.locks.ReentrantLock;
     protected Long endTime;
     protected Long priorLevel;//used as exe sequence of tasks; but worker must used ArrayList as tasks container and index as the priorLevel;
      //limit we want to user container as this:can auto resize and gc non using null slot;
-    protected volatile AbstractTask[] list;//for 有序的 task
-    protected volatile Long[] taskStartTimes;
-    protected volatile Long[] taskEndTimes;
-    protected volatile Long[] taskPriorLevels;//used as in the one task , the sequence of exe;
-    protected volatile int[] taskTypes;//任务类型
-    protected volatile int[] status;//任务状态 未进队 初始化 工作中 结束
-    protected volatile Object[] objects;//oom-limit : a large of
+
+    protected volatile AbstractTaskWrapper[] abstractTaskWrappers;
     protected Long globalWorkId;//集群唯一id；
 
     // waste memory with null slot except that task is been worked with short time
@@ -57,16 +53,12 @@ import java.util.concurrent.locks.ReentrantLock;
         workCount=taskCount;
         workIndex=0;
         counter=new AtomicLong(Long.valueOf(taskCount).longValue());
-        list=new AbstractTask[taskCount];
-        taskTypes=new int[taskCount];
-        objects=new Object[taskCount];
-        status=new int[taskCount];
-        taskPriorLevels=new Long[taskCount];
-        taskEndTimes=new Long[taskCount];
-        taskStartTimes=new Long[taskCount];
+        abstractTaskWrappers=new AbstractTaskWrapper[taskCount];
+         AbstractTaskWrapper abstractTaskWrapper;
         for(int index=0;index < taskCount;index++){
-            status[index]=AbstractTask.INIT;
-            taskPriorLevels[index]=0L;
+            abstractTaskWrapper=new AbstractTaskWrapper();
+            abstractTaskWrapper.setTaskStatus(AbstractTask.INIT);
+            abstractTaskWrappers[index]=abstractTaskWrapper;
         }
     }
 
@@ -78,8 +70,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
     protected void setNull(Integer workIndex) {
-        list[workIndex]=null;
-        objects[workIndex]=null;
+        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[workIndex];
+        abstractTaskWrapper.reInit();
     }
     /*
     * return 0: 任务还未进队
@@ -87,31 +79,29 @@ import java.util.concurrent.locks.ReentrantLock;
     *
     * */
     protected int work(int tempIndex) {
-        int currentStatus=status[tempIndex];
-        int taskType=taskTypes[tempIndex];
+        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[workIndex];
+        int currentStatus=abstractTaskWrapper.getTaskStatus();
+        int taskType=abstractTaskWrapper.getTaskType();
         if(currentStatus==AbstractTask.INIT){
             return AbstractTask.INIT;
         }
         if(currentStatus==START){
-            status[tempIndex]=WORKING;
-            Object attach=objects[tempIndex];
-            AbstractTask abstractTask =list[tempIndex];
+            abstractTaskWrapper.setTaskStatus(WORKING);
+            Object attach=abstractTaskWrapper.getObject();
+            AbstractTask abstractTask =abstractTaskWrapper.getAbstractTask();
             try{
                 abstractTask.doTask(taskType,attach);
-                status[tempIndex]=END;
+                abstractTaskWrapper.setTaskStatus(END);
                 return -2;
             }catch (Exception e){
-                status[tempIndex]=FAIL;
+                abstractTaskWrapper.setTaskStatus(FAIL);
                 e.printStackTrace();
             }
         }
         return taskType;//
     }
 
-    boolean addTask(
-            AbstractTask abstractTask,
-            int taskType,
-            Object attach){
+    boolean addTask(AbstractTask abstractTask, int taskType,Object attach){
         Long startTime=System.currentTimeMillis();
         int seq=sequenceGen.getAndIncrement();
         setNonNull(seq,startTime,abstractTask,taskType,attach);
@@ -120,13 +110,14 @@ import java.util.concurrent.locks.ReentrantLock;
         return true;
     }
 
-    protected void setNonNull(int seq, Long startTime, AbstractTask abstractTask, int taskType, Object attach) {
-        taskStartTimes[seq]=startTime;
-        list[seq]= abstractTask;//一定可以保证有序，当前只有业务线程来处理
-        taskTypes[seq]=taskType;
+    protected void setNonNull(int seq, Long startTime, AbstractTask abstractTask, Integer taskType, Object attach) {
+        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[seq];
+        abstractTaskWrapper.setTaskStartTimes(startTime);
+        abstractTaskWrapper.setAbstractTask(abstractTask);//一定可以保证有序，当前只有业务线程来处理
+        abstractTaskWrapper.setTaskType(taskType);
 //            System.out.println(taskType+"-"+seq);
-        objects[seq]=attach;// we must set task firstly and increment enQueueIndex secondly for safely works()
-        status[seq]=START;
+        abstractTaskWrapper.setObject(attach);// we must set task firstly and increment enQueueIndex secondly for safely works()
+        abstractTaskWrapper.setTaskStatus(START);
     }
 
 
@@ -182,14 +173,6 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     //Tasks execute design end
-
-    public AbstractTask[] getList() {
-        return list;
-    }
-
-    public void setList(AbstractTask[] list) {
-        this.list = list;
-    }
 
     public Long getEndTime() {
         return endTime;

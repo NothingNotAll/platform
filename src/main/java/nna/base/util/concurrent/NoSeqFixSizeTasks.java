@@ -27,9 +27,11 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
     protected int doTasks() {
         AbstractTask abstractTask;
         int tempIndex=0;
+        AbstractTaskWrapper abstractTaskWrapper;
         for(;tempIndex<workCount;tempIndex++){
-            abstractTask =list[tempIndex];
-            int sta=status[tempIndex];
+            abstractTaskWrapper=abstractTaskWrappers[tempIndex];
+            abstractTask =abstractTaskWrapper.getAbstractTask();
+            Integer sta=abstractTask.getTaskStatus();
             // for 乐观锁 ; for performance
             if(sta==START&&abstractTask!=null){
                 lockAndExe(tempIndex);
@@ -47,8 +49,10 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
         int sta;
         boolean isLocked=false;
         int loopCount=0;
+        AbstractTaskWrapper abstractTaskWrapper;
         for(int index=0;index < workCount;){
-            sta=status[index];
+            abstractTaskWrapper=abstractTaskWrappers[index];
+            sta=abstractTaskWrapper.getTaskStatus();
             if(sta== AbstractTask.INIT||sta==END||sta==FAIL){
                 lock=locks[index];
                 try{
@@ -80,7 +84,8 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
     protected int lockAndExe(int tempIndex) {
                 ReentrantLock lock=locks[tempIndex];
         boolean isLocked=false;
-        int sta=status[tempIndex];
+        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[tempIndex];
+        int sta=abstractTaskWrapper.getTaskStatus();
         try{
             if(sta==START&&lock.tryLock()){
                 isLocked=true;
