@@ -40,7 +40,6 @@ public class Log extends AbstractTask {
             int flushLimit,
             int closeTimeout,
             String encode,
-            boolean isWorkSeq,
             int logTimes
             ) {
         super(logFileName,logTimes);
@@ -52,7 +51,7 @@ public class Log extends AbstractTask {
         this.closeTimeout=closeTimeout;
         this.encode=encode;
         setTaskStatus(INIT);
-        startTask(null,true);
+        startTask(null,Marco.SEQ_FIX_SIZE_TASK);
     }
 
     public void log(String log,int logLevel){
@@ -158,7 +157,7 @@ public class Log extends AbstractTask {
                 logFileName,
                 appLogLevel,
                 flushLimit,
-                closeTimeout,encode,true,logTime);
+                closeTimeout,encode,logTime);
     }
 
     protected Object doTask(int taskType, Object attach) throws Exception {

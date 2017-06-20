@@ -1,5 +1,7 @@
 package nna.base.server;
 
+import nna.Marco;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,7 +35,7 @@ public class NIOServerTask extends AbstractNIOTask {
         this.selector=NIOSelector.registerChannel(serverSocketChannel, SelectionKey.OP_ACCEPT,this);
         serverSocketChannel.bind(socketAddress,((ServerConfig)endConfig).getBackLog());
         System.out.println("nio Server init @"+endConfig.getIp()+":"+endConfig.getPort());
-        startTask(null,false);
+        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
     }
 
 

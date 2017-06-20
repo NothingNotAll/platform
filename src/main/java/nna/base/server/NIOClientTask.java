@@ -1,5 +1,7 @@
 package nna.base.server;
 
+import nna.Marco;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,7 +28,7 @@ public class NIOClientTask extends AbstractNIOTask {
                          Method method) throws IOException {
         super("NIO Client", 10, endConfig,object,method);
         this.requestBytes=requestBytes;
-        startTask(null,false);
+        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
     }
 
 

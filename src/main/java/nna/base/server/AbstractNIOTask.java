@@ -1,5 +1,6 @@
 package nna.base.server;
 
+import nna.Marco;
 import nna.base.util.concurrent.AbstractTask;
 
 import java.io.IOException;
@@ -65,7 +66,7 @@ public abstract class AbstractNIOTask extends AbstractTask {
     }
 
     void startNIOTask(Object att){
-         startTask(att,false);
+         startTask(att, Marco.NO_SEQ_FIX_SIZE_TASK);
     }
 
     public InetSocketAddress getSocketAddress() {
