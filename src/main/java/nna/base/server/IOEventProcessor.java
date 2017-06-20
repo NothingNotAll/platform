@@ -1,7 +1,7 @@
 package nna.base.server;
 
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
+import java.io.IOException;
+import java.nio.channels.*;
 
 /**
  * @author NNA-SHUAI
@@ -10,49 +10,67 @@ import java.nio.channels.SelectionKey;
 
 public class IOEventProcessor {
     private void processAcceptEvent(SelectionKey acceptSK,
-                                    SelectableChannel socketChannel,
-                                    NIOEntry att,
-                                    int ioEventType){
+                                    SelectableChannel selectableChannel,
+                                    AbstractNIOTask att,
+                                    int ioEventType) throws IOException {
         //there can do other thing
+        ServerSocketChannel serverSocketChannel= (ServerSocketChannel) selectableChannel;
+        SocketChannel socketChannel=serverSocketChannel.accept();
+        socketChannel.configureBlocking(false);
+        if(!socketChannel.isConnected()){
+            socketChannel.finishConnect();
+        }
+        Selector selector=att.getSelector();
+        socketChannel.register(selector,SelectionKey.OP_READ,att);
     }
 
     private void processConnectEvent(SelectionKey acceptSK,
-                                     SelectableChannel socketChannel,
-                                     NIOEntry att,
+                                     SelectableChannel selectableChannel,
+                                     AbstractNIOTask att,
                                      int ioEventType){
-        //there can do other thing
+        SocketChannel socketChannel= (SocketChannel) selectableChannel;
+        if(!socketChannel.isConnected()){
+            try {
+                socketChannel.finishConnect();
+                socketChannel.register(att.getSelector(),SelectionKey.OP_WRITE,att);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void processReadEvent(SelectionKey acceptSK,
                                   SelectableChannel socketChannel,
-                                  NIOEntry att,
+                                  AbstractNIOTask att,
                                   int ioEventType){
-        //there can do other thing
+        nioTask.addNewNIOTask(selectableChannel,ioEventType);
+        System.out.println(ioEventType);
+        acceptSK.cancel();
     }
 
     private void processWriteEvent(SelectionKey acceptSK,
                                    SelectableChannel socketChannel,
-                                   NIOEntry att,
+                                   AbstractNIOTask att,
                                    int ioEventType){
-        //there can do other thing
+        nioTask.addNewNIOTask(selectableChannel,ioEventType);
+        acceptSK.cancel();
     }
 
     private SelectableChannel selectableChannel;
     private int ioEventType;
-    private NIOEntry att;
     private AbstractNIOTask nioTask;
-    public void doIOEvent(SelectionKey selectionKey) {
+    public void doIOEvent(SelectionKey selectionKey) throws IOException {
         ioEventType=selectionKey.interestOps();
         selectableChannel=selectionKey.channel();
-        att=(NIOEntry)selectionKey.attachment();
-        nioTask=att.getNioTask();
+//        att=(AbstractNIOTask)selectionKey.attachment();
+        nioTask=(AbstractNIOTask)selectionKey.attachment();
         switch (ioEventType){
             case SelectionKey.OP_ACCEPT:
                 /*
                 * for log record
                 * */;
-                processAcceptEvent(selectionKey,selectableChannel,att,ioEventType);
-                break;
+                processAcceptEvent(selectionKey,selectableChannel,nioTask,ioEventType);
+                return ;
             case SelectionKey.OP_CONNECT:
                 /*
                 * then finish connect;
@@ -61,19 +79,19 @@ public class IOEventProcessor {
                 * then over
                 * for server
                 * */;
-                processConnectEvent(selectionKey,selectableChannel,att,ioEventType);
-                break;
+                processConnectEvent(selectionKey,selectableChannel,nioTask,ioEventType);
+                return;
             case SelectionKey.OP_READ:
                 /*
                 * read immediately
                 * */;
-                processReadEvent(selectionKey,selectableChannel,att,ioEventType);
+                processReadEvent(selectionKey,selectableChannel,nioTask,ioEventType);
                 break;
             case SelectionKey.OP_WRITE:
                 /*
                 * write immediately
                 * */;
-                processWriteEvent(selectionKey,selectableChannel,att,ioEventType);
+                processWriteEvent(selectionKey,selectableChannel,nioTask,ioEventType);
                 break;
         }
         nioTask.addNewNIOTask(selectableChannel,ioEventType);

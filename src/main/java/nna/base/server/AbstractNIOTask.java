@@ -57,6 +57,7 @@ public abstract class AbstractNIOTask extends AbstractTask {
     }
 
      void addNewNIOTask(Object attach,int taskType){
+//        System.out.println("new Task!!");
         addNewTask(attach,taskType);
     }
 

@@ -26,6 +26,7 @@ public class NIOClientTask extends AbstractNIOTask {
                          Method method) throws IOException {
         super("NIO Client", 10, endConfig,object,method);
         this.requestBytes=requestBytes;
+        startTask(null,false);
     }
 
 
@@ -75,7 +76,7 @@ public class NIOClientTask extends AbstractNIOTask {
         SocketChannel channel=SocketChannel.open();
         setSocketOption(channel);
         channel.configureBlocking(false);
-        NIOSelector.registerChannel(channel,SelectionKey.OP_CONNECT,this);
+        this.selector=NIOSelector.registerChannel(channel,SelectionKey.OP_CONNECT,this);
         channel.connect(socketAddress);
     }
 

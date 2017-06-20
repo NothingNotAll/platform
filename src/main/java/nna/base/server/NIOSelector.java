@@ -31,11 +31,12 @@ public class NIOSelector implements Runnable{
         }
     }
 
-     static void registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
+     static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
         while(!isInit){
             continue;
         }
         selectableChannel.register(selector,ops,att);
+        return selector;
     }
 
     private NIOSelector(){}
@@ -47,12 +48,12 @@ public class NIOSelector implements Runnable{
         try{
             while(true){
                 ioEventCount=selector.select();
-                Set<SelectionKey> set= selector.keys();
+                Set<SelectionKey> set= selector.selectedKeys();
                 iterator=set.iterator();
                 while(iterator.hasNext()){
-                    iterator.remove();
                     selectionKey=iterator.next();
                     ioEventProcessor.doIOEvent(selectionKey);
+                    iterator.remove();
                 }
                 destroy();
             }
