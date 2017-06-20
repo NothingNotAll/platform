@@ -14,7 +14,7 @@ import java.nio.channels.*;
  **/
 
 public class NIOClientTask extends AbstractNIOTask {
-    private static final int CLIENT_ACCEPT = SelectionKey.OP_ACCEPT;
+//    private static final int CLIENT_ACCEPT = SelectionKey.OP_ACCEPT;
     private static final int CLIENT_READ=SelectionKey.OP_READ;
     private static final int CLIENT_CONNECT=SelectionKey.OP_CONNECT;
     private static final int CLIENT_WRITE = SelectionKey.OP_WRITE;
@@ -31,21 +31,23 @@ public class NIOClientTask extends AbstractNIOTask {
 
     private void clientRead(SocketChannel channel) throws InvocationTargetException, IllegalAccessException {
         method.invoke(object,protocolType,channel,CLIENT_READ);
+        addNewNIOTask(channel,OVER);
     }
 
     private void clientWrite(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
-        SocketChannel socketChannel=channel;
-        if(!socketChannel.isConnected()){
-            socketChannel.finishConnect();
+        if(!channel.isConnected()){
+            channel.finishConnect();
         }
-        method.invoke(object,socketChannel,requestBytes,protocolType,CLIENT_WRITE);
-        NIOSelector.registerChannel(socketChannel, SelectionKey.OP_READ,this);
+        method.invoke(object,channel,requestBytes,protocolType,CLIENT_WRITE);
+        NIOSelector.registerChannel(channel, SelectionKey.OP_READ,this);
     }
 
-    private void clientConnect(SocketChannel channel) throws IOException {
-        SocketChannel socketChannel= channel;
-        socketChannel.connect(socketAddress);
-        NIOSelector.registerChannel(socketChannel,SelectionKey.OP_ACCEPT,this);
+    private void clientConnect(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
+        if(!channel.isConnected()){
+            channel.finishConnect();
+        }
+        method.invoke(object,channel,protocolType,CLIENT_WRITE);
+        NIOSelector.registerChannel(channel,SelectionKey.OP_READ,this);
     }
 
     protected Object doTask(int taskType, Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
@@ -54,12 +56,12 @@ public class NIOClientTask extends AbstractNIOTask {
             case CLIENT_CONNECT:
                 clientConnect(socketChannel);
                 break;
-            case CLIENT_ACCEPT:
-                clientWrite(socketChannel);
             case CLIENT_READ:
                 clientRead(socketChannel);
             case OVER:
                 close(socketChannel);
+            case CLIENT_WRITE:
+                clientWrite(socketChannel);
 
         }
         return null;

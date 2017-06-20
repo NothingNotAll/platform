@@ -49,10 +49,12 @@ public class NIOServerTask extends AbstractNIOTask {
 
     private void serverWrite(SelectableChannel channel) throws InvocationTargetException, IllegalAccessException {
         method.invoke(object,channel,protocolType,SERVER_WRITE);
+        addNewNIOTask(channel,OVER);
     }
 
     private void serverRead(SelectableChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
         method.invoke(object,channel,protocolType,SERVER_READ);
+        channel.register(selector,SelectionKey.OP_WRITE,this);
     }
 
     private void close(SelectableChannel channel) throws IOException {
