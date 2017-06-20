@@ -8,7 +8,7 @@ import java.nio.channels.*;
  * @create 2017-06-19 11:50
  **/
 
-public class IOEventProcessor {
+public class NIOEventProcessor {
     private void processAcceptEvent(SelectionKey acceptSK,
                                     SelectableChannel selectableChannel,
                                     AbstractNIOTask att,
@@ -44,7 +44,6 @@ public class IOEventProcessor {
                                   AbstractNIOTask att,
                                   int ioEventType){
         nioTask.addNewNIOTask(selectableChannel,ioEventType);
-        System.out.println(ioEventType);
         acceptSK.cancel();
     }
 

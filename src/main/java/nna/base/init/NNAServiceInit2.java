@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.SocketOption;
+import java.net.SocketOptions;
+import java.net.StandardSocketOptions;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -242,9 +244,7 @@ public class NNAServiceInit2 {
             }
             endConfig.setIp(platformProtocol.getProtocolIp());
             endConfig.setPort(platformProtocol.getProtocolPort());
-            SocketOption[] socketOptions=new SocketOption[0];
-            endConfig.setSocketOptions(socketOptions);
-            endConfig.setOptions(new Object[0]);
+            setOpVals(endConfig,platformProtocol);
             Object[] os=new Object[2];
 //            switch (platformProtocol.getProtocolType()){
 //                case XML:
@@ -269,6 +269,35 @@ public class NNAServiceInit2 {
                 }
             }
         }
+    }
+
+    private void setOpVals(EndConfig endConfig,PlatformProtocol platformProtocol){
+        SocketOption[] options=new SocketOption[11];
+        Object[] opVlaues=new Object[11];
+        options[0]=StandardSocketOptions.SO_BROADCAST;
+        opVlaues[0]=platformProtocol.getSoBroadcast();
+        options[1]=StandardSocketOptions.SO_KEEPALIVE;
+        opVlaues[0]=platformProtocol.getSoKeepalive();
+        options[2]=StandardSocketOptions.SO_SNDBUF;
+        opVlaues[2]=platformProtocol.getSoSndbuf();
+        options[3]=StandardSocketOptions.SO_RCVBUF;
+        opVlaues[3]=platformProtocol.getSoRcvbuf();
+        options[4]=StandardSocketOptions.SO_REUSEADDR;
+        opVlaues[4]=platformProtocol.getSoReuseadr();
+        options[5]=StandardSocketOptions.SO_LINGER;
+        opVlaues[5]=platformProtocol.getSoLinger();
+        options[6]=StandardSocketOptions.IP_TOS;
+        opVlaues[6]=platformProtocol.getIpTos();
+        options[7]=StandardSocketOptions.IP_MULTICAST_IF;
+        opVlaues[7]=platformProtocol.getIpMulticastIf();
+        options[8]=StandardSocketOptions.IP_MULTICAST_TTL;
+        opVlaues[8]=platformProtocol.getIpMulticastTtl();
+        options[9]=StandardSocketOptions.IP_MULTICAST_LOOP;
+        opVlaues[9]=platformProtocol.getIpMulticastLoop();
+        options[10]=StandardSocketOptions.TCP_NODELAY;
+        opVlaues[10]=platformProtocol.getTcpNodelay();
+        endConfig.setOptions(opVlaues);
+        endConfig.setSocketOptions(options);
     }
 
     private void buildPlatformProtocols() {

@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 public class NIOSelector implements Runnable{
      static Selector selector = null;
      static ExecutorService executorService= Executors.newFixedThreadPool(1);
-     static IOEventProcessor ioEventProcessor=new IOEventProcessor();
+     static NIOEventProcessor NIOEventProcessor =new NIOEventProcessor();
      private static volatile boolean isInit=false;
     static {
         try {
@@ -45,7 +45,11 @@ public class NIOSelector implements Runnable{
     private Iterator<SelectionKey> iterator;
     private SelectionKey selectionKey;
     public void run() {
-        Thread.yield();//for not block
+        try {
+            Thread.sleep(10000L);//for not block
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         try{
             while(true){
                 ioEventCount=selector.select();
@@ -53,7 +57,7 @@ public class NIOSelector implements Runnable{
                 iterator=set.iterator();
                 while(iterator.hasNext()){
                     selectionKey=iterator.next();
-                    ioEventProcessor.doIOEvent(selectionKey);
+                    NIOEventProcessor.doIOEvent(selectionKey);
                     iterator.remove();
                 }
                 destroy();

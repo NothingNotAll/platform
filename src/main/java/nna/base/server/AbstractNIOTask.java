@@ -52,12 +52,15 @@ public abstract class AbstractNIOTask extends AbstractTask {
         for(int index=0;index < count;index++){
             socketOption=socketOptions[index];
             object= objects[index];
-            networkChannel.setOption(socketOption,object);
+            try{
+                networkChannel.setOption(socketOption,object);
+            }catch (Exception e){
+                System.out.println(" "+socketOption.name()+" channel not supported");
+            }
         }
     }
 
      void addNewNIOTask(Object attach,int taskType){
-//        System.out.println("new Task!!");
         addNewTask(attach,taskType);
     }
 
