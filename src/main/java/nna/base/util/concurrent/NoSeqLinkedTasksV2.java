@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 public class NoSeqLinkedTasksV2 extends NoSeqFixSizeTasks {
-
+    //next step is solve the hungry lock;
     protected LinkedBlockingQueue<AbstractTaskWrapper>[] list;
     protected ReentrantLock[] locks;
     protected ExecutorService service;
