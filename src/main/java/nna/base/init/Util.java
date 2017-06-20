@@ -2,8 +2,10 @@ package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.dbbean.PlatformSql;
+import nna.base.dispatch.protocol.Protocol;
 import nna.base.log.Log;
 import nna.base.dispatch.AppUtil;
+import nna.base.server.NIOEntry;
 import nna.base.util.BuildSQL;
 
 import java.sql.SQLException;
@@ -15,7 +17,12 @@ import java.sql.SQLException;
 
  class Util {
 
-
+    static void loadNIOSelector(){
+        NIOEntry.loadNIOSelector();
+    }
+    static Object[] getProtocolProcessConfig(int protocolType) throws NoSuchMethodException {
+        return Protocol.getProcessConfig(protocolType);
+     }
      static String buildSQL(PlatformSql platformSql) throws SQLException {
          Log log= AppUtil.getLog();
         String sqlStr=null;

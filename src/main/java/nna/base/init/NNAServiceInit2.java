@@ -1,5 +1,6 @@
 package nna.base.init;
 
+import nna.Marco;
 import nna.MetaBean;
 import nna.base.bean.dbbean.*;
 import nna.base.db.DBCon;
@@ -217,7 +218,7 @@ public class NNAServiceInit2 {
         return dbCon;
     }
 
-    public void buildStaticAttribute(){
+    public void buildStaticAttribute() throws NoSuchMethodException {
         buildPLog();
         buildFreeResource();
         buildPlatformUser();
@@ -228,7 +229,7 @@ public class NNAServiceInit2 {
         buildNIOServers();
     }
 
-    private void buildNIOServers() {
+    private void buildNIOServers() throws NoSuchMethodException {
         Iterator<Map.Entry<Integer,PlatformProtocol>> iterator=NNAServiceInit1.platformProtocols.entrySet().iterator();
         while(iterator.hasNext()){
             Map.Entry<Integer,PlatformProtocol> entry=iterator.next();
@@ -244,6 +245,15 @@ public class NNAServiceInit2 {
             SocketOption[] socketOptions=new SocketOption[0];
             endConfig.setSocketOptions(socketOptions);
             endConfig.setOptions(new Object[0]);
+            Object[] os=new Object[2];
+//            switch (platformProtocol.getProtocolType()){
+//                case XML:
+//                    os=Util.getProtocolProcessConfig(Marco.XML_PROTOCOL);
+//                    break;
+//                case HTTP:
+//                    os=Util.getProtocolProcessConfig(Marco.HTTP_PROTOCOL);
+//                    break;
+//            }
             if(platformProtocol.isServer()){
                 ((ServerConfig)endConfig).setBackLog(platformProtocol.getBacklog());
                 try {

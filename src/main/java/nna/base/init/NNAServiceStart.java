@@ -21,6 +21,7 @@ public class NNAServiceStart {
 
     static{
         try {
+            Util.loadNIOSelector();
             NNAServiceInit0 nna0=new NNAServiceInit0();
             PreparedStatement[] preparedStatements=nna0.build();
             NNAServiceInit1 nna1=new NNAServiceInit1(preparedStatements);
