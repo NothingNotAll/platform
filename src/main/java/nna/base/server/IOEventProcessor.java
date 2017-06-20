@@ -2,7 +2,6 @@ package nna.base.server;
 
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 
 /**
  * @author NNA-SHUAI
