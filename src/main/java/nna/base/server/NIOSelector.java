@@ -45,6 +45,7 @@ public class NIOSelector implements Runnable{
     private Iterator<SelectionKey> iterator;
     private SelectionKey selectionKey;
     public void run() {
+        Thread.yield();//for not block
         try{
             while(true){
                 ioEventCount=selector.select();
