@@ -24,21 +24,24 @@
       <artifactId>cglib</artifactId>
       <version>3.2.5</version>
     </dependency>
+      <!--
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
       <version>3.15</version>
     </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.3</version>
-    </dependency>
+      -->
       <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
     <dependency>
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
       <version>2.9.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
     </dependency>
   </dependencies>
   <build>

@@ -5,6 +5,9 @@ import nna.base.util.concurrent.AbstractTask;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
@@ -14,6 +17,7 @@ import java.text.SimpleDateFormat;
 public class Log extends AbstractTask {
     public static final int WRITING=5;
     public static final int NOTHING=6;
+    private static final AtomicLong logSeqGen=new AtomicLong();
 
     public static final SimpleDateFormat yyMMdd=new SimpleDateFormat(Marco.YYYYMMDD_DIR);
     public static final SimpleDateFormat HHmmssSS=new SimpleDateFormat(Marco.LOG_TIME_DIR);
@@ -50,7 +54,6 @@ public class Log extends AbstractTask {
         this.closeTimeout=closeTimeout;
         this.encode=encode;
         setTaskStatus(INIT);
-//        startTask(null,Marco.SEQ_FIX_SIZE_TASK);
         startTask(null,Marco.SEQ_LINKED_SIZE_TASK);
     }
 
@@ -106,10 +109,14 @@ public class Log extends AbstractTask {
                         logDir.mkdirs();
                     }
                     int logCount=logDir.list().length;
-                    int logSeq=logCount==0?1:logCount+1;
+//                    int logSeq=logCount==0?1:logCount+1;
+                    Long logSeq=logSeqGen.getAndIncrement();
                     File logFile=new File(logFileName+"-"+logSeq+".log");
+                    //threadSafe
                     if(!logFile.exists()){
                         logFile.createNewFile();
+                    }else{
+
                     }
                     writer=new BufferedWriter(
                             new OutputStreamWriter(

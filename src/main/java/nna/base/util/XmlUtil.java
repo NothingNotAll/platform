@@ -27,7 +27,8 @@ public class XmlUtil {
     public static String parseXmlStr(String xmlStr,Map<String,String[]> map) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilder documentBuilder=documentBuilderFactory.newDocumentBuilder();
         Node root=documentBuilder.parse(new InputSource(new StringReader(xmlStr)));
-        parseNode(root,"/",map);
+
+        parseNode(root,"",map);
         return root.getNodeName();
     }
     public static void parseNode(Node node, String path, Map<String,String[]> kvs){
@@ -105,5 +106,29 @@ public class XmlUtil {
             }
         }
         return stringBuilder.toString();
+    }
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
+        HashMap<String,String[]> map=new HashMap<String, String[]>();
+        parseXmlStr("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
+                        " <books> \n" +
+                        "   <book id=\"001\"> \n" +
+                        "      <title>Harry Potter</title> \n" +
+                        "      <author>J K. Rowling</author> \n" +
+                        "   </book> \n" +
+                        "   <book id=\"002\"> \n" +
+                        "      <title>Learning XML</title> \n" +
+                        "      <author>Erik T. Ray</author> \n" +
+                        "   </book> \n" +
+                        " </books>",
+                map);
+        Iterator<Map.Entry<String,String[]>> iterator=map.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<String,String[]> entry=iterator.next();
+            System.out.println(entry.getKey());
+            String[] vals=entry.getValue();
+            for(int index=0;index < vals.length;index++){
+                System.out.println(vals[index]);
+            }
+        }
     }
 }

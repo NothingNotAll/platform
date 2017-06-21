@@ -2,6 +2,7 @@ package nna.test;
 
 import nna.Marco;
 import nna.base.log.Log;
+import nna.base.util.LogUtil;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -69,7 +70,7 @@ public class Test {
 
     public static void testCon(){
                     for(int index = 0; index < Marco.CON_TEST_COUNT; index++){
-                final Log log=Log.getLog(
+                final Log log= LogUtil.getLog(
                         "LOG",
                         "TEST-CON-LOG",
                         10,

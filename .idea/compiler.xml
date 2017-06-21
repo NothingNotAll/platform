@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="nna" />
         <module name="platformv3" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="nna" target="1.5" />
       <module name="platformv3" target="1.5" />
     </bytecodeTargetLevel>
   </component>

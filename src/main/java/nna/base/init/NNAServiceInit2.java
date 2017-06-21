@@ -12,6 +12,7 @@ import nna.base.server.EndConfig;
 import nna.base.server.NIOEntry;
 import nna.base.server.ServerConfig;
 import nna.base.util.List;
+import nna.base.util.LogUtil;
 import nna.enums.DBSQLConValType;
 
 import java.io.IOException;
@@ -55,7 +56,6 @@ public class NNAServiceInit2 {
     }
 
     private void buildMetaBean(MetaBean temp,PlatformEntry entry) throws SQLException, ClassNotFoundException {
-        temp.setLogTimes(entry.getEntryLogTimes());
         temp.setPlatformEntry(entry);
         temp.setPublic(entry.getEntryFree());
 
@@ -207,7 +207,7 @@ public class NNAServiceInit2 {
                 platformDB.getDbPoolsCount(),
                 platformDB.getDbPoolCount(),
                 Long.valueOf(platformDB.getDbHeartbeatTest()),
-                platformDB.getDbFailTrytime()),Log.getLog(
+                platformDB.getDbFailTrytime()), LogUtil.getLog(
                 dbLog.getLogDir(),
                 "db",
                 dbLog.getLogLevel(),
@@ -406,7 +406,7 @@ public class NNAServiceInit2 {
 
     private void buildPLog() {
         PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(new Integer(1));
-        final Log pLog=Log.getLog(
+        final Log pLog=LogUtil.getLog(
                 platformLog.getLogDir(),
                 "nna",
                 platformLog.getLogLevel(),

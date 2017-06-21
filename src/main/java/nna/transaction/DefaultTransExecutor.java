@@ -44,7 +44,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         boolean isExeTranSuccess;
         Integer nextTranIndex;
         ArrayList<PlatformEntryTransaction> tranStack=metaBeanWrapper.getTranStack();
-        for(int index=0;index < sevTranCount;index++){
+        for(int index=0;index < sevTranCount;){
             metaBeanWrapper.setCurrentServTranIndex(index);
             tempSevTran=serviceTrans[index];
             tranStack.add(tempSevTran);
@@ -56,7 +56,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
                 destroy(metaBeanWrapper,tempSevTran);
             }
             if(isExeTranSuccess){
-                nextTranIndex=tempSevTran.getSuccessIndex();
+                nextTranIndex=index++;
             }else {
                 nextTranIndex=tempSevTran.getFailIndex();
             }
@@ -130,31 +130,34 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         PlatformSql sqlType;
         String[] columns;
         PlatformTransaction platformTransaction;
-        boolean isExeSQLSuccess;
-        Integer nextSQLIndex;
-        for(int index=0;index < exeSQLCount;index++){
+        Boolean isExeSQLSuccess = null;
+        Integer nextSQLIndex = null;
+        for(int index=0;index < exeSQLCount;){
             SQL=SQLS[index];
             cons=conList.get(index);
             conValTypes=valTypes.get(index);
             sqlType=sqlTypes[index];
             columns=selCols.get(index);
             platformTransaction=tranCfg[index];
-            isExeSQLSuccess=executeOneSql(
-                    metaBeanWrapper,
-                    con,
-                    sqlType,
-                    SQL,
-                    columns,
-                    cons,
-                    conValTypes);
-            if(isExeSQLSuccess){
-                nextSQLIndex=platformTransaction.getSuccessSequence();
-            }else{
-                nextSQLIndex=platformTransaction.getFailSequence();
+            try{
+                isExeSQLSuccess=executeOneSql(
+                        metaBeanWrapper,
+                        con,
+                        sqlType,
+                        SQL,
+                        columns,
+                        cons,
+                        conValTypes);
+                index++;
+            }catch (Exception e){
+                if(!isExeSQLSuccess){
+                    nextSQLIndex=platformTransaction.getExceptionIndex();
+                }else{
+                    if(isExeSQLSuccess==null){}
+                    nextSQLIndex=platformTransaction.getNothingIndex();
+                }
             }
-            if(nextSQLIndex==null){
-                return true;
-            }else{
+            if(nextSQLIndex!=null){
                 index=nextSQLIndex;
             }
         }

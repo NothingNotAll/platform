@@ -13,6 +13,7 @@ import nna.base.log.Log;
 import nna.base.dispatch.ConfMetaSetFactory;
 import nna.base.util.BuildSQL;
 import nna.base.util.List;
+import nna.base.util.LogUtil;
 import nna.base.util.orm.ObjectFactory;
 import nna.base.util.orm.ObjectUtil;
 
@@ -110,7 +111,7 @@ public class NNAServiceInit0 {
     private static Log getPlatformLog(PlatformLog platformLog) {
         String logPath="LOG";
         String logName="init";
-        return Log.getLog(
+        return LogUtil.getLog(
                 logPath,
                 logName,
                 platformLog.getLogLevel(),
