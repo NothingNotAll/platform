@@ -18,8 +18,10 @@ public class PlatformTransaction extends Clone {
     private int sqlSequence;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
-    private Integer successSequence;
-    private Integer failSequence;
+    private Integer exceptionIndex;
+    private Integer nothingIndex;
+    private Boolean exceptionCommit;
+    private Boolean exceptionCommitPropagation;
     private String sqlDesc;
 
     public PlatformTransaction(){
@@ -74,19 +76,35 @@ public class PlatformTransaction extends Clone {
         this.sqlSequence = sqlSequence;
     }
 
-    public Integer getSuccessSequence() {
-        return successSequence;
+    public Integer getExceptionIndex() {
+        return exceptionIndex;
     }
 
-    public void setSuccessSequence(int successSequence) {
-        this.successSequence = successSequence;
+    public void setExceptionIndex(Integer exceptionIndex) {
+        this.exceptionIndex = exceptionIndex;
     }
 
-    public Integer getFailSequence() {
-        return failSequence;
+    public Integer getNothingIndex() {
+        return nothingIndex;
     }
 
-    public void setFailSequence(int failSequence) {
-        this.failSequence = failSequence;
+    public void setNothingIndex(Integer nothingIndex) {
+        this.nothingIndex = nothingIndex;
+    }
+
+    public Boolean getExceptionCommitPropagation() {
+        return exceptionCommitPropagation;
+    }
+
+    public void setExceptionCommitPropagation(Boolean exceptionCommitPropagation) {
+        this.exceptionCommitPropagation = exceptionCommitPropagation;
+    }
+
+    public Boolean getExceptionCommit() {
+        return exceptionCommit;
+    }
+
+    public void setExceptionCommit(Boolean exceptionCommit) {
+        this.exceptionCommit = exceptionCommit;
     }
 }

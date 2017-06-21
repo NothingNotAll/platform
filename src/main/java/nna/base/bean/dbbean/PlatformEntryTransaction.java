@@ -17,14 +17,12 @@ public class PlatformEntryTransaction extends Clone {
 
     private String transactions;
     private String transactionName;
-    private int transactionSqlSize;
     private int serviceTransactionSequence;
     private int previousTransactionIndex;
     private DBTranPpgType transactionPropagation;
     private DBTranLvlType transactionLevel;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
-    private Integer successIndex;
     private Integer failIndex;
     private String transactionDesc;
 
@@ -94,22 +92,6 @@ public class PlatformEntryTransaction extends Clone {
 
     public void setTransactionLevel(DBTranLvlType transactionLevel) {
         this.transactionLevel = transactionLevel;
-    }
-
-    public int getTransactionSqlSize() {
-        return transactionSqlSize;
-    }
-
-    public void setTransactionSqlSize(int transactionSqlSize) {
-        this.transactionSqlSize = transactionSqlSize;
-    }
-
-    public Integer getSuccessIndex() {
-        return successIndex;
-    }
-
-    public void setSuccessIndex(Integer successIndex) {
-        this.successIndex = successIndex;
     }
 
     public Integer getFailIndex() {
