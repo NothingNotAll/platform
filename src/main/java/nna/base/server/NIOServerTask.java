@@ -15,10 +15,6 @@ import java.nio.channels.*;
  **/
 
 public class NIOServerTask extends AbstractNIOTask {
-
-    private static final int SERVER_READ = SelectionKey.OP_READ;
-    private static final int SERVER_WRITE = SelectionKey.OP_WRITE;
-    private static final int SERVER_CONNECT=SelectionKey.OP_CONNECT;
     private ServerSocketChannel serverSocketChannel;
 
     public NIOServerTask(
@@ -42,27 +38,16 @@ public class NIOServerTask extends AbstractNIOTask {
     protected Object doTask(int taskType, Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
         SocketChannel selectableChannel=(SocketChannel) attach;
         switch (taskType){
-            case OVER:
-                close(selectableChannel);
-            case SERVER_READ:
-                serverRead(selectableChannel);
-            case SERVER_WRITE:
-                serverWrite(selectableChannel);
+            case SelectionKey.OP_ACCEPT:
+                return serverAccept(selectableChannel);
         }
         return null;
     }
 
-    private void serverWrite(SocketChannel channel) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(object,channel,protocolType,SERVER_WRITE);
-        addNewNIOTask(channel,OVER);
-    }
-
-    private void serverRead(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
-        method.invoke(object,channel,protocolType,SERVER_READ);
-        channel.register(selector,SelectionKey.OP_WRITE,this);
-    }
-
-    private void close(SocketChannel channel) throws IOException {
-        channel.close();
+    private Object serverAccept(SocketChannel socketChannel) throws IOException, InvocationTargetException, IllegalAccessException {
+        if(!socketChannel.isConnected()){
+            socketChannel.finishConnect();
+        }
+        return method.invoke(object,socketChannel);
     }
 }

@@ -16,10 +16,7 @@ import java.nio.channels.*;
  **/
 
 public class NIOClientTask extends AbstractNIOTask {
-//    private static final int CLIENT_ACCEPT = SelectionKey.OP_ACCEPT;
-    private static final int CLIENT_READ=SelectionKey.OP_READ;
     private static final int CLIENT_CONNECT=SelectionKey.OP_CONNECT;
-    private static final int CLIENT_WRITE = SelectionKey.OP_WRITE;
 
     public NIOClientTask(
                          EndConfig endConfig,
@@ -29,25 +26,11 @@ public class NIOClientTask extends AbstractNIOTask {
         startTask( Marco.NO_SEQ_LINKED_SIZE_TASK);
     }
 
-    private void clientRead(SocketChannel channel) throws InvocationTargetException, IllegalAccessException {
-        method.invoke(object,channel,protocolType,CLIENT_READ);
-        addNewNIOTask(channel,OVER);
-    }
-
-    private void clientWrite(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
+    private Object clientConnect(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
         if(!channel.isConnected()){
             channel.finishConnect();
         }
-        method.invoke(object,channel,protocolType,CLIENT_WRITE);
-        NIOSelector.registerChannel(channel, SelectionKey.OP_READ,this);
-    }
-
-    private void clientConnect(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
-        if(!channel.isConnected()){
-            channel.finishConnect();
-        }
-        method.invoke(object,channel,protocolType,CLIENT_WRITE);
-        NIOSelector.registerChannel(channel,SelectionKey.OP_READ,this);
+        return method.invoke(object,channel);
     }
 
     protected Object doTask(int taskType, Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
@@ -56,19 +39,8 @@ public class NIOClientTask extends AbstractNIOTask {
             case CLIENT_CONNECT:
                 clientConnect(socketChannel);
                 break;
-            case CLIENT_READ:
-                clientRead(socketChannel);
-            case OVER:
-                close(socketChannel);
-            case CLIENT_WRITE:
-                clientWrite(socketChannel);
-
         }
         return null;
-    }
-
-    private void close(SocketChannel channel) throws IOException {
-        channel.close();
     }
 
     protected void register() throws IOException {
