@@ -35,7 +35,7 @@ public class NIOServerTask extends AbstractNIOTask {
         this.selector=NIOSelector.registerChannel(serverSocketChannel, SelectionKey.OP_ACCEPT,this);
         serverSocketChannel.bind(socketAddress,((ServerConfig)endConfig).getBackLog());
         System.out.println("nio Server init @"+endConfig.getIp()+":"+endConfig.getPort());
-        startTask(null, Marco.NO_SEQ_LINKED_SIZE_TASK);
+        startTask( Marco.NO_SEQ_LINKED_SIZE_TASK);
     }
 
 
