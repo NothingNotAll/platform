@@ -44,10 +44,10 @@ public class NIOEventProcessor {
         ioEventType=selectionKey.interestOps();
         selectableChannel=selectionKey.channel();
         nioTask=(AbstractNIOTask)selectionKey.attachment();
-//        switch (ioEventType){
-//            case SelectionKey.OP_ACCEPT:
-//                processAcceptEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-//                break;
+        switch (ioEventType){
+            case SelectionKey.OP_ACCEPT:
+                processAcceptEvent(selectionKey,selectableChannel,nioTask,ioEventType);
+                break;
 //            case SelectionKey.OP_CONNECT:
 //                processConnectEvent(selectionKey,selectableChannel,nioTask,ioEventType);
 //                break;
@@ -57,7 +57,7 @@ public class NIOEventProcessor {
 //            case SelectionKey.OP_WRITE:
 //                processWriteEvent(selectionKey,selectableChannel,nioTask,ioEventType);
 //                break;
-//        }
+        }
         selectionKey.cancel();
         nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
