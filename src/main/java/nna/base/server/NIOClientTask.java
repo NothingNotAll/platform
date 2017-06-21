@@ -26,9 +26,8 @@ public class NIOClientTask extends AbstractNIOTask {
                          Object object,
                          Method method) throws IOException {
         super("NIO Client", 10, endConfig,object,method);
-        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
+        startTask( Marco.NO_SEQ_LINKED_SIZE_TASK);
     }
-
 
     private void clientRead(SocketChannel channel) throws InvocationTargetException, IllegalAccessException {
         method.invoke(object,channel,protocolType,CLIENT_READ);
