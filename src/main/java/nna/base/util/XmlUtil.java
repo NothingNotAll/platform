@@ -2,6 +2,7 @@ package nna.base.util;
 
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -12,6 +13,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -64,17 +66,43 @@ public class XmlUtil {
         DocumentBuilderFactory factory = DocumentBuilderFactory
                 .newInstance();
         Document document=factory.newDocumentBuilder().newDocument();
-
+        Element root=document.createElement(rootNm);
         StringBuilder stringBuilder=new StringBuilder();
         Iterator<Map.Entry<String,String[]>> iterator=kvs.entrySet().iterator();
         Map.Entry<String,String[]> entry;
         String keyNm;
         String[] vS;
+        String[] pathNodeNms;
+        StringBuilder nodeNm = new StringBuilder("");
+        Node node;
+        int pathNodeNmsCount;
+        int vSize;
+        String v;
+        Node previousNode;
+        HashMap<String,Node> map=new HashMap<String, Node>();
         while(iterator.hasNext()){
             entry=iterator.next();
             keyNm=entry.getKey();
             vS=entry.getValue();
+            pathNodeNms=keyNm.split("[/]");
+            pathNodeNmsCount=pathNodeNms.length-1;
+            nodeNm.delete(0,nodeNm.length()-1);
+            for(int index=0;index <= pathNodeNmsCount;index++){
+                nodeNm.append("/");
+                nodeNm.append(pathNodeNms[index]);
+                node=map.get(nodeNm);
+                if(node==null){
 
+                }
+                previousNode=node;
+                if(index==pathNodeNmsCount){
+                    vSize=vS.length;
+                    for(index=0;index < vSize;index++){
+                        v=vS[index];
+
+                    }
+                }
+            }
         }
         return stringBuilder.toString();
     }
