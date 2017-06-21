@@ -57,13 +57,13 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         if(totalCount==0){
             LockSupport.park();
         }else{
-            Iterator<AbstractTaskWrapper> iterator=temps.iterator();
-            consumer(iterator);
+            consumer(temps);
         }
         return -1;
     }
 
-    private void consumer(Iterator<AbstractTaskWrapper> iterator) {
+    private void consumer(LinkedList<AbstractTaskWrapper> temps) {
+        Iterator<AbstractTaskWrapper> iterator=temps.iterator();
         AbstractTaskWrapper abstractTaskWrapper;
         Object att;
         int taskType;
