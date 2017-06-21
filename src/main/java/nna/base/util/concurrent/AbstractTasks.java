@@ -3,8 +3,6 @@ package nna.base.util.concurrent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.LockSupport;
-import java.util.concurrent.locks.ReentrantLock;
 
 /*
 * THE BEST queue alg is that : order by en_queue_time:System.currentTimeMillis() use it as the index of list;
@@ -62,10 +60,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
     protected abstract int doTasks();
 
-
     protected abstract int lockAndExe(int tempIndex);
-
-
 
     protected void setNull(Integer workIndex) {
         AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[workIndex];
@@ -98,7 +93,7 @@ import java.util.concurrent.locks.ReentrantLock;
         return taskType;//
     }
 
-    boolean addTask(AbstractTask abstractTask, Integer taskType,Object attach){
+     boolean addTask(AbstractTask abstractTask, Integer taskType,Object attach){
         Long startTime=System.currentTimeMillis();
         int seq=sequenceGen.getAndIncrement();
         AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[seq];

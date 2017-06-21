@@ -1,6 +1,7 @@
 package nna.base.util;
 
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -11,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -56,5 +58,24 @@ public class XmlUtil {
                 }
             }
         }
+    }
+
+    public static String buildXML(String rootNm,Map<String,String[]> kvs) throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory
+                .newInstance();
+        Document document=factory.newDocumentBuilder().newDocument();
+
+        StringBuilder stringBuilder=new StringBuilder();
+        Iterator<Map.Entry<String,String[]>> iterator=kvs.entrySet().iterator();
+        Map.Entry<String,String[]> entry;
+        String keyNm;
+        String[] vS;
+        while(iterator.hasNext()){
+            entry=iterator.next();
+            keyNm=entry.getKey();
+            vS=entry.getValue();
+
+        }
+        return stringBuilder.toString();
     }
 }

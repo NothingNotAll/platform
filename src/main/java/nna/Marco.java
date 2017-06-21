@@ -122,11 +122,15 @@ public interface Marco {
     String YYYYMMDD_DIR = "yyyyMMdd";
     int HTTP_PROTOCOL=0;
     int XML_PROTOCOL=1;
-    int CON_TEST_COUNT = 1;
+    int CON_TEST_COUNT = 0;
     int CON_WORK_COUNT=11900;
 
     int ONE_TASK=0;
     int NO_SEQ_FIX_SIZE_TASK=1;
     int NO_SEQ_LINKED_SIZE_TASK=2;
     int SEQ_FIX_SIZE_TASK=4;
+    int SEQ_LINKED_SIZE_TASK=5;
+
+    int IO_BLOCKQUEUE_COUNT = 15;
+    int IO_PROCESS_COUNT = 15;
 }

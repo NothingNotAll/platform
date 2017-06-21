@@ -213,7 +213,7 @@ public class NNAServiceInit2 {
                 dbLog.getLogLevel(),
                 dbLog.getLogBufferThreshold(),
                 dbLog.getLogCloseTimedout(),
-                dbLog.getLogEncode(),4000
+                dbLog.getLogEncode()
         ));
         dbConMap.put(Integer.valueOf(platformDB.getDbId()),dbCon);
         return dbCon;
@@ -412,9 +412,7 @@ public class NNAServiceInit2 {
                 platformLog.getLogLevel(),
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
-                platformLog.getLogEncode(),
-                4000
-        );
+                platformLog.getLogEncode());
         MetaBean.setpLog(pLog);
     }
 }

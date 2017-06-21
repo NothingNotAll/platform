@@ -87,23 +87,18 @@ public class Protocol {
         }
     }
 
-    public static String processHttp(SocketChannel channel,int protocolType,int eventType){
-        ZeroCopy zeroCopy=new ZeroCopy(1024,100,100);
-        ByteBuffer byteBuffer=ByteBuffer.allocate(1024);
-        try {
-            channel.finishConnect();
-            int readCount=channel.read(byteBuffer);
-            while(readCount!=-1){
-                byte[] bytes=new byte[readCount];
-                byteBuffer.get(bytes,0,readCount);
-                zeroCopy.add(bytes);
-                byteBuffer.clear();
-                readCount=channel.read(byteBuffer);
-            }
-            System.out.println(zeroCopy.toBytes().length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static String processHttp(SocketChannel channel,int protocolType,int eventType) throws IOException {
+//        ZeroCopy zeroCopy=new ZeroCopy(1024,100,100);
+//        byte[] bytes=new byte[1];
+//        ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
+//        int count=channel.read(byteBuffer);
+//        while(count!=-1){
+//            zeroCopy.add(bytes);
+//            byteBuffer.clear();
+//            channel.read(byteBuffer);
+//        }
+        System.out.println("read-");
+
         switch (eventType){
             case SelectionKey.OP_READ:
                 ;

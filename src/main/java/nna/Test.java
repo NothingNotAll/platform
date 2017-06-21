@@ -41,8 +41,7 @@ public class Test {
                         10,
                         0,
                         1000,
-                        "UTF-8",
-                        Marco.CON_WORK_COUNT
+                        "UTF-8"
                 );
                 new Thread(new Runnable() {
                     public void run() {

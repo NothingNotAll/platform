@@ -43,7 +43,6 @@ public abstract class AbstractNIOTask extends AbstractTask {
 
     protected abstract void register() throws IOException;
 
-
     protected void setSocketOption(NetworkChannel networkChannel) throws IOException {
         SocketOption[] socketOptions=endConfig.getSocketOptions();
         Object[] objects=endConfig.getOptions();

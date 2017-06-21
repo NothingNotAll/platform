@@ -58,8 +58,7 @@ public class NNAService {
                 metaBean.getLogLevel(),
                 platformLog.getLogBufferThreshold(),
                 platformLog.getLogCloseTimedout(),
-                platformLog.getLogEncode(),
-                metaBean.getLogTimes()
+                platformLog.getLogEncode()
         );
         metaBean.setLog(log);
     }

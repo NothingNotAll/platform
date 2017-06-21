@@ -23,11 +23,11 @@ public class SeqLinkedTasks extends AbstractTasks {
     private AbstractTaskWrapper abstractTaskWrapper;
     protected int doTasks() {
         tempCount=abstractTaskWrappers.size();
-        abstractTaskWrappers.drainTo(temp,tempCount);
+        tempCount=abstractTaskWrappers.drainTo(temp,tempCount);
         if(tempCount==0){
             try {
                 abstractTaskWrapper=abstractTaskWrappers.take();
-                temp.addAll(abstractTaskWrappers);
+                temp.add(abstractTaskWrapper);
                 tempCount=1;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -45,6 +45,15 @@ public class SeqLinkedTasks extends AbstractTasks {
             isOver=work(abstractTaskWrapper);
         }
         return isOver;
+    }
+
+    private AbstractTaskWrapper tempWrapper;
+    public boolean addTask(AbstractTask abstractTask, Integer taskType,Object attach){
+        Long startTime=System.currentTimeMillis();
+        tempWrapper=new AbstractTaskWrapper();
+        setNonNull(tempWrapper,startTime,abstractTask,taskType,attach);
+        abstractTaskWrappers.add(tempWrapper);
+        return true;
     }
 
     public void run(){
@@ -66,7 +75,4 @@ public class SeqLinkedTasks extends AbstractTasks {
         return 0;
     }
 
-    boolean addTask(AbstractTask abstractTask, Integer taskType,Object attach){
-        return true;
-    }
 }

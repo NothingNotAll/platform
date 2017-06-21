@@ -20,7 +20,6 @@ package nna.base.util.concurrent;
         taskStartTimes=System.currentTimeMillis();
         abstractTask=t;
         this.object=object;
-        this.taskStatus=taskType;
         taskStatus=AbstractTask.INIT;
         this.taskType=taskType;
     }
@@ -96,5 +95,6 @@ package nna.base.util.concurrent;
     public void reInit() {
         abstractTask=null;
         object=null;
+        taskStatus=AbstractTask.INIT;
     }
 }
