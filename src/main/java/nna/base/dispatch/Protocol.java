@@ -87,7 +87,7 @@ public class Protocol {
         }
     }
 
-    public static String processHttp(SocketChannel channel,int protocolType,int eventType) throws IOException {
+    public static String processHttp(SocketChannel channel) throws IOException {
 //        ZeroCopy zeroCopy=new ZeroCopy(1024,100,100);
 //        byte[] bytes=new byte[1];
 //        ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
@@ -98,20 +98,11 @@ public class Protocol {
 //            channel.read(byteBuffer);
 //        }
         System.out.println("read-");
-
-        switch (eventType){
-            case SelectionKey.OP_READ:
-                ;
-                break;
-            case SelectionKey.OP_WRITE:
-                ;
-                break;
-        }
         return null;
     }
 
-    public static String processXml(SocketChannel channel,int protocolType,int eventType){
-
+    public static String processXml(SocketChannel channel){
+        System.out.println("process XML");
         return null;
     }
 

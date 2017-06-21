@@ -7,6 +7,7 @@ import nna.base.bean.dbbean.PlatformLog;
 import nna.base.bean.dbbean.PlatformService;
 import nna.base.bean.dbbean.PlatformSession;
 import nna.base.log.Log;
+import nna.base.util.LogUtil;
 
 import static nna.base.dispatch.Dispatch.dispatch;
 
@@ -52,7 +53,7 @@ public class NNAService {
         String serviceCode=platformService.getServiceName();
         String path=userIdStr+"-"+appEnCode+"-"+serviceCode;
         PlatformLog platformLog=metaBean.getPlatformLog();
-        Log log=Log.getLog(
+        Log log= LogUtil.getLog(
                 platformLog.getLogDir()+"/"+path,
                 path,
                 metaBean.getLogLevel(),
