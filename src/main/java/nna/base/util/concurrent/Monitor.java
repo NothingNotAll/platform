@@ -103,7 +103,7 @@ public class Monitor implements Runnable {
         int length=list.length;
         for(int index=0;index < length;index++){
             temp=list[index];
-            System.out.println(temp.size());
+            System.out.println("NO."+index+"-LinkedBlockingQueue'size:"+temp.size());
         }
         Thread[] threads=noSeqLinkedTasks.getThreads();
         int tCount=threads.length;
