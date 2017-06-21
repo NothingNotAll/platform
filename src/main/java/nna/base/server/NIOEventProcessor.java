@@ -16,28 +16,25 @@ public class NIOEventProcessor {
         ServerSocketChannel serverSocketChannel= (ServerSocketChannel) selectableChannel;
         SocketChannel socketChannel=serverSocketChannel.accept();
         socketChannel.configureBlocking(false);
-        nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
 
     private void processConnectEvent(SelectionKey acceptSK,
                                      SelectableChannel selectableChannel,
                                      AbstractNIOTask att,
                                      int ioEventType){
-        nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
 
     private void processReadEvent(SelectionKey acceptSK,
                                   SelectableChannel selectableChannel,
                                   AbstractNIOTask att,
                                   int ioEventType){
-        nioTask.addNewNIOTask(selectableChannel,ioEventType);
+
     }
 
     private void processWriteEvent(SelectionKey acceptSK,
                                    SelectableChannel selectableChannel,
                                    AbstractNIOTask att,
                                    int ioEventType){
-        nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
 
     private SelectableChannel selectableChannel;
@@ -50,16 +47,18 @@ public class NIOEventProcessor {
         switch (ioEventType){
             case SelectionKey.OP_ACCEPT:
                 processAcceptEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-                return ;
+                break;
             case SelectionKey.OP_CONNECT:
                 processConnectEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-                return;
+                break;
             case SelectionKey.OP_READ:
                 processReadEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-                return;
+                break;
             case SelectionKey.OP_WRITE:
                 processWriteEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-                return;
+                break;
         }
+        selectionKey.cancel();
+        nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
 }
