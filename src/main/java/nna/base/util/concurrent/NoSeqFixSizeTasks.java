@@ -59,7 +59,7 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
                     if(lock.tryLock()){
                         isLocked=true;
                         if(sta== AbstractTask.INIT||sta==END||sta==FAIL){
-                            setNonNull(index,startTime, abstractTask,taskType,attach);
+                            setNonNull(abstractTaskWrapper,startTime, abstractTask,taskType,attach);
                             return true;
                         }
                     }
@@ -91,7 +91,7 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
                 isLocked=true;
                 lock.lock();
                 if(sta==START){
-                    return work(tempIndex);
+                    return work(abstractTaskWrapper);
                 }
             }
         }catch (Exception e){

@@ -26,7 +26,6 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
     protected ReentrantLock[] locks;
     protected ExecutorService service;
     protected int linkedListCount;
-
     NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId) {
         super(0, workId);
         this.linkedListCount=linkedListCount;
@@ -51,6 +50,7 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         boolean locked=false;
         int index=0;
         LinkedBlockingQueue<AbstractTaskWrapper> temp;
+        AbstractTaskWrapper abstractTaskWrapper;
         for(;index<linkedListCount;index++){
             lock=locks[index];
             try{
@@ -60,6 +60,12 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
                     tempCount=temp.size();
                     tempCount=temp.drainTo(temps,tempCount);
                     totalCount+=tempCount;
+                    if(totalCount==0){
+                        abstractTaskWrapper=temp.take();
+                        temps.add(abstractTaskWrapper);
+                        tempCount=1;
+                        totalCount=1;
+                    }
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -74,7 +80,6 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         Object att;
         int taskType;
         AbstractTask abstractTask;
-        AbstractTaskWrapper abstractTaskWrapper;
         while(iterator.hasNext()){
             abstractTaskWrapper=iterator.next();
             abstractTask=abstractTaskWrapper.getAbstractTask();

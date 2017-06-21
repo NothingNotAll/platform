@@ -33,12 +33,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
     protected volatile AbstractTaskWrapper[] abstractTaskWrappers;
     protected Long globalWorkId;//集群唯一id；
-
     // waste memory with null slot except that task is been worked with short time
     protected volatile Integer enQueueIndex;
     protected volatile Integer workIndex;
     protected Integer workCount;
-
     protected AtomicLong counter;
     protected AtomicInteger sequenceGen=new AtomicInteger();
 
@@ -54,7 +52,7 @@ import java.util.concurrent.locks.ReentrantLock;
         workIndex=0;
         counter=new AtomicLong(Long.valueOf(taskCount).longValue());
         abstractTaskWrappers=new AbstractTaskWrapper[taskCount];
-         AbstractTaskWrapper abstractTaskWrapper;
+        AbstractTaskWrapper abstractTaskWrapper;
         for(int index=0;index < taskCount;index++){
             abstractTaskWrapper=new AbstractTaskWrapper();
             abstractTaskWrapper.setTaskStatus(AbstractTask.INIT);
@@ -78,8 +76,7 @@ import java.util.concurrent.locks.ReentrantLock;
     * -1：任务结束：
     *
     * */
-    protected int work(int tempIndex) {
-        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[workIndex];
+    protected int work(AbstractTaskWrapper abstractTaskWrapper) {
         int currentStatus=abstractTaskWrapper.getTaskStatus();
         int taskType=abstractTaskWrapper.getTaskType();
         if(currentStatus==AbstractTask.INIT){
@@ -104,14 +101,13 @@ import java.util.concurrent.locks.ReentrantLock;
     boolean addTask(AbstractTask abstractTask, Integer taskType,Object attach){
         Long startTime=System.currentTimeMillis();
         int seq=sequenceGen.getAndIncrement();
-        setNonNull(seq,startTime,abstractTask,taskType,attach);
+        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[seq];
+        setNonNull(abstractTaskWrapper,startTime,abstractTask,taskType,attach);
         enQueueIndex=seq+1;
-        unPark();
         return true;
     }
 
-    protected void setNonNull(int seq, Long startTime, AbstractTask abstractTask, Integer taskType, Object attach) {
-        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[seq];
+    protected void setNonNull(AbstractTaskWrapper abstractTaskWrapper, Long startTime, AbstractTask abstractTask, Integer taskType, Object attach) {
         abstractTaskWrapper.setTaskStartTimes(startTime);
         abstractTaskWrapper.setAbstractTask(abstractTask);//一定可以保证有序，当前只有业务线程来处理
         abstractTaskWrapper.setTaskType(taskType);
@@ -120,59 +116,6 @@ import java.util.concurrent.locks.ReentrantLock;
         abstractTaskWrapper.setTaskStatus(START);
     }
 
-
-    ////Tasks execute design begin
-    protected volatile Thread thread;
-    protected AtomicLong inc=new AtomicLong(0L);
-    protected AtomicLong add=new AtomicLong(0L);//avoid ABA bug
-    protected ReentrantLock lock=new ReentrantLock();
-    protected ReentrantLock tInitLock=new ReentrantLock();
-
-    public void run() {
-        if(tInitLock.tryLock()){
-            thread=Thread.currentThread();
-            try{
-                while(true){
-                    if(doTasks()!= AbstractTask.OVER){
-                        park();
-                    }else{
-                        System.out.println("OVER");
-                        break;
-                    }
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }else{
-            unPark();
-        }
-    }
-
-    private void park() {
-        add.getAndIncrement();
-        LockSupport.park();
-    }
-
-    private void unPark(){
-        while(thread==null){
-            continue;
-        }
-        try{
-            lock.lock();//性能阻塞点 避免 ABA问题 。
-            LockSupport.unpark(thread);
-            inc.getAndDecrement();
-            Long result=inc.get()+add.get();
-            while(result > 0){
-                LockSupport.unpark(thread);
-                inc.getAndDecrement();
-                result=inc.get()+add.get();
-            }
-        }finally {
-            lock.unlock();
-        }
-    }
-
-    //Tasks execute design end
 
     public Long getEndTime() {
         return endTime;

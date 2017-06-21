@@ -1,6 +1,9 @@
 package nna.base.util.concurrent;
 
 
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author NNA-SHUAI
@@ -17,7 +20,8 @@ public class SeqFixSizeTasks extends AbstractTasks {
         int temp=enQueueIndex;//为了尽可能的照顾所有的 Tasks对象
         int taskType= AbstractTask.INIT;
         for(;workIndex < temp;workIndex++){
-            taskType=work(workIndex);
+            AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[workIndex];
+            taskType=work(abstractTaskWrapper);
             switch (taskType){
                 case AbstractTask.OVER:
                     return taskType;
@@ -29,11 +33,77 @@ public class SeqFixSizeTasks extends AbstractTasks {
     }
 
     protected int lockAndExe(int tempIndex) {
-        return work(tempIndex);
+        AbstractTaskWrapper abstractTaskWrapper=abstractTaskWrappers[tempIndex];
+        return work(abstractTaskWrapper);
     }
 
     public static void main(String[] args){
 
     }
+
+    boolean addTask(AbstractTask abstractTask, Integer taskType,Object attach){
+        try{
+            super.addTask(abstractTask,taskType,attach);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        unPark();
+        return true;
+    }
+
+
+    ////Tasks execute design begin
+    protected volatile Thread thread;
+    protected AtomicLong inc=new AtomicLong(0L);
+    protected AtomicLong add=new AtomicLong(0L);//avoid ABA bug
+    protected ReentrantLock lock=new ReentrantLock();
+    protected ReentrantLock tInitLock=new ReentrantLock();
+
+    public void run() {
+        if(tInitLock.tryLock()){
+            thread=Thread.currentThread();
+            try{
+                while(true){
+                    if(doTasks()!= AbstractTask.OVER){
+                        park();
+                    }else{
+                        System.out.println("OVER");
+                        break;
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }else{
+            unPark();
+        }
+    }
+
+    private void park() {
+        add.getAndIncrement();
+        LockSupport.park();
+    }
+
+    protected void unPark(){
+        while(thread==null){
+            continue;
+        }
+        try{
+            lock.lock();//性能阻塞点 避免 ABA问题 。
+            LockSupport.unpark(thread);
+            inc.getAndDecrement();
+            Long result=inc.get()+add.get();
+            while(result > 0){
+                LockSupport.unpark(thread);
+                inc.getAndDecrement();
+                result=inc.get()+add.get();
+            }
+        }finally {
+            lock.unlock();
+        }
+    }
+
+    //Tasks execute design end
 
 }

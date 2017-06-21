@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicLong;
             int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
             workCount=Math.max(count,workCount);
         }
-        TaskScheduleManager =new TaskScheduleManager(workCount);
+        TaskScheduleManager =new TaskScheduleManager();
         return TaskScheduleManager;
     }
 
@@ -55,13 +55,14 @@ import java.util.concurrent.atomic.AtomicLong;
         return coreCount<=1?1:coreCount-1;
         }
 
-        private TaskScheduleManager(int workerCount){
-            init(workerCount*10);
+        private TaskScheduleManager(){
+            init();
         }
 
-        private void init(int workerCount) {
-            Monitor Monitor =new Monitor();
-            Monitor.setMap(monitorMap);
+        private void init() {
+            Monitor monitor =new Monitor();
+            monitor.setMap(monitorMap);
+            cachedService.submit(monitor);
         }
 
         private void enWorkMap(AbstractTasks abstractTasks) {
@@ -131,6 +132,11 @@ import java.util.concurrent.atomic.AtomicLong;
                 abstractTasks.addTask(t, AbstractTask.INIT,object);
                 cachedService.submit(abstractTasks);
                 break;
+            case Marco.SEQ_LINKED_SIZE_TASK:
+                abstractTasks=new SeqLinkedTasks(null);
+                t.setTasks(abstractTasks);
+                cachedService.submit(abstractTasks);
+                abstractTasks.addTask(t, AbstractTask.INIT,object);
         }
         enWorkMap(abstractTasks);
     }
