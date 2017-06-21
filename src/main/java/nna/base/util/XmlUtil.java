@@ -84,7 +84,7 @@ public class XmlUtil {
             entry=iterator.next();
             keyNm=entry.getKey();
             vS=entry.getValue();
-            pathNodeNms=keyNm.split("[/]");
+            pathNodeNms=keyNm.split("[/|_]");
             pathNodeNmsCount=pathNodeNms.length-1;
             nodeNm.delete(0,nodeNm.length()-1);
             for(int index=0;index <= pathNodeNmsCount;index++){

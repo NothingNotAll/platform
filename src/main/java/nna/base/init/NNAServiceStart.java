@@ -1,6 +1,6 @@
 package nna.base.init;
 
-import nna.Test;
+import nna.test.Test;
 import nna.base.dispatch.ConfMetaSetFactory;
 
 import java.io.IOException;
