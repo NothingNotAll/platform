@@ -1,6 +1,7 @@
 package nna.base.util.concurrent;
 
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 // Been Set Null ' s slot;
 // but we can solve it with recycle queue to make full use of memory and solve the oom problem
  abstract class AbstractTasks implements Runnable{
+    public static final Random random=new Random();
     public static final int START=1;
     public static final int WORKING=2;
     public static final int END=3;
@@ -144,4 +146,51 @@ import java.util.concurrent.atomic.AtomicLong;
         this.globalWorkId = globalWorkId;
     }
 
+    public AbstractTaskWrapper[] getAbstractTaskWrappers() {
+        return abstractTaskWrappers;
+    }
+
+    public void setAbstractTaskWrappers(AbstractTaskWrapper[] abstractTaskWrappers) {
+        this.abstractTaskWrappers = abstractTaskWrappers;
+    }
+
+    public Integer getEnQueueIndex() {
+        return enQueueIndex;
+    }
+
+    public void setEnQueueIndex(Integer enQueueIndex) {
+        this.enQueueIndex = enQueueIndex;
+    }
+
+    public Integer getWorkIndex() {
+        return workIndex;
+    }
+
+    public void setWorkIndex(Integer workIndex) {
+        this.workIndex = workIndex;
+    }
+
+    public Integer getWorkCount() {
+        return workCount;
+    }
+
+    public void setWorkCount(Integer workCount) {
+        this.workCount = workCount;
+    }
+
+    public AtomicLong getCounter() {
+        return counter;
+    }
+
+    public void setCounter(AtomicLong counter) {
+        this.counter = counter;
+    }
+
+    public AtomicInteger getSequenceGen() {
+        return sequenceGen;
+    }
+
+    public void setSequenceGen(AtomicInteger sequenceGen) {
+        this.sequenceGen = sequenceGen;
+    }
 }

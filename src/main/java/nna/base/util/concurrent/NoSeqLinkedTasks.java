@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -13,23 +15,20 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
-    public LinkedBlockingQueue<AbstractTaskWrapper>[] getList() {
-        return list;
-    }
-
-    public void setList(LinkedBlockingQueue<AbstractTaskWrapper>[] list) {
-        this.list = list;
-    }
 
     //next step is solve the hungry lock;
     protected LinkedBlockingQueue<AbstractTaskWrapper>[] list;
-    protected ReentrantLock[] locks;
+    protected volatile Thread[] threads;
+    protected ReentrantLock[] unParkLocks;
+    protected AtomicInteger threadIndexGen=new AtomicInteger();
     protected ExecutorService service;
     protected int linkedListCount;
     NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId) {
         super(0, workId);
         this.linkedListCount=linkedListCount;
         list=new LinkedBlockingQueue[linkedListCount];
+        threads=new Thread[linkedListCount];
+        unParkLocks=new ReentrantLock[threadCount];
         locks=new ReentrantLock[linkedListCount];
         threadCount=threadCount>linkedListCount?linkedListCount:threadCount;
         service=Executors.newFixedThreadPool(threadCount);
@@ -39,44 +38,33 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         }
         for(int index=0;index < threadCount;index++){
             service.submit(this);
+            unParkLocks[index]=new ReentrantLock();
         }
     }
 
     protected int doTasks(){
         LinkedList<AbstractTaskWrapper> temps=new LinkedList<AbstractTaskWrapper>();
-        ReentrantLock lock;
         int tempCount;
         int totalCount=0;
-        boolean locked=false;
         int index=0;
         LinkedBlockingQueue<AbstractTaskWrapper> temp;
-        AbstractTaskWrapper abstractTaskWrapper;
         for(;index<linkedListCount;index++){
-            lock=locks[index];
-            try{
-                if(lock.tryLock()){
-                    locked=true;
-                    temp=list[index];
-                    tempCount=temp.size();
-                    tempCount=temp.drainTo(temps,tempCount);
-                    totalCount+=tempCount;
-                    if(totalCount==0){
-                        abstractTaskWrapper=temp.take();
-                        temps.add(abstractTaskWrapper);
-                        tempCount=1;
-                        totalCount=1;
-                    }
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }finally {
-                if(locked){
-                    locked=false;
-                    lock.unlock();
-                }
-            }
+            temp=list[index];
+            tempCount=temp.size();
+            tempCount=temp.drainTo(temps,tempCount);
+            totalCount+=tempCount;
         }
-        Iterator<AbstractTaskWrapper> iterator=temps.iterator();
+        if(totalCount==0){
+            LockSupport.park();
+        }else{
+            Iterator<AbstractTaskWrapper> iterator=temps.iterator();
+            consumer(iterator);
+        }
+        return -1;
+    }
+
+    private void consumer(Iterator<AbstractTaskWrapper> iterator) {
+        AbstractTaskWrapper abstractTaskWrapper;
         Object att;
         int taskType;
         AbstractTask abstractTask;
@@ -91,10 +79,10 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
                 e.printStackTrace();
             }
         }
-        return -1;
     }
 
     public void run(){
+        threads[threadIndexGen.getAndIncrement()]=Thread.currentThread();
         try{
             while(true){
                 try{
@@ -117,12 +105,62 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
             Integer taskType,
             Object attach){
         AbstractTaskWrapper abstractTaskWrapper=new AbstractTaskWrapper(abstractTask,attach,taskType);
-        LinkedBlockingQueue<AbstractTaskWrapper> loadBalance=getLoadBalacer();
+        LinkedBlockingQueue<AbstractTaskWrapper> loadBalance=getLoadBalance();
         loadBalance.add(abstractTaskWrapper);
+        unPark();
         return true;
     }
 
-    private LinkedBlockingQueue<AbstractTaskWrapper> getLoadBalacer() {
+    private void unPark() {
+        int threadCount=threads.length;
+        Thread thread;
+        ReentrantLock unParkLock;
+        boolean isLocked=false;
+        boolean isUnParkExe=false;
+        boolean isAllNull=true;
+        for(int index=0;index < threadCount;index++){
+            thread=threads[index];
+            Thread.State state= thread.getState();
+            if(thread!=null&&state != Thread.State.RUNNABLE){
+                isAllNull=false;
+                unParkLock=unParkLocks[index];
+                try{
+                    if(unParkLock.tryLock()){
+                        isLocked=true;
+                        if(state != Thread.State.RUNNABLE){
+                            LockSupport.unpark(thread);
+                            isUnParkExe=true;
+                            break;
+                        }
+                    }
+                    LockSupport.unpark(thread);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    if(isLocked){
+                        unParkLock.unlock();
+                        isLocked=false;
+                    }
+                }
+            }
+        }
+//        if(!isAllNull){
+//            System.out.println("unPark Success!");
+//        }
+//        if(isAllNull){
+//            System.out.println("threads is not init success!");
+//        }
+        if(isAllNull&&!isUnParkExe){
+            int randomInt=random.nextInt(threadCount-1);
+            try{
+                LockSupport.unpark(threads[randomInt]);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private LinkedBlockingQueue<AbstractTaskWrapper> getLoadBalance() {
         LinkedBlockingQueue temp;
         Integer tempCount;
         Integer minCount = null;
@@ -147,4 +185,53 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         return list[minIndex];
     }
 
+    public LinkedBlockingQueue<AbstractTaskWrapper>[] getList() {
+        return list;
+    }
+
+    public void setList(LinkedBlockingQueue<AbstractTaskWrapper>[] list) {
+        this.list = list;
+    }
+
+
+
+    public Thread[] getThreads() {
+        return threads;
+    }
+
+    public void setThreads(Thread[] threads) {
+        this.threads = threads;
+    }
+
+    public ExecutorService getService() {
+        return service;
+    }
+
+    public void setService(ExecutorService service) {
+        this.service = service;
+    }
+
+    public int getLinkedListCount() {
+        return linkedListCount;
+    }
+
+    public void setLinkedListCount(int linkedListCount) {
+        this.linkedListCount = linkedListCount;
+    }
+
+    public AtomicInteger getThreadIndexGen() {
+        return threadIndexGen;
+    }
+
+    public void setThreadIndexGen(AtomicInteger threadIndexGen) {
+        this.threadIndexGen = threadIndexGen;
+    }
+
+    public ReentrantLock[] getUnParkLocks() {
+        return unParkLocks;
+    }
+
+    public void setUnParkLocks(ReentrantLock[] unParkLocks) {
+        this.unParkLocks = unParkLocks;
+    }
 }

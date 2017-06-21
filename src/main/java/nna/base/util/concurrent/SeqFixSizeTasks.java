@@ -106,4 +106,38 @@ public class SeqFixSizeTasks extends AbstractTasks {
 
     //Tasks execute design end
 
+
+
+    public AtomicLong getInc() {
+        return inc;
+    }
+
+    public void setInc(AtomicLong inc) {
+        this.inc = inc;
+    }
+
+    public AtomicLong getAdd() {
+        return add;
+    }
+
+    public void setAdd(AtomicLong add) {
+        this.add = add;
+    }
+
+    public ReentrantLock getLock() {
+        return lock;
+    }
+
+    public void setLock(ReentrantLock lock) {
+        this.lock = lock;
+    }
+
+    public ReentrantLock gettInitLock() {
+        return tInitLock;
+    }
+
+    public void settInitLock(ReentrantLock tInitLock) {
+        this.tInitLock = tInitLock;
+    }
+
 }

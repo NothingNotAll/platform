@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
         int workCount=getAvlCPUCount();
         if(maxBusinessProcessTime!=null&&thresholdTime!=null){
             int count=getBusinessCount(maxBusinessProcessTime,thresholdTime);
-            workCount=Math.max(count,workCount);
+            Math.max(count,workCount);
         }
         TaskScheduleManager =new TaskScheduleManager();
         return TaskScheduleManager;

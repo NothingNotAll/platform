@@ -62,6 +62,8 @@ public class SeqLinkedTasks extends AbstractTasks {
                 int isOver=doTasks();
                 if(isOver==AbstractTask.OVER){
                     return ;
+                }else{
+                    temp.clear();
                 }
             }
         }catch (Exception e){
@@ -73,6 +75,54 @@ public class SeqLinkedTasks extends AbstractTasks {
 
     protected int lockAndExe(int tempIndex) {
         return 0;
+    }
+
+    public LinkedBlockingQueue<AbstractTaskWrapper> getAbstractsTaskWrappers() {
+        return abstractTaskWrappers;
+    }
+
+    public void setAbstractTaskWrappers(LinkedBlockingQueue<AbstractTaskWrapper> abstractTaskWrappers) {
+        this.abstractTaskWrappers = abstractTaskWrappers;
+    }
+
+    public LinkedList<AbstractTaskWrapper> getTemp() {
+        return temp;
+    }
+
+    public void setTemp(LinkedList<AbstractTaskWrapper> temp) {
+        this.temp = temp;
+    }
+
+    public int getTempCount() {
+        return tempCount;
+    }
+
+    public void setTempCount(int tempCount) {
+        this.tempCount = tempCount;
+    }
+
+    public AbstractTaskWrapper getAbstractTaskWrapper() {
+        return abstractTaskWrapper;
+    }
+
+    public void setAbstractTaskWrapper(AbstractTaskWrapper abstractTaskWrapper) {
+        this.abstractTaskWrapper = abstractTaskWrapper;
+    }
+
+    public Iterator<AbstractTaskWrapper> getIterator() {
+        return iterator;
+    }
+
+    public void setIterator(Iterator<AbstractTaskWrapper> iterator) {
+        this.iterator = iterator;
+    }
+
+    public AbstractTaskWrapper getTempWrapper() {
+        return tempWrapper;
+    }
+
+    public void setTempWrapper(AbstractTaskWrapper tempWrapper) {
+        this.tempWrapper = tempWrapper;
     }
 
 }

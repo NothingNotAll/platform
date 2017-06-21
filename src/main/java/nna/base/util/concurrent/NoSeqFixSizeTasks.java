@@ -103,4 +103,12 @@ public class NoSeqFixSizeTasks extends AbstractTasks {
         }
         return -5;
     }
+
+    public ReentrantLock[] getLocks() {
+        return locks;
+    }
+
+    public void setLocks(ReentrantLock[] locks) {
+        this.locks = locks;
+    }
 }
