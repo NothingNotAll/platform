@@ -45,7 +45,6 @@ public class NIOEventProcessor {
         ioEventType=selectionKey.interestOps();
         selectableChannel=selectionKey.channel();
         nioTask=(AbstractNIOTask)selectionKey.attachment();
-        selectionKey.cancel();
         switch (ioEventType){
             case SelectionKey.OP_ACCEPT:
                 processAcceptEvent(selectionKey,selectableChannel,nioTask,ioEventType);
