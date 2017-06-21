@@ -47,7 +47,7 @@ public class Monitor implements Runnable {
     private SeqLinkedTasks seqLinkedTasks;
     private NoSeqLinkedTasks noSeqLinkedTasks;
     private NoSeqFixSizeTasks noSeqFixSizeTasks;
-    private OneTask oneTask;
+//    private OneTask oneTask;
     private void monitor(Long workId,AbstractTasks abstractTasks){
         if(abstractTasks instanceof SeqFixSizeTasks){
             seqFixSizeTasks=(SeqFixSizeTasks) abstractTasks;
@@ -65,10 +65,10 @@ public class Monitor implements Runnable {
             noSeqFixSizeTasks=(NoSeqFixSizeTasks) abstractTasks;
             monitor(noSeqFixSizeTasks);
         }
-        if(abstractTasks instanceof OneTask){
-            oneTask=(OneTask) abstractTasks;
-            monitor(oneTask);
-        }
+//        if(abstractTasks instanceof OneTask){
+//            oneTask=(OneTask) abstractTasks;
+//            monitor(oneTask);
+//        }
         System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-TASKS:"+workId);
         System.out.println("Start Time:"+simpleDateFormat.format(abstractTasks.getStartTime()));
         System.out.println("work count:"+abstractTasks.getWorkCount());
@@ -84,9 +84,9 @@ public class Monitor implements Runnable {
         System.out.println("SeqFixSizeTasks");
     }
 
-    private void monitor(OneTask oneTask){
-        System.out.println("OneTask");
-    }
+//    private void monitor(OneTask oneTask){
+//        System.out.println("OneTask");
+//    }
 
     private void monitor(NoSeqLinkedTasks noSeqLinkedTasks){
         System.out.println("NoSeqFixSizeTasks");

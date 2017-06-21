@@ -195,8 +195,6 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         this.list = list;
     }
 
-
-
     public Thread[] getThreads() {
         return threads;
     }
