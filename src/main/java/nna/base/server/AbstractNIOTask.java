@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketOption;
 import java.nio.channels.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * For NIOTask Of Abstract
@@ -17,7 +18,8 @@ import java.nio.channels.*;
  **/
 
 public abstract class AbstractNIOTask extends AbstractTask {
-
+    private static final ReentrantLock initLock=new ReentrantLock();
+    private static boolean isInit=false;
     protected int protocolType;
     protected EndConfig endConfig;
     protected Object object;
@@ -39,6 +41,13 @@ public abstract class AbstractNIOTask extends AbstractTask {
         int port=endConfig.getPort();
         this.socketAddress=new InetSocketAddress(ip,port);
         register();
+    }
+
+    protected void startTask(int containerType){
+        if(!isInit&&initLock.tryLock()){
+            isInit=true;
+            super.startTask(null,containerType);
+        }
     }
 
     protected abstract void register() throws IOException;
