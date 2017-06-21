@@ -16,6 +16,7 @@ public class NIOEventProcessor {
         ServerSocketChannel serverSocketChannel= (ServerSocketChannel) selectableChannel;
         SocketChannel socketChannel=serverSocketChannel.accept();
         socketChannel.configureBlocking(false);
+        nioTask.addNewNIOTask(socketChannel,ioEventType);
     }
 
     private void processConnectEvent(SelectionKey acceptSK,
@@ -44,10 +45,11 @@ public class NIOEventProcessor {
         ioEventType=selectionKey.interestOps();
         selectableChannel=selectionKey.channel();
         nioTask=(AbstractNIOTask)selectionKey.attachment();
+        selectionKey.cancel();
         switch (ioEventType){
             case SelectionKey.OP_ACCEPT:
                 processAcceptEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-                break;
+                return;
 //            case SelectionKey.OP_CONNECT:
 //                processConnectEvent(selectionKey,selectableChannel,nioTask,ioEventType);
 //                break;
@@ -58,7 +60,6 @@ public class NIOEventProcessor {
 //                processWriteEvent(selectionKey,selectableChannel,nioTask,ioEventType);
 //                break;
         }
-        selectionKey.cancel();
         nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
 }
