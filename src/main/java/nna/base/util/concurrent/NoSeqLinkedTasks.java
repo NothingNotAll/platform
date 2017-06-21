@@ -120,36 +120,38 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         boolean isAllNull=true;
         for(int index=0;index < threadCount;index++){
             thread=threads[index];
-            Thread.State state= thread.getState();
-            if(thread!=null&&state != Thread.State.RUNNABLE){
-                isAllNull=false;
-                unParkLock=unParkLocks[index];
-                try{
-                    if(unParkLock.tryLock()){
-                        isLocked=true;
-                        if(state != Thread.State.RUNNABLE){
-                            LockSupport.unpark(thread);
-                            isUnParkExe=true;
-                            break;
+            if(thread!=null){
+                Thread.State state= thread.getState();
+                if(state != Thread.State.RUNNABLE){
+                    isAllNull=false;
+                    unParkLock=unParkLocks[index];
+                    try{
+                        if(unParkLock.tryLock()){
+                            isLocked=true;
+                            if(state != Thread.State.RUNNABLE){
+                                LockSupport.unpark(thread);
+                                isUnParkExe=true;
+                                break;
+                            }
                         }
-                    }
-                    LockSupport.unpark(thread);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }finally {
-                    if(isLocked){
-                        unParkLock.unlock();
-                        isLocked=false;
+                        LockSupport.unpark(thread);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }finally {
+                        if(isLocked){
+                            unParkLock.unlock();
+                            isLocked=false;
+                        }
                     }
                 }
             }
         }
-//        if(!isAllNull){
-//            System.out.println("unPark Success!");
-//        }
-//        if(isAllNull){
-//            System.out.println("threads is not init success!");
-//        }
+        if(!isAllNull){
+            System.out.println("unPark Success!");
+        }
+        if(isAllNull){
+            System.out.println("threads is not init success!");
+        }
         if(isAllNull&&!isUnParkExe){
             int randomInt=random.nextInt(threadCount-1);
             try{
