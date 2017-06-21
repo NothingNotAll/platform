@@ -13,7 +13,21 @@ import nna.base.log.Log;
 public class LogUtil {
     private LogUtil(){}
 
-
+    public static Log getLog(
+            String logDir,
+            String logFileName,
+            int appLogLevel,
+            int flushLimit,
+            int closeTimeout,
+            String encode){
+        return Log.getLog(
+                logDir,
+                logFileName,
+                appLogLevel,
+                flushLimit,
+                closeTimeout,
+                encode);
+    }
     public static void log(PlatformColumn[] columns, Log log, int logLevel){
         if (columns==null)
             return;
