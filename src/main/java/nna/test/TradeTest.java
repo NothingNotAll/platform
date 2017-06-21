@@ -22,7 +22,7 @@ public class TradeTest {
     private static final int PORT=80;
     private static final String XML_ENCODE="UTF-8";
     private static final String XML_DECODE="UTF-8";
-    private static final int HEADLENTH=8;
+    private static final int HEAD_LENTH=8;
     private static final String XML_ROOT_NM = "root";
 
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
@@ -53,7 +53,7 @@ public class TradeTest {
         byte[] bytes=xmlStr.getBytes(XML_ENCODE);
         ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
         client.write(byteBuffer);
-        byte[] length=new byte[HEADLENTH];
+        byte[] length=new byte[HEAD_LENTH];
         ByteBuffer rspStrLength=ByteBuffer.wrap(length);
         int readCount=0;
         while(readCount<8){
