@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
 
+    protected ReentrantLock addLock=new ReentrantLock();
     //next step is solve the hungry lock;
     protected LinkedBlockingQueue<AbstractTaskWrapper>[] list;
     protected volatile Thread[] threads;
@@ -38,6 +39,35 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
             executorService.submit(this);
             unParkLocks[index]=new ReentrantLock();
         }
+    }
+
+    boolean addLoadBalance(ExecutorService executorService){
+        boolean addSuccess=false;
+        LinkedBlockingQueue<AbstractTaskWrapper> loadBalance=new LinkedBlockingQueue<AbstractTaskWrapper>();
+        try{
+            addLock.lock();
+            LinkedBlockingQueue[] temp=new LinkedBlockingQueue[linkedListCount+1];
+            temp[linkedListCount]=loadBalance;
+            System.arraycopy(list,0,temp,0,linkedListCount);
+
+            Thread[] tS=new Thread[threadIndexGen.get()+1];
+            System.arraycopy(threads,0,tS,0,threadIndexGen.get());
+
+            ReentrantLock[] tempLocks=new ReentrantLock[threadIndexGen.get()+1];
+            tempLocks[threadIndexGen.get()]=new ReentrantLock();
+            System.arraycopy(unParkLocks,0,tempLocks,0,threadIndexGen.get());
+            unParkLocks=tempLocks;
+
+            this.list=temp;
+            threads=tS;
+
+            executorService.submit(this);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            addLock.unlock();
+        }
+        return  addSuccess;
     }
 
     protected int doTasks(){

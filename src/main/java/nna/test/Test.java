@@ -4,9 +4,13 @@ import nna.Marco;
 import nna.base.log.Log;
 import nna.base.util.LogUtil;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
@@ -18,7 +22,27 @@ import java.util.concurrent.locks.LockSupport;
 
 public class Test {
     public static void main(String[] args){
-        park();
+        new Thread(new Runnable() {
+            public void run() {
+                while (true){
+                    try {
+                        SocketChannel socketChannel=SocketChannel.open();
+                        socketChannel.connect(new InetSocketAddress("47.93.62.188",80));
+                        if(!socketChannel.isConnected()){
+                            socketChannel.finishConnect();
+                        }
+                        socketChannel.write(ByteBuffer.wrap(new String("ajfpajfpafjajfajfa;jfaj;jf;ajf;ajfj").getBytes()));
+                        socketChannel.close();
+                        Thread.sleep(3000L);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+        //        park();
 //        AtomicInteger atomicInteger=new AtomicInteger();
 //        atomicInteger.getAndIncrement();
 //        System.out.println(atomicInteger.get());

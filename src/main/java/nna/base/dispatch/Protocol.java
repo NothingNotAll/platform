@@ -5,9 +5,11 @@ import nna.base.util.CharUtil;
 import nna.base.util.orm.ObjectUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -89,33 +91,49 @@ public class Protocol {
     }
 
     public static String processHttp(SocketChannel channel) throws IOException {
-        byte[] bytes=new byte[1];
-        ArrayList<Byte> byteList=new ArrayList<Byte>();
-        ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
-        int count=channel.read(byteBuffer);
-        while(count!=-1){
-            if(count>0){
-                byteList.add(byteBuffer.get(0));
-                byteBuffer.clear();
-            }else{
-                if(count==-1){
-                    break;
-                }
-            }
-//            System.out.println("readCount:"+count);
+        read(channel);
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        bytes=new byte[byteList.size()];
-        count=byteList.size();
-        for(int index=0;index < count;index++){
-            bytes[index]=byteList.get(index);
-        }
-        System.out.println(new String(bytes));
         channel.close();
         return null;
     }
 
+    private static void read(SocketChannel channel) {
+        InputStream inputStream=Channels.newInputStream(channel);
+        ArrayList<byte[]> bytes=new ArrayList<byte[]>();
+        byte[] temp=new byte[1];
+        int count=-1;
+        while(true){
+            try {
+                count=inputStream.read(temp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(count==-1){
+                break;
+            }else{
+                bytes.add(temp);
+            }
+        }
+        byte[] byteList=new byte[bytes.size()];
+        int size=bytes.size();
+        for(int index=0;index < size;index++){
+            byteList[index]=bytes.get(0)[0];
+        }
+        System.out.println(new String(byteList));
+    }
+
     public static String processXml(SocketChannel channel){
         System.out.println("process XML");
+        read(channel);
+        try {
+            Thread.sleep(10000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
