@@ -15,7 +15,6 @@ public abstract class AbstractTask {
     private AbstractTasks tasks;
     private int failTryTimes;
     private int workCount;
-    private String taskName;
     private Long threadId;
     private String threadName;
     private volatile int taskStatus;
@@ -27,8 +26,7 @@ public abstract class AbstractTask {
         System.out.println("init TaskScheduleManager!");
         TaskEntry.init(null,null);
     }
-    public AbstractTask(String taskName, int workCount){
-        this.taskName=taskName;
+    public AbstractTask(int workCount){
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
@@ -39,8 +37,8 @@ public abstract class AbstractTask {
         TaskEntry.addNewTask(this,object,taskType);
     }
 
-    protected void startTask(Object object,int containerType){
-        TaskEntry.startTask(this,object,containerType);
+    protected void startTask(Object object,int containerType,String taskName){
+        TaskEntry.startTask(this,object,containerType,taskName);
     }
 
     protected abstract Object doTask(int taskType,Object attach) throws Exception;
@@ -67,14 +65,6 @@ public abstract class AbstractTask {
 
     public void setTaskStatus(int taskStatus) {
         this.taskStatus = taskStatus;
-    }
-
-    public String getTaskName() {
-        return taskName;
-    }
-
-    public void setTaskName(String taskName) {
-        this.taskName = taskName;
     }
 
     public int getWorkCount() {

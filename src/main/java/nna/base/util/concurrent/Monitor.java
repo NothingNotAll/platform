@@ -21,8 +21,8 @@ public class Monitor extends AbstractTask {
     AbstractTasks abstractTasks;
 
     public Monitor() {
-        super("[Concurrent Container Monitor]", 1);
-        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
+        super( 1);
+        startTask(null, Marco.SEQ_FIX_SIZE_TASK,"[Concurrent Container Monitor]");
     }
 
     public void run() {
@@ -57,6 +57,13 @@ public class Monitor extends AbstractTask {
     private NoSeqFixSizeTasks noSeqFixSizeTasks;
 //    private OneTask oneTask;
     private void monitor(Long workId,AbstractTasks abstractTasks){
+
+        System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-TASKS:"+workId);
+        System.out.println("Start Time:"+simpleDateFormat.format(abstractTasks.getStartTime()));
+        System.out.println("work count:"+abstractTasks.getWorkCount());
+        System.out.println("current workIndex:"+abstractTasks.getCounter().get());
+        System.out.println("task priorLevel:"+abstractTasks.getPriorLevel());
+        System.out.println(abstractTasks.getTaskName());
         if(abstractTasks instanceof SeqFixSizeTasks){
             seqFixSizeTasks=(SeqFixSizeTasks) abstractTasks;
             monitor(seqFixSizeTasks);
@@ -77,11 +84,6 @@ public class Monitor extends AbstractTask {
 //            oneTask=(OneTask) abstractTasks;
 //            monitor(oneTask);
 //        }
-        System.out.println(simpleDateFormat.format(System.currentTimeMillis())+"-TASKS:"+workId);
-        System.out.println("Start Time:"+simpleDateFormat.format(abstractTasks.getStartTime()));
-        System.out.println("work count:"+abstractTasks.getWorkCount());
-        System.out.println("current workIndex:"+abstractTasks.getCounter().get());
-        System.out.println("task priorLevel:"+abstractTasks.getPriorLevel());
     }
 
     private void monitor(NoSeqFixSizeTasks noSeqFixSizeTasks){

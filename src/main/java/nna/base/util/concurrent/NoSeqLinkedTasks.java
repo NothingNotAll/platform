@@ -22,8 +22,8 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
     protected ReentrantLock[] unParkLocks;
     protected AtomicInteger threadIndexGen=new AtomicInteger();
     protected int linkedListCount;
-    NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId,ExecutorService executorService) {
-        super(0, workId);
+    NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId,ExecutorService executorService,String taskName) {
+        super(0, workId,taskName);
         this.linkedListCount=linkedListCount;
         list=new LinkedBlockingQueue[linkedListCount];
         threads=new Thread[linkedListCount];

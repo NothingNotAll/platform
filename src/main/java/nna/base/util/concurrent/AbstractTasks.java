@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
     public static final int END=3;
     public static final int FAIL=4;
 
+    protected String taskName;
     protected Long startTime;
     protected Long endTime;
     protected Long priorLevel;//used as exe sequence of tasks; but worker must used ArrayList as tasks container and index as the priorLevel;
@@ -44,7 +45,8 @@ import java.util.concurrent.atomic.AtomicLong;
     * only adapt for One Producer(business thread producer) and One Consumer Thread
     * */
 
-     AbstractTasks(int taskCount, Long globalWorkId){
+     AbstractTasks(int taskCount, Long globalWorkId,String taskName){
+        this.taskName=taskName;
         startTime=System.currentTimeMillis();
         this.globalWorkId=globalWorkId;
         enQueueIndex=0;
@@ -192,5 +194,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
     public void setSequenceGen(AtomicInteger sequenceGen) {
         this.sequenceGen = sequenceGen;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
     }
 }

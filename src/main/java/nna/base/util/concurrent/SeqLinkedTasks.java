@@ -13,8 +13,8 @@ public class SeqLinkedTasks extends AbstractTasks {
 
     protected LinkedBlockingQueue<AbstractTaskWrapper> abstractTaskWrappers=new LinkedBlockingQueue<AbstractTaskWrapper>();
 
-    SeqLinkedTasks(Long globalWorkId) {
-        super(0, globalWorkId);
+    SeqLinkedTasks(Long globalWorkId,String taskName) {
+        super(0, globalWorkId,taskName);
     }
 
     //for min times of gc;

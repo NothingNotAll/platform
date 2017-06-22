@@ -11,8 +11,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class NoSeqFixSizeTasks extends AbstractTasks {
 
     protected ReentrantLock[] locks;//for NoSeqFixSizeTasks
-    NoSeqFixSizeTasks(int taskCount, Long workId) {
-        super(taskCount,workId);
+    NoSeqFixSizeTasks(int taskCount, Long workId,String taskName) {
+        super(taskCount,workId,taskName);
         locks=new ReentrantLock[taskCount];
         for(int index=0;index<workCount;index++){
             locks[index]=new ReentrantLock();

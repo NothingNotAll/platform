@@ -12,8 +12,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class SeqFixSizeTasks extends AbstractTasks {
 
-    SeqFixSizeTasks(int taskCount, Long workId) {
-        super(taskCount,workId);
+    SeqFixSizeTasks(int taskCount, Long workId,String taskName) {
+        super(taskCount,workId,taskName);
     }
 
     protected int doTasks() {

@@ -30,7 +30,7 @@ package nna.base.util.concurrent;
         TaskScheduleManager.addNewTask(t,object,taskStatus);
     }
 
-    static void startTask(AbstractTask t, Object object, int containerType){
-        TaskScheduleManager.startTask(t,object,containerType);
+    static void startTask(AbstractTask t, Object object, int containerType,String taskName){
+        TaskScheduleManager.startTask(t,object,containerType,taskName);
     }
 }
