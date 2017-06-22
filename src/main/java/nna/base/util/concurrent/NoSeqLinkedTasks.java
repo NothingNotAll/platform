@@ -134,7 +134,6 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
                                 break;
                             }
                         }
-                        LockSupport.unpark(thread);
                     }catch (Exception e){
                         e.printStackTrace();
                     }finally {
@@ -147,10 +146,10 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
             }
         }
         if(!isAllNull){
-            System.out.println("unPark Success!");
+//            System.out.println("unPark Success!");
         }
         if(isAllNull){
-            System.out.println("threads is not init success!");
+//            System.out.println("threads is not init success!");
         }
         if(isAllNull&&!isUnParkExe){
             int randomInt=random.nextInt(threadCount-1);
