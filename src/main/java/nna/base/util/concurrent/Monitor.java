@@ -14,14 +14,18 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 public class Monitor extends AbstractTask {
+    TaskScheduleManager taskScheduleManager;
     SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
     private Map<Long,AbstractTasks> map;
     Iterator<Map.Entry<Long,AbstractTasks>> iterator;
     Map.Entry<Long,AbstractTasks> entry;
     AbstractTasks abstractTasks;
 
-    public Monitor() {
+
+    public Monitor(TaskScheduleManager taskScheduleManager) {
         super( 1);
+        this.taskScheduleManager=taskScheduleManager;
+        this.map=taskScheduleManager.getMonitorMap();
         startTask(null, Marco.SEQ_FIX_SIZE_TASK,"[Concurrent Container Monitor]");
     }
 
@@ -128,10 +132,6 @@ public class Monitor extends AbstractTask {
         System.out.println("SeqLinkedTasks");
         LinkedBlockingQueue linkedBlockingQueue=seqLinkedTasks.getAbstractsTaskWrappers();
         System.out.println("task's count:"+linkedBlockingQueue.size());
-    }
-
-    public void setMap(Map map) {
-        this.map = map;
     }
 
     protected Object doTask(int taskType, Object attach) throws Exception {

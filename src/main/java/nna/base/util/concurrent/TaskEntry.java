@@ -19,11 +19,11 @@ package nna.base.util.concurrent;
 * */
  class TaskEntry {
     static TaskScheduleManager TaskScheduleManager;
+    static Monitor monitor;
 
     static void init(Long maxBusinessProcessTime,Long thresholdTime){
         TaskScheduleManager = TaskScheduleManager.initWorkerManager(maxBusinessProcessTime,thresholdTime);
-        Monitor monitor =new Monitor();
-        monitor.setMap(TaskScheduleManager.getMonitorMap());
+        monitor =new Monitor(TaskScheduleManager);
     }
 
     static void addNewTask(AbstractTask t, Object object, int taskStatus) {
