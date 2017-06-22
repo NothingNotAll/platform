@@ -67,7 +67,7 @@ public class Monitor extends AbstractTask {
         System.out.println("work count:"+abstractTasks.getWorkCount());
         System.out.println("current workIndex:"+abstractTasks.getCounter().get());
         System.out.println("task priorLevel:"+abstractTasks.getPriorLevel());
-        System.out.println(abstractTasks.getTaskName());
+        System.out.println("tasks's name:"+abstractTasks.getTaskName());
         if(abstractTasks instanceof SeqFixSizeTasks){
             seqFixSizeTasks=(SeqFixSizeTasks) abstractTasks;
             monitor(seqFixSizeTasks);
