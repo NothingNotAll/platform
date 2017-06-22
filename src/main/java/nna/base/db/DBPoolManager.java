@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
  **/
 
 public class DBPoolManager {
-    private ExecutorService executor= Executors.newCachedThreadPool();
     private LinkedList<DBPool> balanceConList=new LinkedList<DBPool>();
     private LinkedList<DBPool> balanceCloseList=new LinkedList<DBPool>();
     private int conPoolSize;
@@ -27,6 +26,7 @@ public class DBPoolManager {
     private DBPool JDBC;
     private DBMeta dbMeta;
     private Log managerLog;
+    private DBPutConWorker putWorker=new DBPutConWorker(this);
 
     public DBPoolManager(DBMeta dbMeta, Log log) throws SQLException, ClassNotFoundException {
         this.dbMeta=dbMeta;
@@ -103,8 +103,7 @@ public class DBPoolManager {
     }
 
     public void asyPutCon(Connection con){
-        DBPutConWorker worker=new DBPutConWorker(con,this);
-        executor.submit(worker);
+        putWorker.put(con);
     }
 
     public void putCon(Connection con){

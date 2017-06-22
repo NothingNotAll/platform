@@ -1,6 +1,8 @@
 package nna.base.db;
 
+import nna.Marco;
 import nna.base.log.Log;
+import nna.base.util.concurrent.AbstractTask;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,17 +20,16 @@ import java.util.concurrent.locks.ReentrantLock;
  * @create 2017-05-16 13:14
  **/
 
- class DBConHeartTest implements Runnable{
+ class DBConHeartTest extends AbstractTask{
     private static final DBConHeartTest DB_CON_HEART_TEST=new DBConHeartTest();
     private ArrayList<DBPoolManager> managers=new ArrayList<DBPoolManager>();
     private ReentrantLock lock=new ReentrantLock();
     private Long sleepTime=0L;
     private Object lockObject=new Object();
-    private DBConHeartTest(){}
 
-    static{
-        Thread heartTestThread=new Thread(DB_CON_HEART_TEST);
-        heartTestThread.start();
+    public DBConHeartTest() {
+        super("[DB Connection Pool Keep Alive]", 1);
+        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
     }
 
     public static DBConHeartTest getInstance(){
@@ -122,4 +123,8 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
+    protected Object doTask(int taskType, Object attach) throws Exception {
+        run();
+        return null;
+    }
 }

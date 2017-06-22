@@ -21,9 +21,8 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
     protected volatile Thread[] threads;
     protected ReentrantLock[] unParkLocks;
     protected AtomicInteger threadIndexGen=new AtomicInteger();
-    protected ExecutorService service;
     protected int linkedListCount;
-    NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId) {
+    NoSeqLinkedTasks(int linkedListCount, int threadCount, Long workId,ExecutorService executorService) {
         super(0, workId);
         this.linkedListCount=linkedListCount;
         list=new LinkedBlockingQueue[linkedListCount];
@@ -31,13 +30,12 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
         unParkLocks=new ReentrantLock[threadCount];
         locks=new ReentrantLock[linkedListCount];
         threadCount=threadCount>linkedListCount?linkedListCount:threadCount;
-        service=Executors.newFixedThreadPool(threadCount);
         for(int index=0;index<linkedListCount;index++){
             list[index]=new LinkedBlockingQueue<AbstractTaskWrapper>();
             locks[index]=new ReentrantLock();
         }
         for(int index=0;index < threadCount;index++){
-            service.submit(this);
+            executorService.submit(this);
             unParkLocks[index]=new ReentrantLock();
         }
     }
@@ -200,14 +198,6 @@ public class NoSeqLinkedTasks extends NoSeqFixSizeTasks {
 
     public void setThreads(Thread[] threads) {
         this.threads = threads;
-    }
-
-    public ExecutorService getService() {
-        return service;
-    }
-
-    public void setService(ExecutorService service) {
-        this.service = service;
     }
 
     public int getLinkedListCount() {

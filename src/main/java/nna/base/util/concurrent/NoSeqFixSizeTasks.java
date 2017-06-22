@@ -1,6 +1,5 @@
 package nna.base.util.concurrent;
 
-import nna.base.server.AbstractNIOTask;
 
 import java.util.concurrent.locks.ReentrantLock;
 

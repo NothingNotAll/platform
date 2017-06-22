@@ -1,5 +1,7 @@
 package nna.base.util.concurrent;
 
+import nna.Marco;
+
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,12 +13,18 @@ import java.util.concurrent.locks.ReentrantLock;
  * @create 2017-06-15 21:53
  **/
 
-public class Monitor implements Runnable {
+public class Monitor extends AbstractTask {
     SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd-HH:mm:ss:SSS");
     private Map<Long,AbstractTasks> map;
     Iterator<Map.Entry<Long,AbstractTasks>> iterator;
     Map.Entry<Long,AbstractTasks> entry;
     AbstractTasks abstractTasks;
+
+    public Monitor() {
+        super("[Concurrent Container Monitor]", 1);
+        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
+    }
+
     public void run() {
         while(true){
             try{
@@ -89,7 +97,7 @@ public class Monitor implements Runnable {
 //    }
 
     private void monitor(NoSeqLinkedTasks noSeqLinkedTasks){
-        System.out.println("NoSeqFixSizeTasks");
+        System.out.println("NoSeqLinkedTasks");
         ReentrantLock[] locks=noSeqLinkedTasks.getLocks();
         ReentrantLock lock;
         int count=locks.length;
@@ -124,4 +132,8 @@ public class Monitor implements Runnable {
         this.map = map;
     }
 
+    protected Object doTask(int taskType, Object attach) throws Exception {
+        run();
+        return null;
+    }
 }

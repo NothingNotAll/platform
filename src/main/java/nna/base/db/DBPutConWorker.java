@@ -1,5 +1,8 @@
 package nna.base.db;
 
+import nna.Marco;
+import nna.base.util.concurrent.AbstractTask;
+
 import java.sql.Connection;
 
 /**
@@ -7,25 +10,28 @@ import java.sql.Connection;
  * @create 2017-05-28 22:44
  **/
 
-public class DBPutConWorker implements Runnable {
-    private Connection con;
+public class DBPutConWorker extends AbstractTask {
     private DBPoolManager manager;
 
-    public DBPutConWorker(Connection con,DBPoolManager manager){
-        this.con=con;
+
+    public DBPutConWorker(DBPoolManager manager){
+        super("[DBCon Put Back Task]", 1);
         this.manager=manager;
-    }
-    public void run() {
-      try{
-           work();
-      }catch (Exception e){
-          e.printStackTrace();
-      }finally {
-
-      }
+        startTask(null, Marco.SEQ_LINKED_SIZE_TASK);
     }
 
-    private void work() {
-        manager.putCon(con);
+    public void put(Connection con){
+        addNewTask(con,INIT);
+    }
+
+    private void work(Connection con) {
+        if(con!=null){
+            manager.putCon(con);
+        }
+    }
+
+    protected Object doTask(int taskType, Object attach) throws Exception {
+        work((Connection)attach);
+        return null;
     }
 }

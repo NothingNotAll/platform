@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -88,16 +89,28 @@ public class Protocol {
     }
 
     public static String processHttp(SocketChannel channel) throws IOException {
-//        ZeroCopy zeroCopy=new ZeroCopy(1024,100,100);
-//        byte[] bytes=new byte[1];
-//        ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
-//        int count=channel.read(byteBuffer);
-//        while(count!=-1){
-//            zeroCopy.add(bytes);
-//            byteBuffer.clear();
-//            channel.read(byteBuffer);
-//        }
-        System.out.println("read-");
+        byte[] bytes=new byte[1];
+        ArrayList<Byte> byteList=new ArrayList<Byte>();
+        ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
+        int count=channel.read(byteBuffer);
+        while(count!=-1){
+            if(count>0){
+                byteList.add(byteBuffer.get(0));
+                byteBuffer.clear();
+            }else{
+                if(count==-1){
+                    break;
+                }
+            }
+//            System.out.println("readCount:"+count);
+        }
+        bytes=new byte[byteList.size()];
+        count=byteList.size();
+        for(int index=0;index < count;index++){
+            bytes[index]=byteList.get(index);
+        }
+        System.out.println(new String(bytes));
+        channel.close();
         return null;
     }
 

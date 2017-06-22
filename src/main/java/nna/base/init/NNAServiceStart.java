@@ -1,5 +1,6 @@
 package nna.base.init;
 
+import nna.base.util.concurrent.AbstractTask;
 import nna.test.Test;
 import nna.base.dispatch.ConfMetaSetFactory;
 
@@ -21,6 +22,7 @@ public class NNAServiceStart {
 
     static{
         try {
+            AbstractTask.init();
             Util.loadNIOSelector();
             NNAServiceInit0 nna0=new NNAServiceInit0();
             PreparedStatement[] preparedStatements=nna0.build();

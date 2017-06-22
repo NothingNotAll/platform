@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
     private static TaskScheduleManager TaskScheduleManager;
     private static volatile boolean init=false;
     private static ExecutorService cachedService = Executors.newCachedThreadPool();
+    private static ConcurrentHashMap<Integer,ExecutorService> tPoolMap=new ConcurrentHashMap<Integer, ExecutorService>();
 
     synchronized static TaskScheduleManager initWorkerManager(Long maxBusinessProcessTime, Long thresholdTime){
         if(init){
@@ -60,9 +61,7 @@ import java.util.concurrent.atomic.AtomicLong;
         }
 
         private void init() {
-            Monitor monitor =new Monitor();
-            monitor.setMap(monitorMap);
-            cachedService.submit(monitor);
+
         }
 
         private void enWorkMap(AbstractTasks abstractTasks) {
@@ -116,7 +115,7 @@ import java.util.concurrent.atomic.AtomicLong;
                 cachedService.submit(abstractTasks);
                 break;
             case Marco.NO_SEQ_LINKED_SIZE_TASK:
-                abstractTasks =new NoSeqLinkedTasks(Marco.IO_BLOCKQUEUE_COUNT,Marco.IO_PROCESS_COUNT,null);
+                abstractTasks =new NoSeqLinkedTasks(Marco.IO_BLOCKQUEUE_COUNT, Marco.IO_PROCESS_COUNT, null,cachedService);
                 t.setTasks(abstractTasks);
                 abstractTasks.addTask(t, AbstractTask.INIT,object);
                 break;
@@ -139,5 +138,13 @@ import java.util.concurrent.atomic.AtomicLong;
                 abstractTasks.addTask(t, AbstractTask.INIT,object);
         }
         enWorkMap(abstractTasks);
+    }
+
+    static ConcurrentHashMap<Long, AbstractTasks> getMonitorMap() {
+        return monitorMap;
+    }
+
+    static void setMonitorMap(ConcurrentHashMap<Long, AbstractTasks> monitorMap) {
+        nna.base.util.concurrent.TaskScheduleManager.monitorMap = monitorMap;
     }
 }

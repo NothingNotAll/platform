@@ -23,11 +23,10 @@ public abstract class AbstractTask {
     private volatile boolean isInit=false;
     private ReentrantLock initLock=new ReentrantLock();
 
-    static{
+    public static void init(){
         System.out.println("init TaskScheduleManager!");
         TaskEntry.init(null,null);
     }
-
     public AbstractTask(String taskName, int workCount){
         this.taskName=taskName;
         Thread thread=Thread.currentThread();
