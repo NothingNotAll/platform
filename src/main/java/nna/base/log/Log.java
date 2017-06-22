@@ -45,7 +45,7 @@ public class Log extends AbstractTask {
             int closeTimeout,
             String encode
             ) {
-        super(logFileName,0);
+        super(0);
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
@@ -54,7 +54,7 @@ public class Log extends AbstractTask {
         this.closeTimeout=closeTimeout;
         this.encode=encode;
         setTaskStatus(INIT);
-        startTask(null,Marco.SEQ_LINKED_SIZE_TASK);
+        startTask(null,Marco.SEQ_LINKED_SIZE_TASK,logFileName);
     }
 
     public void log(String log,int logLevel){

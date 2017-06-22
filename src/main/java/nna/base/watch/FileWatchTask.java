@@ -17,8 +17,8 @@ public class FileWatchTask extends AbstractTask{
 //    private static final WatchService fileMonitor=FileSystems.getDefault().newWatchService();
 
     public FileWatchTask(String taskName) {
-        super(taskName, 1);
-        startTask(null,Marco.SEQ_FIX_SIZE_TASK);
+        super(1);
+        startTask(null,Marco.SEQ_FIX_SIZE_TASK,taskName);
     }
 
 

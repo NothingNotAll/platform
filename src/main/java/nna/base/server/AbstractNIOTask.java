@@ -32,7 +32,7 @@ import java.util.concurrent.locks.ReentrantLock;
                            EndConfig endConfig,
                            Object object,
                            Method method) throws IOException {
-        super(taskName, workCount);
+        super(workCount);
         this.protocolType=endConfig.getProtocolType();
         this.object=object;
         this.method=method;
@@ -46,7 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
     protected void startTask(int containerType){
         if(!isInit&&initLock.tryLock()){
             isInit=true;
-            super.startTask(null,containerType);
+            super.startTask(null,containerType,"NIO Server Task");
         }
     }
 
@@ -73,8 +73,8 @@ import java.util.concurrent.locks.ReentrantLock;
         addNewTask(attach,taskType);
     }
 
-    void startNIOTask(Object att){
-         startTask(att, Marco.NO_SEQ_FIX_SIZE_TASK);
+    void startNIOTask(Object att,String name){
+         startTask(att, Marco.NO_SEQ_FIX_SIZE_TASK,name);
     }
 
     public InetSocketAddress getSocketAddress() {

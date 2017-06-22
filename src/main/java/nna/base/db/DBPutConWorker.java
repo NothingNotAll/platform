@@ -15,9 +15,9 @@ public class DBPutConWorker extends AbstractTask {
 
 
     public DBPutConWorker(DBPoolManager manager){
-        super("[DBCon Put Back Task]", 1);
+        super( 1);
         this.manager=manager;
-        startTask(null, Marco.SEQ_LINKED_SIZE_TASK);
+        startTask(null, Marco.SEQ_LINKED_SIZE_TASK,"[DBCon Put Back Task]");
     }
 
     public void put(Connection con){

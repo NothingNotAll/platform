@@ -28,8 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
     private Object lockObject=new Object();
 
     public DBConHeartTest() {
-        super("[DB Connection Pool Keep Alive]", 1);
-        startTask(null, Marco.SEQ_FIX_SIZE_TASK);
+        super(1);
+        startTask(null, Marco.SEQ_FIX_SIZE_TASK,"[DB Connection Pool Keep Alive]");
     }
 
     public static DBConHeartTest getInstance(){
