@@ -14,7 +14,7 @@ import java.nio.channels.*;
  * @create 2017-06-19 15:18
  **/
 
-public class NIOServerTask extends AbstractNIOTask {
+ class NIOServerTask extends AbstractNIOTask {
     private ServerSocketChannel serverSocketChannel;
 
     public NIOServerTask(

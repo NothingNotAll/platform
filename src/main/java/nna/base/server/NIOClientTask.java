@@ -14,7 +14,7 @@ import java.nio.channels.*;
  * @create 2017-06-19 15:02
  **/
 
-public class NIOClientTask extends AbstractNIOTask {
+ class NIOClientTask extends AbstractNIOTask {
     private static final int CLIENT_CONNECT=SelectionKey.OP_CONNECT;
 
     public NIOClientTask(

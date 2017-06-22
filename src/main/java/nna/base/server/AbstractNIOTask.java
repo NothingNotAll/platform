@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @create 2017-06-19 15:01
  **/
 
-public abstract class AbstractNIOTask extends AbstractTask {
+ abstract class AbstractNIOTask extends AbstractTask {
     private static final ReentrantLock initLock=new ReentrantLock();
     private static boolean isInit=false;
     protected int protocolType;
