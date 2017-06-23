@@ -7,7 +7,8 @@ import java.util.concurrent.ExecutorService;
  * @create 2017-06-23 8:58
  **/
 
-public class SeqFixSizeStgy<TaskWrapper> extends AbstractEnAndDeStgy {
+public class SeqFixSizeStgy extends AbstractEnAndDeStgy {
+
 
     SeqFixSizeStgy(Integer queueSize, Integer exeTCount) {
         super(queueSize, exeTCount);
@@ -17,7 +18,7 @@ public class SeqFixSizeStgy<TaskWrapper> extends AbstractEnAndDeStgy {
         queues[index]=null;
     }
 
-    protected void enQueue(nna.base.util.conv2.TaskWrapper taskWrapper) {
+    protected void enQueue(TaskWrapper taskWrapper) {
 
     }
 

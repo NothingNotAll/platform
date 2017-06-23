@@ -1,6 +1,8 @@
 package nna.base.util.conv2;
 
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author NNA-SHUAI
@@ -8,8 +10,16 @@ import java.util.concurrent.ExecutorService;
  **/
 
 public class NoSeqFixSizeStgy extends AbstractEnAndDeStgy {
+    private volatile Integer workIndex;
+    private ReentrantLock[] tWLocks;
+    private Integer lockCount;
     NoSeqFixSizeStgy(Integer queueSize, Integer exeTCount) {
         super(queueSize, exeTCount);
+        tWLocks=new ReentrantLock[queueSize];
+        for(int index=0;index < queueSize;index++){
+            tWLocks[index]=new ReentrantLock();
+        }
+        this.lockCount=queueSize;
     }
 
     protected void initQueue(Object[] queues, int index) {
@@ -17,10 +27,29 @@ public class NoSeqFixSizeStgy extends AbstractEnAndDeStgy {
     }
 
     protected void enQueue(TaskWrapper taskWrapper) {
+        ReentrantLock lock;
+        TaskWrapper temp;
+        Object[] os=getQueues();
+        for(int index=0;index < lockCount;index++){
+            lock=tWLocks[index];
+            temp=(TaskWrapper) os[index];
+            if(temp==null){
 
+            }
+        }
     }
 
     protected TaskWrapper[] deQueue() {
-        return new TaskWrapper[0];
+        LinkedList<TaskWrapper> temps=new LinkedList<TaskWrapper>();
+        int length=getQueueSize();
+        Object[] os=getQueues();
+        TaskWrapper taskWrapper;
+        for(int index=0;index < length;index++){
+            taskWrapper=(TaskWrapper) os[index];
+            if(taskWrapper!=null&&taskWrapper.getTaskStatus()==AbstractTask.START_STATUS){
+                temps.add(taskWrapper);
+            }
+        }
+        return temps.toArray(new TaskWrapper[0]);
     }
 }

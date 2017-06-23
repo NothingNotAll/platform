@@ -110,7 +110,7 @@ public class NNAServiceInit0 {
 
     private static Log getPlatformLog(PlatformLog platformLog) {
         String logPath="LOG";
-        String logName="init";
+        String logName="INIT";
         return LogUtil.getLog(
                 logPath,
                 logName,

@@ -20,13 +20,18 @@ public class LogUtil {
             int flushLimit,
             int closeTimeout,
             String encode){
-        return Log.getLog(
-                logDir,
-                logFileName,
-                appLogLevel,
-                flushLimit,
-                closeTimeout,
-                encode);
+        try {
+            return Log.getLog(
+                    logDir,
+                    logFileName,
+                    appLogLevel,
+                    flushLimit,
+                    closeTimeout,
+                    encode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public static void log(PlatformColumn[] columns, Log log, int logLevel){
         if (columns==null)

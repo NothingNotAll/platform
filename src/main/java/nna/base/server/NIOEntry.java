@@ -14,15 +14,16 @@ import java.nio.ByteBuffer;
 public class NIOEntry {
     private AbstractNIOTask nioTask;
 
-    public static void loadNIOSelector(){
-        System.out.println(NIOSelector.class);
-    }
     public NIOEntry(ServerConfig endConfig,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
         nioTask=new NIOServerTask(endConfig,protocolProcessObject,protocolProcessMethod);
     }
 
     public NIOEntry(ClientConfig clientConfig,Object protocolProcessObject,Method protocolProcessMethod) throws IOException {
         nioTask=new NIOClientTask(clientConfig,protocolProcessObject,protocolProcessMethod);
+    }
+
+    public static void initSelector(){
+        new NIOSelector();
     }
 
     public AbstractNIOTask getNioTask() {

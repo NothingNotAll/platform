@@ -2,6 +2,7 @@ package nna;
 
 
 import nna.enums.DBType;
+import nna.enums.TaskType;
 
 public interface Marco {
     DBType dbType=DBType.mysql;
@@ -131,6 +132,18 @@ public interface Marco {
     int SEQ_FIX_SIZE_TASK=4;
     int SEQ_LINKED_SIZE_TASK=5;
 
+    int FIX_THREAD_TYPE=0;
+    int CACHED_THREAD_TYPE=1;
+    int TIMER_THREAD_TYPE=2;
+
     int IO_BLOCKQUEUE_COUNT = 15;
     int IO_PROCESS_COUNT = 15;
+
+    boolean NIO_SERVER=true;
+    boolean NIO_CLIENT=true;
+    boolean LOG=true;
+    boolean DB_CON_PUT_BACK=true;
+    boolean DB_KEEP_ALIVE=true;
+    boolean MONITOR=true;
+    boolean NIO_SELECTOR = true;
 }

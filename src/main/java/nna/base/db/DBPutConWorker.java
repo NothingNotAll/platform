@@ -1,7 +1,7 @@
 package nna.base.db;
 
 import nna.Marco;
-import nna.base.util.concurrent.AbstractTask;
+import nna.base.util.conv2.AbstractTask;
 
 import java.sql.Connection;
 
@@ -15,13 +15,16 @@ public class DBPutConWorker extends AbstractTask {
 
 
     public DBPutConWorker(DBPoolManager manager){
-        super( 1);
+        super("DB_PUT_CON",
+                20,
+                1,
+                Marco.NO_SEQ_LINKED_SIZE_TASK,
+                Marco.CACHED_THREAD_TYPE);
         this.manager=manager;
-        startTask(null, Marco.SEQ_LINKED_SIZE_TASK,"[DBCon Put Back Task]");
     }
 
     public void put(Connection con){
-        addNewTask(con,INIT);
+        addNewTask(this,con,WORK_TASK_TYPE,false,null);
     }
 
     private void work(Connection con) {
@@ -30,8 +33,8 @@ public class DBPutConWorker extends AbstractTask {
         }
     }
 
-    protected Object doTask(int taskType, Object attach) throws Exception {
-        work((Connection)attach);
+    public Object doTask(Object att, int taskType) throws Exception {
+        work((Connection)att);
         return null;
     }
 }

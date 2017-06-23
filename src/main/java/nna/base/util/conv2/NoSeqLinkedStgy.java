@@ -1,6 +1,8 @@
 package nna.base.util.conv2;
 
-import java.util.concurrent.ExecutorService;
+
+import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -19,10 +21,13 @@ public class NoSeqLinkedStgy extends AbstractEnAndDeStgy {
     }
 
     protected void enQueue(TaskWrapper taskWrapper) {
-
+        Object[] queues=getQueues();
+        BlockingQueue queue=getLoadBalance(queues);
+        queue.add(taskWrapper);
     }
 
     protected TaskWrapper[] deQueue() {
-        return new TaskWrapper[0];
+        LinkedList<TaskWrapper> consumerList=getBalanceList(this);
+        return consumerList.toArray(new TaskWrapper[0]);
     }
 }

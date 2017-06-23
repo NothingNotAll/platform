@@ -1,12 +1,13 @@
 package nna.base.server;
 
+import nna.Marco;
+import nna.base.util.conv2.AbstractTask;
+
 import java.io.IOException;
 import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * NIOSelector
@@ -16,37 +17,33 @@ import java.util.concurrent.Executors;
  * @create 2017-06-19 11:37
  **/
 
-public class NIOSelector implements Runnable{
-     static Selector selector = null;
-     static ExecutorService executorService= Executors.newFixedThreadPool(1);
-     static NIOEventProcessor NIOEventProcessor =new NIOEventProcessor();
-     private static volatile boolean isInit=false;
-    static {
-        try {
-            selector = SelectorProvider.provider().openSelector();
-            executorService.submit(new NIOSelector());
-            isInit=true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+public class NIOSelector extends AbstractTask{
+    private static Selector selector;
+    private static NIOEventProcessor NIOEventProcessor =new NIOEventProcessor();
+    private static volatile boolean isInit=false;
+
+    public NIOSelector() {
+        super("",1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
+        addNewTask(this,null,WORK_TASK_TYPE,false,null);
     }
 
-     static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
+    static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
         while(!isInit){
             continue;
         }
+        System.out.println("registerChannel");
         selectableChannel.register(selector,ops,att);
         return selector;
     }
 
-    private NIOSelector(){}
     private Set<SelectionKey> set;
     private int ioEventCount;
     private Iterator<SelectionKey> iterator;
     private SelectionKey selectionKey;
-    public void run() {
+    public void select() {
+        System.out.println("select work");
         try {
-            Thread.sleep(10000L);//for not block
+            Thread.sleep(10000L);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -74,5 +71,19 @@ public class NIOSelector implements Runnable{
         ioEventCount=-1;
         iterator=null;
         selectionKey=null;
+    }
+
+    protected Object doTask(Object attach,int taskType) throws Exception {
+        switch (taskType){
+            case WORK_TASK_TYPE:
+                initSelector(attach);
+                select();
+        }
+        return null;
+    }
+
+    private void initSelector(Object attach) throws IOException {
+        selector=SelectorProvider.provider().openSelector();
+        isInit=true;
     }
 }

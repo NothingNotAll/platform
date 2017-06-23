@@ -1,6 +1,8 @@
 package nna.base.util.conv2;
 
 
+import nna.Marco;
+
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,10 +13,16 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public abstract class AbstractTask {
 
-    static final int INIT_TASK_TYPE=0;
-    static final int OVER_TASK_TYPE=-1;
+    public static final int INIT_TASK_TYPE=0;
+    public static final int WORK_TASK_TYPE=5;
+    public static final int OVER_TASK_TYPE=-1;
     private static final AtomicLong gTaskIdGen=new AtomicLong();
     public static final int OVER = -2;
+    public static final int INIT_STATUS=0;
+    public static final int START_STATUS=1;
+    public static final int WORK_STATUS=2;
+    public static final int END_STATUS=3;
+    public static final int FAIL_STATUS=4;
 
     private AbstractEnAndDeStgy abstractEnAndDeStgy;
     private Long gTaskId;
@@ -23,6 +31,8 @@ public abstract class AbstractTask {
     private volatile int taskStatus;
     private volatile boolean isInit=false;
     private ReentrantLock initLock=new ReentrantLock();
+    private Long threadId;
+    private String threadName;
 
     public AbstractTask(
             String taskName,
@@ -31,12 +41,15 @@ public abstract class AbstractTask {
             Integer strategyType,
             int executorServiceType){
         gTaskId=gTaskIdGen.getAndIncrement();
-        this.taskName=taskName+gTaskId;
-        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,null);
+        this.taskName=taskName+"_"+gTaskId;
+        Thread thread=Thread.currentThread();
+        threadId=thread.getId();
+        threadName=thread.getName();
+        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,executorServiceType,null);
         if(abstractEnAndDeStgy.getNeedSubmit()){
             TaskSchedule.submitTask(this,executorServiceType);
         }
-        abstractEnAndDeStgy.enQueue(this,null,INIT_TASK_TYPE,false,0L);
+        addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
     }
 
     public AbstractTask(
@@ -46,22 +59,27 @@ public abstract class AbstractTask {
             Integer strategyType,
             Long delayTime){
         gTaskId=gTaskIdGen.getAndIncrement();
-        this.taskName=taskName+gTaskId;
-        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,delayTime);
+        this.taskName=taskName+"_"+gTaskId;
+        Thread thread=Thread.currentThread();
+        threadId=thread.getId();
+        threadName=thread.getName();
+        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,Marco.TIMER_THREAD_TYPE,delayTime);
         if(abstractEnAndDeStgy.getNeedSubmit()){
             TaskSchedule.submitTask(this);
         }
-        abstractEnAndDeStgy.enQueue(this,null,INIT_TASK_TYPE,false,0L);
+        addNewTask(this,null,INIT_TASK_TYPE,false, delayTime);
     }
 
-    public abstract Object doTask(Object att,int taskType);
+    protected abstract Object doTask(Object att,int taskType) throws Exception;
 
     protected void addNewTask(
+            AbstractTask abstractTask,
             Object att,
             int taskType,
             Boolean isNewTToExe,
             Long delayTime){
-        abstractEnAndDeStgy.enQueue(this,att,taskType,isNewTToExe,delayTime);
+        TaskWrapper taskWrapper=new TaskWrapper(abstractTask,att,taskType,isNewTToExe,delayTime);
+        abstractEnAndDeStgy.en(taskWrapper);
     }
 
     public AbstractEnAndDeStgy getAbstractEnAndDeStgy() {
@@ -118,5 +136,25 @@ public abstract class AbstractTask {
 
     public void setInitLock(ReentrantLock initLock) {
         this.initLock = initLock;
+    }
+
+    public Long getThreadId() {
+        return threadId;
+    }
+
+    public void setThreadId(Long threadId) {
+        this.threadId = threadId;
+    }
+
+    public String getThreadName() {
+        return threadName;
+    }
+
+    public void setThreadName(String threadName) {
+        this.threadName = threadName;
+    }
+
+    public static void init() {
+
     }
 }

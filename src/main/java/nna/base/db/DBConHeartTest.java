@@ -2,7 +2,7 @@ package nna.base.db;
 
 import nna.Marco;
 import nna.base.log.Log;
-import nna.base.util.concurrent.AbstractTask;
+import nna.base.util.conv2.AbstractTask;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @create 2017-05-16 13:14
  **/
 
- class DBConHeartTest extends AbstractTask{
+ class DBConHeartTest extends AbstractTask {
     private static final DBConHeartTest DB_CON_HEART_TEST=new DBConHeartTest();
     private ArrayList<DBPoolManager> managers=new ArrayList<DBPoolManager>();
     private ReentrantLock lock=new ReentrantLock();
@@ -28,8 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
     private Object lockObject=new Object();
 
     public DBConHeartTest() {
-        super(1);
-        startTask(null, Marco.SEQ_FIX_SIZE_TASK,"[DB Connection Pool Keep Alive]");
+        super("DB_CON_KEEP_ALIVE",1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
+        addNewTask(this,null,INIT_TASK_TYPE,false,null);
     }
 
     public static DBConHeartTest getInstance(){
@@ -123,7 +123,7 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    protected Object doTask(int taskType, Object attach) throws Exception {
+    public Object doTask(Object attach,int taskType) throws Exception {
         run();
         return null;
     }

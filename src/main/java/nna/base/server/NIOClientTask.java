@@ -21,8 +21,7 @@ import java.nio.channels.*;
                          EndConfig endConfig,
                          Object object,
                          Method method) throws IOException {
-        super("NIO Client", 10, endConfig,object,method);
-        startTask( Marco.NO_SEQ_LINKED_SIZE_TASK);
+        super(endConfig,object,method);
     }
 
     private Object clientConnect(SocketChannel channel) throws IOException, InvocationTargetException, IllegalAccessException {
@@ -30,16 +29,6 @@ import java.nio.channels.*;
             channel.finishConnect();
         }
         return method.invoke(object,channel);
-    }
-
-    protected Object doTask(int taskType, Object attach) throws IOException, InvocationTargetException, IllegalAccessException {
-        SocketChannel socketChannel=(SocketChannel)attach;
-        switch (taskType){
-            case CLIENT_CONNECT:
-                clientConnect(socketChannel);
-                break;
-        }
-        return null;
     }
 
     protected void register() throws IOException {
@@ -50,4 +39,13 @@ import java.nio.channels.*;
         channel.connect(socketAddress);
     }
 
+    public Object doTask(Object att, int taskType) throws Exception {
+        SocketChannel socketChannel=(SocketChannel)att;
+        switch (taskType){
+            case CLIENT_CONNECT:
+                clientConnect(socketChannel);
+                break;
+        }
+        return null;
+    }
 }

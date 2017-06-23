@@ -17,9 +17,6 @@ import java.sql.SQLException;
 
  class Util {
 
-    static void loadNIOSelector(){
-        NIOEntry.loadNIOSelector();
-    }
     static Object[] getProtocolProcessConfig(int protocolType) throws NoSuchMethodException {
         return Protocol.getProcessConfig(protocolType);
      }
@@ -111,4 +108,16 @@ import java.sql.SQLException;
         log.log("initial "+platformSql.getSqlId()+" SQL:"+sqlStr,Log.INFO);
         return sqlStr;
     }
+
+    public static void loadNIOSelector() {
+        NIOEntry.initSelector();
+    }
+
+    public static void initTaskManager() {
+
+    }
+
+//    public static void initTaskManager() {
+//        AbstractTask.init();
+//    }
 }

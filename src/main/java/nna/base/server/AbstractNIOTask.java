@@ -1,7 +1,7 @@
 package nna.base.server;
 
 import nna.Marco;
-import nna.base.util.concurrent.AbstractTask;
+import nna.base.util.conv2.AbstractTask;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -27,12 +27,10 @@ import java.util.concurrent.locks.ReentrantLock;
     protected Selector selector;
     protected InetSocketAddress socketAddress;
 
-    public AbstractNIOTask(String taskName,
-                           int workCount,
-                           EndConfig endConfig,
+    public AbstractNIOTask(EndConfig endConfig,
                            Object object,
                            Method method) throws IOException {
-        super(workCount);
+        super("NIO_SERVER",50,15,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.CACHED_THREAD_TYPE);
         this.protocolType=endConfig.getProtocolType();
         this.object=object;
         this.method=method;
@@ -41,13 +39,6 @@ import java.util.concurrent.locks.ReentrantLock;
         int port=endConfig.getPort();
         this.socketAddress=new InetSocketAddress(ip,port);
         register();
-    }
-
-    protected void startTask(int containerType){
-        if(!isInit&&initLock.tryLock()){
-            isInit=true;
-            super.startTask(null,containerType,"NIO Server Task");
-        }
     }
 
     protected abstract void register() throws IOException;
@@ -70,11 +61,7 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
      void addNewNIOTask(Object attach,int taskType){
-        addNewTask(attach,taskType);
-    }
-
-    void startNIOTask(Object att,String name){
-         startTask(att, Marco.NO_SEQ_FIX_SIZE_TASK,name);
+        addNewTask(this,attach,taskType,false,null);
     }
 
     public InetSocketAddress getSocketAddress() {

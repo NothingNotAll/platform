@@ -6,16 +6,11 @@ package nna.base.util.conv2;
  **/
 
  class TaskWrapper implements Runnable{
-    static final int INIT_STATUS=0;
-    static final int START_STATUS=1;
-    static final int WORK_STATUS=2;
-    static final int END_STATUS=3;
-    static final int FAIL_STATUS=4;
 
     private AbstractTask abstractTask;
     private Object att;
     private int taskType;
-    private int taskStatus=INIT_STATUS;
+    private int taskStatus=AbstractTask.INIT_STATUS;
     private Object returnObject;
     private Long enQueueTime=System.currentTimeMillis();
     private Long deQueueTime;
@@ -36,25 +31,26 @@ package nna.base.util.conv2;
         this.att=att;
         this.abstractTask=abstractTask;
         this.taskType=taskType;
-        this.taskStatus=START_STATUS;
+        this.taskStatus=AbstractTask.START_STATUS;
     }
 
      boolean doTask(){
          if(isNewThreadToExe){
-            this.taskStatus=WORK_STATUS;
+            this.taskStatus=AbstractTask.WORK_STATUS;
             TaskSchedule.submitTask(this);
+            System.out.println("do tasks !");
             return true;
          }
          boolean isSuccess=false;
         try{
-            this.taskStatus=WORK_STATUS;
+            this.taskStatus=AbstractTask.WORK_STATUS;
             returnObject=abstractTask.doTask(att,taskType);
             this.deQueueTime=System.currentTimeMillis();
-            this.taskStatus=END_STATUS;
+            this.taskStatus=AbstractTask.END_STATUS;
             isSuccess=true;
         }catch (Exception e){
             e.printStackTrace();
-            this.taskStatus=FAIL_STATUS;
+            this.taskStatus=AbstractTask.FAIL_STATUS;
         }
         return isSuccess;
      }

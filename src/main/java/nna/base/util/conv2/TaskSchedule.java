@@ -12,6 +12,10 @@ import java.util.concurrent.Executors;
  **/
 
 public class TaskSchedule {
+
+    public static void main(String[] args){
+
+    }
     private static final ConcurrentHashMap<Long,AbstractTask> monitorMap=new ConcurrentHashMap<Long, AbstractTask>();
     private static ExecutorService cachedThreadPool= Executors.newCachedThreadPool();
     private static MonitorTask monitorTask=new MonitorTask(monitorMap);
@@ -38,6 +42,7 @@ public class TaskSchedule {
         monitorMap.put(abstractTask.getgTaskId(),abstractTask);
         ExecutorService executorService=Executors.newFixedThreadPool(1);
         executorService.submit(abstractTask.getAbstractEnAndDeStgy());
+        abstractTask.getAbstractEnAndDeStgy().init(executorService);
     }
 
     static void submitTask(TaskWrapper taskWrapper){
