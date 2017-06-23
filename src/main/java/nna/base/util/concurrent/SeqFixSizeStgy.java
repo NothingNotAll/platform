@@ -1,6 +1,4 @@
-package nna.base.util.conv2;
-
-import java.util.concurrent.ExecutorService;
+package nna.base.util.concurrent;
 
 /**
  * @author NNA-SHUAI
@@ -22,7 +20,7 @@ public class SeqFixSizeStgy extends AbstractEnAndDeStgy {
 
     }
 
-    protected nna.base.util.conv2.TaskWrapper[] deQueue() {
-        return new nna.base.util.conv2.TaskWrapper[0];
+    protected nna.base.util.concurrent.TaskWrapper[] deQueue() {
+        return new nna.base.util.concurrent.TaskWrapper[0];
     }
 }

@@ -1,5 +1,4 @@
-package nna.base.util.conv2;
-
+package nna.base.util.concurrent;
 
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
@@ -7,12 +6,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @author NNA-SHUAI
- * @create 2017-06-23 9:03
+ * @create 2017-06-23 9:00
  **/
 
-public class NoSeqLinkedStgy extends AbstractEnAndDeStgy {
+public class SeqLinkedStgy extends AbstractEnAndDeStgy {
 
-    NoSeqLinkedStgy(Integer queueSize, Integer exeTCount) {
+    SeqLinkedStgy(Integer queueSize, Integer exeTCount) {
         super(queueSize, exeTCount);
     }
 
@@ -24,6 +23,7 @@ public class NoSeqLinkedStgy extends AbstractEnAndDeStgy {
         Object[] queues=getQueues();
         BlockingQueue queue=getLoadBalance(queues);
         queue.add(taskWrapper);
+        System.out.println(taskWrapper.getAbstractTask().getTaskName()+":"+taskWrapper.getAbstractTask().getgTaskId());
     }
 
     protected TaskWrapper[] deQueue() {

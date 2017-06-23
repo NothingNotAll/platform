@@ -1,7 +1,7 @@
 package nna.base.db;
 
 import nna.Marco;
-import nna.base.util.conv2.AbstractTask;
+import nna.base.util.concurrent.AbstractTask;
 
 import java.sql.Connection;
 
