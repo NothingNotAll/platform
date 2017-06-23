@@ -23,7 +23,6 @@ public class SeqLinkedStgy extends AbstractEnAndDeStgy {
         Object[] queues=getQueues();
         BlockingQueue queue=getLoadBalance(queues);
         queue.add(taskWrapper);
-        System.out.println(taskWrapper.getAbstractTask().getTaskName()+":"+taskWrapper.getAbstractTask().getgTaskId());
     }
 
     protected TaskWrapper[] deQueue() {

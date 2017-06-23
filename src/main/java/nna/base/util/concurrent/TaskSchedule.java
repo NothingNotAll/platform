@@ -26,12 +26,16 @@ public class TaskSchedule {
     static void submitTask(AbstractTask abstractTask,int exeThreadPoolType){
         monitorMap.put(abstractTask.getgTaskId(),abstractTask);
         AbstractEnAndDeStgy abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
+        int exeThreadCount=abstractEnAndDeStgy.getExeTCount();
         switch (exeThreadPoolType){
             case Marco.FIX_THREAD_TYPE:
                 abstractEnAndDeStgy.init(cachedThreadPool);
                 break;
             case Marco.CACHED_THREAD_TYPE:
-                int exeThreadCount=abstractEnAndDeStgy.getExeTCount();
+                abstractEnAndDeStgy.init(Executors.newFixedThreadPool(exeThreadCount));
+                break;
+            case Marco.TIMER_THREAD_TYPE:
+                System.out.println(exeThreadCount);
                 abstractEnAndDeStgy.init(Executors.newFixedThreadPool(exeThreadCount));
                 break;
         }

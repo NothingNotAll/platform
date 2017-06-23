@@ -20,7 +20,7 @@ import java.util.Map;
         super("MONITOR",1,1,Marco.SEQ_LINKED_SIZE_TASK,7000L);
         this.map=monitorMap;
          String logPath="LOG";
-         String logName="INIT";
+         String logName="MONITOR";
          try {
              log = Log.getLog(
                      logPath,
@@ -64,10 +64,10 @@ import java.util.Map;
     AbstractEnAndDeStgy abstractEnAndDeStgy;
     private void monitor(AbstractTask abstractTask) {
         String str1="GLOBAL TASK ID:"+abstractTask.getgTaskId();
-        System.out.println(str1);
+//        System.out.println(str1);
         log.log(str1, Log.INFO);
         String str2="GLOBAL TASK NAME:"+abstractTask.getTaskName();
-        System.out.println(str2);
+//        System.out.println(str2);
         log.log(str2, Log.INFO);
         abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
         switch (abstractEnAndDeStgy.getStrategyType()){

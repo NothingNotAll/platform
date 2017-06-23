@@ -45,8 +45,9 @@ public abstract class AbstractTask {
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,executorServiceType,null);
+        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,executorServiceType);
         if(abstractEnAndDeStgy.getNeedSubmit()){
+//            System.out.println(taskName);
             TaskSchedule.submitTask(this,executorServiceType);
         }
         addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
@@ -63,7 +64,7 @@ public abstract class AbstractTask {
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,Marco.TIMER_THREAD_TYPE,delayTime);
+        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,Marco.TIMER_THREAD_TYPE);
         if(abstractEnAndDeStgy.getNeedSubmit()){
             TaskSchedule.submitTask(this);
         }

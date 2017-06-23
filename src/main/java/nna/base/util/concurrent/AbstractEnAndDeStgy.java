@@ -93,6 +93,7 @@ import java.util.concurrent.locks.ReentrantLock;
                         isLocked=true;
                         LockSupport.unpark(t);
                         isUnParkExe=true;
+//                        System.out.println("lock Unpark sucess! wait for thread's init");
                         return ;
                     }
                 }catch (Exception e){
@@ -106,18 +107,16 @@ import java.util.concurrent.locks.ReentrantLock;
             }
         }
         if(!isUnParkExe){
-            System.out.println("Unpark not sucess! wait for thread's init");
             int randomInt=0;
             if(exeTCount>1&&isAllNull&&!isUnParkExe){
                 randomInt=random.nextInt(exeTCount-1);
             }
             try{
                 LockSupport.unpark(ts[randomInt]);
+//                System.out.println("Unpark random sucess! wait for thread's init");
             }catch (Exception e){
                 e.printStackTrace();
             }
-        }else{
-            System.out.println("Unpark sucess! wait for thread's init");
         }
     }
 
@@ -127,6 +126,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
      void en(TaskWrapper taskWrapper){
         while(!threadsInit){
+//            System.out.println(taskWrapper.getAbstractTask().getTaskName());
+            try {
+                Thread.sleep(10000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             continue;
         }
         enQueue(taskWrapper);
@@ -217,7 +222,7 @@ import java.util.concurrent.locks.ReentrantLock;
         this.tLocks = tLocks;
     }
 
-     static AbstractEnAndDeStgy getStrategy(Integer queueSize,Integer exeTCount,Integer strategyType,Integer executorServiceType,Long delayTime) {
+     static AbstractEnAndDeStgy getStrategy(Integer queueSize,Integer exeTCount,Integer strategyType,Integer executorServiceType) {
          AbstractEnAndDeStgy abstractEnAndDeStgy =null;
          switch (strategyType){
              case Marco.NO_SEQ_FIX_SIZE_TASK:
@@ -236,7 +241,7 @@ import java.util.concurrent.locks.ReentrantLock;
          abstractEnAndDeStgy.setStrategyType(strategyType);
          if(executorServiceType!=Marco.TIMER_THREAD_TYPE&&!isSystemLoadPermit()){
              AbstractEnAndDeStgy temp=strategies.putIfAbsent(strategyType+"-"+executorServiceType,abstractEnAndDeStgy);
-             System.out.println(strategies.size());
+//             System.out.println(strategies.size());
              if(temp!=null){
                 abstractEnAndDeStgy=temp;
                 abstractEnAndDeStgy.setNeedSubmit(false);
@@ -294,21 +299,21 @@ import java.util.concurrent.locks.ReentrantLock;
         }
         int loadCount=tCount*queueSize;
         int avlCount=totalCount/loadCount;
-        int avlQueueCountTemp=loadCount;
-        if(avlCount%loadCount!=0){
-            avlQueueCountTemp+=1;
+        if(totalCount%loadCount!=0){
+            avlCount+=1;
         }
-        int randomInt=tCount>1?random.nextInt(tCount-1):0;
-        for(int index=0;index < randomInt;index++){
+//        System.out.println("avlCount"+avlCount);
+//        int randomInt=tCount>1?random.nextInt(tCount-1):0;
+        for(int index=0;index < queueSize;index++){
             temp=(BlockingQueue) queues[index];
             temp.drainTo(consumerList,avlCount);
         }
-        temp=(BlockingQueue) queues[randomInt];
-        temp.drainTo(consumerList,avlQueueCountTemp);
-        for(randomInt+=1;randomInt<queueSize;randomInt++){
-            temp=(BlockingQueue) queues[randomInt];
-            temp.drainTo(consumerList,avlCount);
-        }
+//        temp=(BlockingQueue) queues[randomInt];
+//        temp.drainTo(consumerList,avlQueueCountTemp);
+//        for(randomInt+=1;randomInt<queueSize;randomInt++){
+//            temp=(BlockingQueue) queues[randomInt];
+//            temp.drainTo(consumerList,avlCount);
+//        }
         return consumerList;
     }
 
