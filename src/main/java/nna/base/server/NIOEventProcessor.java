@@ -59,6 +59,7 @@ public class NIOEventProcessor {
 //                processWriteEvent(selectionKey,selectableChannel,nioTask,ioEventType);
 //                break;
         }
+        System.out.println("nio select event ");
         nioTask.addNewNIOTask(selectableChannel,ioEventType);
     }
 }

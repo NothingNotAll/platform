@@ -15,7 +15,7 @@ public class FileWatchTask extends AbstractTask{
 
     public FileWatchTask(String taskName) {
         super("FILE_CHANGE_WATCH",1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
-        addNewTask(this,null,WORK_TASK_TYPE,false,null);
+//        addNewTask(this,null,WORK_TASK_TYPE,false,null);
     }
 
 

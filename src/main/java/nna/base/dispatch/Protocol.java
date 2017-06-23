@@ -91,12 +91,10 @@ public class Protocol {
     }
 
     public static String processHttp(SocketChannel channel) throws IOException {
-        read(channel);
-        try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        read(channel);
+//            Thread.sleep(10000L);
+        System.out.println("ajofajfpajfpajfp");
+        //
         channel.close();
         return null;
     }

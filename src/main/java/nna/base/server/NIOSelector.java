@@ -23,16 +23,17 @@ public class NIOSelector extends AbstractTask{
     private static volatile boolean isInit=false;
 
     public NIOSelector() {
-        super("",1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
-        addNewTask(this,null,WORK_TASK_TYPE,false,null);
+        super("NIO_SELECTOR",1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
+//        addNewTask(this,null,WORK_TASK_TYPE,false,null);
     }
 
     static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
+        System.out.println("registerChannel start");
         while(!isInit){
             continue;
         }
-        System.out.println("registerChannel");
         selectableChannel.register(selector,ops,att);
+        System.out.println("registerChannel Success");
         return selector;
     }
 
@@ -41,7 +42,7 @@ public class NIOSelector extends AbstractTask{
     private Iterator<SelectionKey> iterator;
     private SelectionKey selectionKey;
     public void select() {
-        System.out.println("select work");
+//        System.out.println("select work");
         try {
             Thread.sleep(10000L);
         } catch (InterruptedException e) {
@@ -75,7 +76,7 @@ public class NIOSelector extends AbstractTask{
 
     protected Object doTask(Object attach,int taskType) throws Exception {
         switch (taskType){
-            case WORK_TASK_TYPE:
+            case INIT_TASK_TYPE:
                 initSelector(attach);
                 select();
         }

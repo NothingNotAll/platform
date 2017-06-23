@@ -24,6 +24,7 @@ public class NIOEntry {
 
     public static void initSelector(){
         new NIOSelector();
+        System.out.println("NIO Selector");
     }
 
     public AbstractNIOTask getNioTask() {

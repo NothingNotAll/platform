@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
     public AbstractNIOTask(EndConfig endConfig,
                            Object object,
                            Method method) throws IOException {
-        super("NIO_SERVER",50,15,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.CACHED_THREAD_TYPE);
+        super("NIO_SERVER",15,15,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.CACHED_THREAD_TYPE);
         this.protocolType=endConfig.getProtocolType();
         this.object=object;
         this.method=method;

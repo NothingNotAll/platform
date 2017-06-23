@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
     public DBConHeartTest() {
         super("DB_CON_KEEP_ALIVE",1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
-        addNewTask(this,null,INIT_TASK_TYPE,false,null);
+//        addNewTask(this,null,INIT_TASK_TYPE,false,null);
     }
 
     public static DBConHeartTest getInstance(){
