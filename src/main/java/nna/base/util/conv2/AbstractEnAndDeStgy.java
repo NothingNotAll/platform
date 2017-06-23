@@ -148,6 +148,7 @@ import java.util.concurrent.locks.ReentrantLock;
                 tempTaskWrapper.doTask();
                 if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
                     removeMonitor(tempTaskWrapper.getAbstractTask());
+                    tempTaskWrapper.getAbstractTask().setTaskStatus(AbstractTask.OVER);
                     return;
                 }
             }

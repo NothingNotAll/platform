@@ -14,6 +14,7 @@ public abstract class AbstractTask {
     static final int INIT_TASK_TYPE=0;
     static final int OVER_TASK_TYPE=-1;
     private static final AtomicLong gTaskIdGen=new AtomicLong();
+    public static final int OVER = -2;
 
     private AbstractEnAndDeStgy abstractEnAndDeStgy;
     private Long gTaskId;
@@ -24,10 +25,13 @@ public abstract class AbstractTask {
     private ReentrantLock initLock=new ReentrantLock();
 
     public AbstractTask(
+            String taskName,
             Integer queueSize,
             Integer exeThreadCount,
             Integer strategyType,
             int executorServiceType){
+        gTaskId=gTaskIdGen.getAndIncrement();
+        this.taskName=taskName+gTaskId;
         this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,null);
         if(abstractEnAndDeStgy.getNeedSubmit()){
             TaskSchedule.submitTask(this,executorServiceType);
@@ -36,9 +40,13 @@ public abstract class AbstractTask {
     }
 
     public AbstractTask(
+            String taskName,
             Integer queueSize,
             Integer exeThreadCount,
-            Integer strategyType,Long delayTime){
+            Integer strategyType,
+            Long delayTime){
+        gTaskId=gTaskIdGen.getAndIncrement();
+        this.taskName=taskName+gTaskId;
         this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,delayTime);
         if(abstractEnAndDeStgy.getNeedSubmit()){
             TaskSchedule.submitTask(this);
