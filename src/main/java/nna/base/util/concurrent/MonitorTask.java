@@ -5,6 +5,7 @@ import nna.base.log.Log;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author NNA-SHUAI
@@ -50,7 +51,7 @@ import java.util.Map;
                         e.printStackTrace();
                     }
                     try {
-                        Thread.sleep(7000L);
+                        Thread.sleep(2000L);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -64,14 +65,31 @@ import java.util.Map;
     AbstractEnAndDeStgy abstractEnAndDeStgy;
     private void monitor(AbstractTask abstractTask) {
         String str1="GLOBAL TASK ID:"+abstractTask.getgTaskId();
-//        System.out.println(str1);
+        System.out.println(str1);
         log.log(str1, Log.INFO);
         String str2="GLOBAL TASK NAME:"+abstractTask.getTaskName();
-//        System.out.println(str2);
+        System.out.println(str2);
         log.log(str2, Log.INFO);
         abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
-        switch (abstractEnAndDeStgy.getStrategyType()){
-
+        if(abstractEnAndDeStgy.getStrategyType()==Marco.NO_SEQ_LINKED_SIZE_TASK){
+            if(abstractTask.getTaskName().startsWith("NIO_SERVER")){
+                System.out.println(abstractTask.getTaskName());
+                Thread[] ts=abstractEnAndDeStgy.getTs();
+                Object[] os=abstractEnAndDeStgy.getQueues();
+                int count=os.length;
+                int index=0;
+                for(Thread t:ts){
+                    System.out.println(t.getState());
+                    log.log("No."+index+":"+t.getState(), Log.INFO);
+                    index++;
+                }
+                index=0;
+                for(;index < count;index++){
+                    BlockingQueue temp=(BlockingQueue) os[index];
+                    System.out.println(temp.size());
+                    log.log("No."+index+":"+temp.size(), Log.INFO);
+                }
+            }
         }
     }
 }

@@ -1,12 +1,11 @@
 package nna.test;
 
 import nna.base.util.XmlUtil;
-import nna.test.trade.TestDemo;
+import org.dom4j.DocumentException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -19,40 +18,22 @@ import java.util.HashMap;
 
 public class TradeTest {
     private static final String IP="127.0.0.1";
-    private static final int PORT=80;
+    private static final int PORT=8080;
     private static final String XML_ENCODE="UTF-8";
     private static final String XML_DECODE="UTF-8";
     private static final int HEAD_LENTH=8;
     private static final String XML_ROOT_NM = "root";
 
-    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
-        Class reqInterface= TestDemo.class;
-        Field[] reqCols=reqInterface.getFields();
-        int count=reqCols.length;
-        HashMap<String,String[]> reqMap=new HashMap<String, String[]>(count);
-        String colNm;
-        String colVal;
-        Field field;
-        for(int index=0;index < count;index++){
-            field=reqCols[index];
-            Class fieldClazz=Field.class;
-            colNm=field.getName();
-            String[] tempColVal=reqMap.get(colNm);
-            if(tempColVal!=null){
-                String[] newTempVal=new String[tempColVal.length+1];
-                System.arraycopy(tempColVal,0,newTempVal,0,tempColVal.length);
-                newTempVal[tempColVal.length]="";
-                reqMap.put(colNm,newTempVal);
-            }else{
-                reqMap.put(colNm,new String[]{});
-            }
-        }
+    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, IllegalAccessException {
+        HashMap<String,String[]> reqMap= TradeReqMap.map;
         String xmlStr=XmlUtil.buildXML(XML_ROOT_NM,reqMap);
+        System.out.println(xmlStr);
         SocketChannel client=SocketChannel.open();
         client.connect(new InetSocketAddress(IP,PORT));
         byte[] bytes=xmlStr.getBytes(XML_ENCODE);
         ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
         client.write(byteBuffer);
+        client.shutdownOutput();
         byte[] length=new byte[HEAD_LENTH];
         ByteBuffer rspStrLength=ByteBuffer.wrap(length);
         int readCount=0;
@@ -64,11 +45,22 @@ public class TradeTest {
         ByteBuffer rspBB=ByteBuffer.wrap(body);
         readCount=0;
         while(readCount<=rspSize){
-            readCount+=client.read(rspBB);
+            int readCounts=client.read(rspBB);
+            if(readCounts!=-1){
+                readCount+=readCounts;
+            }else{
+                break;
+            }
         }
+        client.shutdownInput();
+        client.close();
         String rspStr=new String(body,XML_DECODE);
         HashMap<String,String[]> rspMap=new HashMap<String, String[]>();
-        XmlUtil.parseXmlStr(rspStr,rspMap);
+        try {
+            XmlUtil.parseXmlStr(rspStr,rspMap);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         System.out.println(rspStr);
         System.out.println(rspMap.toString());
     }

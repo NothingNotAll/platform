@@ -27,18 +27,20 @@ public class Test {
                 while (true){
                     try {
                         SocketChannel socketChannel=SocketChannel.open();
-                        socketChannel.connect(new InetSocketAddress("47.93.62.188",80));
+                        socketChannel.connect(new InetSocketAddress("localhost",80));
                         if(!socketChannel.isConnected()){
                             socketChannel.finishConnect();
                         }
                         socketChannel.write(ByteBuffer.wrap(new String("ajfpajfpafjajfajfa;jfaj;jf;ajf;ajfj").getBytes()));
                         socketChannel.close();
-                        Thread.sleep(3000L);
                     } catch (IOException e) {
                         e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
+//                    try {
+//                        Thread.sleep(300L);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         }).start();

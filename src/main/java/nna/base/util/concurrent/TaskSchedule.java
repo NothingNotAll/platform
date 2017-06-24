@@ -35,7 +35,6 @@ public class TaskSchedule {
                 abstractEnAndDeStgy.init(Executors.newFixedThreadPool(exeThreadCount));
                 break;
             case Marco.TIMER_THREAD_TYPE:
-                System.out.println(exeThreadCount);
                 abstractEnAndDeStgy.init(Executors.newFixedThreadPool(exeThreadCount));
                 break;
         }
@@ -53,8 +52,8 @@ public class TaskSchedule {
         cachedThreadPool.submit(taskWrapper);
     }
 
-    static void remove(AbstractTask abstractTask){
-        monitorMap.remove(abstractTask.getgTaskId());
+    static void remove(Long gTaskId){
+        monitorMap.remove(gTaskId);
     }
 
     static MonitorTask getMonitorTask() {

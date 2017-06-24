@@ -1,21 +1,15 @@
 package nna.base.util;
 
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * @author NNA-SHUAI
@@ -23,104 +17,118 @@ import java.util.Map;
  **/
 
 public class XmlUtil {
-    private static final DocumentBuilderFactory documentBuilderFactory=DocumentBuilderFactory.newInstance();
-    public static String parseXmlStr(String xmlStr,Map<String,String[]> map) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilder documentBuilder=documentBuilderFactory.newDocumentBuilder();
-        Node root=documentBuilder.parse(new InputSource(new StringReader(xmlStr)));
-
-        parseNode(root,"",map);
-        return root.getNodeName();
+    public static String parseXmlStr(String xmlStr,Map<String,String[]> map) throws DocumentException {
+        HashMap<String,LinkedList<String>> listMap=new HashMap<String, LinkedList<String>>();
+        Document document=DocumentHelper.parseText(xmlStr);
+        Element root=document.getRootElement();
+        parseNode(root,listMap);
+        Iterator<Map.Entry<String,LinkedList<String>>> iterator=listMap.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<String,LinkedList<String>> entry=iterator.next();
+            LinkedList<String> temp=entry.getValue();
+            String key=entry.getKey();
+            map.put(key,temp.toArray(new String[0]));
+        }
+        return root.getName();
     }
-    public static void parseNode(Node node, String path, Map<String,String[]> kvs){
-        if(node.hasChildNodes()){
-            Node tempNode;
-            String[] vs;
-            String[] temp;
-            int length;
-            String tempNodeNm;
-            NodeList list=node.getChildNodes();
-            int size=list.getLength();
-            for(int index=0;index < size;index++){
-                tempNode=list.item(index);
-                tempNodeNm=tempNode.getNodeName();
-                if(!tempNode.hasChildNodes()){
-                    path+="/";
-                    path+=tempNodeNm;
-                    vs=kvs.get(path);
-                    if(vs==null){
-                        kvs.put(path,new String[]{tempNode.getNodeValue()});
-                    }else{
-                        length=vs.length;
-                        temp=new String[length];
-                        System.arraycopy(vs,0,temp,0,length);
-                        temp[length]=tempNode.getNodeValue();
-                        kvs.put(path,temp);
-                    }
+    public static void parseNode(Element element,HashMap<String, LinkedList<String>> listMap){
+        element.elements();
+        java.util.List<Element> eles=element.elements();
+        String abPath;
+        String value;
+        String abPath2;
+        for(Element ele:eles){
+            List<Element> temps=ele.elements();
+            if(temps.size()>0){
+                parseNode(ele,listMap);
+            }else{
+                abPath=ele.getPath();
+                value=ele.getText();
+                abPath2=abPath.substring(1);
+                abPath=abPath2.substring(abPath2.indexOf("/"));
+                LinkedList<String> temp=listMap.get(abPath);
+                if(temp==null){
+                    temp=new LinkedList<String>();
+                    temp.add(value);
+                    listMap.put(abPath,temp);
                 }else{
-                    parseNode(tempNode,path+"/"+tempNodeNm,kvs);
+                    temp.add(value);
                 }
             }
         }
     }
 
-    public static String buildXML(String rootNm,Map<String,String[]> kvs) throws ParserConfigurationException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory
-                .newInstance();
-        Document document=factory.newDocumentBuilder().newDocument();
-        Element root=document.createElement(rootNm);
-        StringBuilder stringBuilder=new StringBuilder();
+    public static String buildXML(String rootNm,Map<String,String[]> kvs) {
+        Element root=DocumentHelper.createElement(rootNm);
         Iterator<Map.Entry<String,String[]>> iterator=kvs.entrySet().iterator();
         Map.Entry<String,String[]> entry;
-        String keyNm;
-        String[] vS;
-        String[] pathNodeNms;
-        StringBuilder nodeNm = new StringBuilder("");
-        Node node;
-        int pathNodeNmsCount;
-        int vSize;
-        String v;
-        Node previousNode;
-        HashMap<String,Node> map=new HashMap<String, Node>();
+        String nodePath;
+        String[] nodeNms;
+        int nodeNmCount;
+        String[] nodeValues;
+        String nodeValue;
+        int nvCount;
+        int index;
+        int index2;
+        String tempNm;
+        Element previousEle;
+        Element tempEle;
+        HashMap<String,Element> eleMap=new HashMap<String, Element>();
+        StringBuilder nodePathTemp=new StringBuilder("");
         while(iterator.hasNext()){
             entry=iterator.next();
-            keyNm=entry.getKey();
-            vS=entry.getValue();
-            pathNodeNms=keyNm.split("[/|_]");
-            pathNodeNmsCount=pathNodeNms.length-1;
-            nodeNm.delete(0,nodeNm.length()-1);
-            for(int index=0;index <= pathNodeNmsCount;index++){
-                nodeNm.append("/");
-                nodeNm.append(pathNodeNms[index]);
-                node=map.get(nodeNm);
-                if(node==null){
-
+            nodePath=entry.getKey();
+            nodeValues=entry.getValue();
+            nvCount=nodeValues.length;
+            nodeNms=nodePath.substring(1).split("/");
+            nodeNmCount=nodeNms.length;
+            previousEle=root;
+            index2=0;
+            index=0;
+            nodePathTemp.delete(0,nodePathTemp.length());
+            for(;index < nodeNmCount;index++){
+                nodePathTemp.append("/");
+                tempNm=nodeNms[index];
+                nodePathTemp.append(tempNm);
+                tempEle=eleMap.get(nodePathTemp);
+                if(tempEle==null){
+                    if(nodeNmCount-1>index){
+                        previousEle=previousEle.addElement(tempNm);
+                        eleMap.put(nodePathTemp.toString(),tempEle);
+                    }
+                }else{
+                    previousEle=tempEle;
                 }
-                previousNode=node;
-                if(index==pathNodeNmsCount){
-                    vSize=vS.length;
-                    for(index=0;index < vSize;index++){
-                        v=vS[index];
-
+                if(index==nodeNmCount-1){
+                    for(;index2<nvCount;index2++){
+                        Element son=previousEle.addElement(tempNm);
+                        nodeValue=nodeValues[index2];
+                        son.addText(nodeValue);
                     }
                 }
             }
         }
-        return stringBuilder.toString();
+        return root.asXML();
     }
-    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
+
+    public static void main(String[] args) throws IOException {
         HashMap<String,String[]> map=new HashMap<String, String[]>();
-        parseXmlStr("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
-                        " <books> \n" +
-                        "   <book id=\"001\"> \n" +
-                        "      <title>Harry Potter</title> \n" +
-                        "      <author>J K. Rowling</author> \n" +
-                        "   </book> \n" +
-                        "   <book id=\"002\"> \n" +
-                        "      <title>Learning XML</title> \n" +
-                        "      <author>Erik T. Ray</author> \n" +
-                        "   </book> \n" +
-                        " </books>",
-                map);
+        try {
+            parseXmlStr("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n" +
+                            " <books> \n" +
+                            "   <book id=\"001\"> \n" +
+                            "      <title>Harry Potter</title> \n" +
+                            "      <author>J K. Rowling</author> \n" +
+                            "   </book> \n" +
+                            "   <book id=\"002\"> \n" +
+                            "      <title>Learning XML</title> \n" +
+                            "      <author>Erik T. Ray</author> \n" +
+                            "   </book> \n" +
+                            " </books>",
+                    map);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         Iterator<Map.Entry<String,String[]>> iterator=map.entrySet().iterator();
         while(iterator.hasNext()){
             Map.Entry<String,String[]> entry=iterator.next();
@@ -130,5 +138,6 @@ public class XmlUtil {
                 System.out.println(vals[index]);
             }
         }
+        System.out.println(buildXML("books",map));
     }
 }

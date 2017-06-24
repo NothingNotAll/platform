@@ -17,7 +17,7 @@ public class Log extends AbstractTask {
     public static final SimpleDateFormat yyMMdd=new SimpleDateFormat(Marco.YYYYMMDD_DIR);
     public static final SimpleDateFormat HHmmssSS=new SimpleDateFormat(Marco.LOG_TIME_DIR);
     private static final SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-
+    private static final int CLOSE=6;
     public static final int ERROR=Integer.MAX_VALUE;
     public static final int INFO=0;
     public static final int TRACE=1;
@@ -44,7 +44,7 @@ public class Log extends AbstractTask {
                 20,
                 1,
                 Marco.SEQ_LINKED_SIZE_TASK,
-                Marco.CACHED_THREAD_TYPE);
+                Marco.CACHED_THREAD_TYPE);//这里已经提交了一个任务，但是 encode 还没有完全初始化完全。
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
@@ -54,7 +54,7 @@ public class Log extends AbstractTask {
         this.encode=encode;
         if(checkSystemLoad()){
             isSynWrite=false;
-            addNewTask(this,null,INIT_TASK_TYPE,false,null);
+//            addNewTask(this,null,INIT_TASK_TYPE,false,null);
         }else{
             isSynWrite=true;
             init(null);
@@ -100,6 +100,9 @@ public class Log extends AbstractTask {
     }
 
     private Object init(Object object) throws Exception {
+        while(encode==null){
+            continue;
+        }// in case of that log's constructor did not fully complete;
         boolean locked=false;
         try{
             if(!isInit()&&getInitLock().tryLock()){
@@ -134,8 +137,8 @@ public class Log extends AbstractTask {
     }
 
     public void close(){
-        setTaskStatus(OVER);
-        addNewTask(this,null,OVER_TASK_TYPE,false,null);
+        setTaskStatus(CLOSE);
+        addNewTask(this,null,CLOSE,false,null);
     }
 
     private boolean checkSystemLoad() {
@@ -158,7 +161,7 @@ public class Log extends AbstractTask {
             case INIT_TASK_TYPE:
                 init(att);
                 break;
-            case OVER_TASK_TYPE:
+            case CLOSE:
                 destroy(att);
                 break;
             case WORK_TASK_TYPE:

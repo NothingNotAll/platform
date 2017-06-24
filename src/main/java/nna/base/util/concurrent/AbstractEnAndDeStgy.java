@@ -85,7 +85,7 @@ import java.util.concurrent.locks.ReentrantLock;
         boolean isAllNull=true;
         for(int index=0;index < exeTCount;index++){
             t=ts[index];
-            if(t!=null&&t.getState()!=Thread.State.RUNNABLE){
+            if(t!=null&&t.getState()==Thread.State.WAITING){
                 isAllNull=false;
                 unParkLock=tLocks[index];
                 try{
@@ -175,7 +175,7 @@ import java.util.concurrent.locks.ReentrantLock;
                     tempTaskWrapper=taskWrappers[index];
                     sleep(tempTaskWrapper,delayTime);
                     if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
-                        removeMonitor(tempTaskWrapper.getAbstractTask());
+                        removeMonitor(tempTaskWrapper.getAbstractTask().getgTaskId());
                         tempTaskWrapper.getAbstractTask().setTaskStatus(AbstractTask.OVER);
                         return;
                     }
@@ -198,8 +198,8 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    private static void removeMonitor(AbstractTask tAbstractEnAndDeStgy) {
-
+    private static void removeMonitor(Long gTaskId) {
+        TaskSchedule.remove(gTaskId);
     }
 
     ReentrantLock getAddTLock() {
@@ -241,7 +241,6 @@ import java.util.concurrent.locks.ReentrantLock;
          abstractEnAndDeStgy.setStrategyType(strategyType);
          if(executorServiceType!=Marco.TIMER_THREAD_TYPE&&!isSystemLoadPermit()){
              AbstractEnAndDeStgy temp=strategies.putIfAbsent(strategyType+"-"+executorServiceType,abstractEnAndDeStgy);
-//             System.out.println(strategies.size());
              if(temp!=null){
                 abstractEnAndDeStgy=temp;
                 abstractEnAndDeStgy.setNeedSubmit(false);
@@ -282,38 +281,38 @@ import java.util.concurrent.locks.ReentrantLock;
         }
         return (BlockingQueue<TaskWrapper>)queues[minIndex];
     }
-
+    /*
+    *
+    * */
     protected static LinkedList<TaskWrapper> getBalanceList(AbstractEnAndDeStgy abstractEnAndDeStgy) {
         Object[] queues=abstractEnAndDeStgy.getQueues();
-        Thread[] ts=abstractEnAndDeStgy.getTs();
         LinkedList<TaskWrapper> consumerList=new LinkedList<TaskWrapper>();
         int queueSize=queues.length;
-        int tCount=ts.length;
         BlockingQueue temp;
-        int totalCount=0;
+//        Thread[] ts=abstractEnAndDeStgy.getTs();
+//        int tCount=ts.length;
+//        int totalCount=0;
+//        int tempSize;
+//        for(int index=0;index < queueSize;index++){
+//            temp=(BlockingQueue) queues[index];
+//            tempSize=temp.size();
+//            totalCount+=tempSize;
+//        }
+//        int loadCount=tCount*queueSize;
+//        int avlCount=totalCount/loadCount;
+//        if(totalCount%loadCount!=0){
+//            avlCount+=1;
+//        }
+//        for(int index=0;index < queueSize;index++){
+//            temp=(BlockingQueue) queues[index];
+//            temp.drainTo(consumerList,avlCount);
+//        }
         int tempSize;
         for(int index=0;index < queueSize;index++){
             temp=(BlockingQueue) queues[index];
             tempSize=temp.size();
-            totalCount+=tempSize;
+            temp.drainTo(consumerList,tempSize);
         }
-        int loadCount=tCount*queueSize;
-        int avlCount=totalCount/loadCount;
-        if(totalCount%loadCount!=0){
-            avlCount+=1;
-        }
-//        System.out.println("avlCount"+avlCount);
-//        int randomInt=tCount>1?random.nextInt(tCount-1):0;
-        for(int index=0;index < queueSize;index++){
-            temp=(BlockingQueue) queues[index];
-            temp.drainTo(consumerList,avlCount);
-        }
-//        temp=(BlockingQueue) queues[randomInt];
-//        temp.drainTo(consumerList,avlQueueCountTemp);
-//        for(randomInt+=1;randomInt<queueSize;randomInt++){
-//            temp=(BlockingQueue) queues[randomInt];
-//            temp.drainTo(consumerList,avlCount);
-//        }
         return consumerList;
     }
 
@@ -340,7 +339,6 @@ import java.util.concurrent.locks.ReentrantLock;
      void setStrategyType(Integer strategyType) {
         this.strategyType = strategyType;
     }
-
 
      Object[] getQueues() {
         return queues;

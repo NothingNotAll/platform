@@ -42,7 +42,6 @@ public class NIOSelector extends AbstractTask{
     private Iterator<SelectionKey> iterator;
     private SelectionKey selectionKey;
     public void select() {
-//        System.out.println("select work");
         try {
             Thread.sleep(10000L);
         } catch (InterruptedException e) {

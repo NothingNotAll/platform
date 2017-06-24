@@ -4,13 +4,13 @@ import nna.Marco;
 import nna.base.util.CharUtil;
 import nna.base.util.orm.ObjectUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -90,12 +90,31 @@ public class Protocol {
         }
     }
 
-    public static String processHttp(SocketChannel channel) throws IOException {
+    public static String processHttp(SocketChannel socketChannel) throws IOException {
 //        read(channel);
-//            Thread.sleep(10000L);
-        System.out.println("ajofajfpajfpajfp");
+        try {
+            Thread.sleep(5000L);
+            System.out.println(Thread.currentThread().getName());
+            System.out.println(Thread.currentThread().getId());
+            System.out.println(Thread.currentThread().getState());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        byte[] bytes;
+        int size;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        while ((size = socketChannel.read(buffer)) > 0) {
+            buffer.flip();
+            bytes = new byte[size];
+            buffer.get(bytes);
+            baos.write(bytes);
+            buffer.clear();
+        }
+        bytes = baos.toByteArray();
+//        System.out.println(new String(bytes));
         //
-        channel.close();
+        socketChannel.close();
         return null;
     }
 

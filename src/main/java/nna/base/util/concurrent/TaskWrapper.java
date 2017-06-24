@@ -38,7 +38,6 @@ package nna.base.util.concurrent;
          if(isNewThreadToExe){
             this.taskStatus=AbstractTask.WORK_STATUS;
             TaskSchedule.submitTask(this);
-            System.out.println("do tasks !");
             return true;
          }
          boolean isSuccess=false;
