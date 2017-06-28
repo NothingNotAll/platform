@@ -10,6 +10,7 @@ import nna.base.util.view.Template;
 import nna.enums.DBSQLConValType;
 
 import java.lang.reflect.Method;
+import java.nio.channels.ByteChannel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class MetaBean extends Clone{
     private Object renderObject;
     private Template template;
     private String renderPage;//used as check write flag;
+    private ByteChannel rwChannel;
 
     // For DefaultTransExecutor
     private PlatformEntryTransaction[] serviceTrans;
@@ -594,5 +596,13 @@ public class MetaBean extends Clone{
 
     public void setProtocolType(int protocolType) {
         this.protocolType = protocolType;
+    }
+
+    public ByteChannel getRwChannel() {
+        return rwChannel;
+    }
+
+    public void setRwChannel(ByteChannel rwChannel) {
+        this.rwChannel = rwChannel;
     }
 }
