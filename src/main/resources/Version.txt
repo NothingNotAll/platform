@@ -1,4 +1,4 @@
-jdk version required: @since 1.6+;
+jdk version required: @since 1.7+;
 1:关于异常处理机制的完善
   需要定义全局统一响应描述 响应码值
 2:事务模块的合理整治，模块需要重新绘制
@@ -26,3 +26,8 @@ brain Storm 随机数算法 与 人工智能 人的意识不可以用人能够�
 thread 只可以用人无法预料的事情去创造。所以可以用人无法预料的随机数去构建人的意识，
 当然其中肯定要借鉴很多已经成熟的人工智能的概念。
 The goal is that config with person instead of write with hand
+
+
+the rules of config db trans:
+firstly we can search in the platform_entry and platform_entry_transaction to search the fit
+trans_name to avoid config repeatedly more once;
