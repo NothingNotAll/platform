@@ -12,7 +12,7 @@ public class ReturnMessage extends Clone {
     private static final Long serialVersionUID=0L;
 
     public boolean isSucess=true;
-    public String message="sucess";
+    public String message="success";
     public char returnFlag='S';
     public int returnCode=000000;
     public Object result;
