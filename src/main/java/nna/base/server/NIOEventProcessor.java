@@ -49,15 +49,15 @@ public class NIOEventProcessor {
             case SelectionKey.OP_ACCEPT:
                 processAcceptEvent(selectionKey,selectableChannel,nioTask,ioEventType);
                 return;
-//            case SelectionKey.OP_CONNECT:
-//                processConnectEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-//                break;
-//            case SelectionKey.OP_READ:
-//                processReadEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-//                break;
-//            case SelectionKey.OP_WRITE:
-//                processWriteEvent(selectionKey,selectableChannel,nioTask,ioEventType);
-//                break;
+            case SelectionKey.OP_CONNECT:
+                processConnectEvent(selectionKey,selectableChannel,nioTask,ioEventType);
+                break;
+            case SelectionKey.OP_READ:
+                processReadEvent(selectionKey,selectableChannel,nioTask,ioEventType);
+                break;
+            case SelectionKey.OP_WRITE:
+                processWriteEvent(selectionKey,selectableChannel,nioTask,ioEventType);
+                break;
         }
         System.out.println("nio select event ");
         nioTask.addNewNIOTask(selectableChannel,ioEventType);

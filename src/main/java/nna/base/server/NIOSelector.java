@@ -24,6 +24,7 @@ public class NIOSelector extends AbstractTask{
 
     public NIOSelector() {
         super(1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
+        addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
     }
 
     static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
