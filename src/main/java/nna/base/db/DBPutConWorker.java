@@ -15,12 +15,13 @@ public class DBPutConWorker extends AbstractTask {
 
 
     public DBPutConWorker(DBPoolManager manager){
-        super("DB_PUT_CON",
+        super(
                 20,
                 1,
                 Marco.NO_SEQ_LINKED_SIZE_TASK,
                 Marco.CACHED_THREAD_TYPE);
         this.manager=manager;
+        addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
     }
 
     public void put(Connection con){
