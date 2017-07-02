@@ -35,13 +35,12 @@ public abstract class AbstractTask {
     private String threadName;
 
     public AbstractTask(
-            String taskName,
             Integer queueSize,
             Integer exeThreadCount,
             Integer strategyType,
             int executorServiceType){
         gTaskId=gTaskIdGen.getAndIncrement();
-        this.taskName=taskName+"_"+gTaskId;
+        this.taskName=getClass().getCanonicalName()+"_"+gTaskId;
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
@@ -54,13 +53,12 @@ public abstract class AbstractTask {
     }
 
     public AbstractTask(
-            String taskName,
             Integer queueSize,
             Integer exeThreadCount,
             Integer strategyType,
             Long delayTime){
         gTaskId=gTaskIdGen.getAndIncrement();
-        this.taskName=taskName+"_"+gTaskId;
+        this.taskName=getClass().getCanonicalName()+"_"+gTaskId;
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();

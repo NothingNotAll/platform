@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
      private AtomicInteger tId=new AtomicInteger();
      private Thread[] ts;
      private Object[] queues;
+     private ReentrantLock[] qLocks;
      private ReentrantLock[] tLocks;
      private ReentrantLock addTLock=new ReentrantLock();
      private Integer exeTCount;
@@ -31,7 +32,10 @@ import java.util.concurrent.locks.ReentrantLock;
      private Boolean needSubmit=true;
      private Integer strategyType;
      private AtomicInteger incUnParkTime=new AtomicInteger();
+     private AtomicInteger[] incParkTimes;
      private AtomicInteger decUnParkTime=new AtomicInteger();
+     private AtomicInteger[] decUnParkTimes;
+     private volatile Integer[] tFlags;
      private volatile boolean threadsInit=false;
 
      AbstractEnAndDeStgy(
@@ -41,11 +45,19 @@ import java.util.concurrent.locks.ReentrantLock;
          queues=new Object[queueSize];
          this.exeTCount=exeTCount;
          ts=new Thread[exeTCount];
+         incParkTimes=new AtomicInteger[exeTCount];
+         decUnParkTimes=new AtomicInteger[exeTCount];
+         tFlags=new Integer[exeTCount];
          tLocks=new ReentrantLock[exeTCount];
+         qLocks=new ReentrantLock[queueSize];
          for(int index=0;index < queueSize;index++){
              initQueue(queues,index);
+             qLocks[index]=new ReentrantLock();
              if(index < exeTCount){
+                 incParkTimes[index]=new AtomicInteger();
+                 decUnParkTimes[index]=new AtomicInteger();
                  tLocks[index]=new ReentrantLock();
+                 tFlags[index]=new Integer(-1);
              }
          }
      }
@@ -93,7 +105,6 @@ import java.util.concurrent.locks.ReentrantLock;
                         isLocked=true;
                         LockSupport.unpark(t);
                         isUnParkExe=true;
-//                        System.out.println("lock Unpark sucess! wait for thread's init");
                         return ;
                     }
                 }catch (Exception e){
@@ -113,7 +124,6 @@ import java.util.concurrent.locks.ReentrantLock;
             }
             try{
                 LockSupport.unpark(ts[randomInt]);
-//                System.out.println("Unpark random sucess! wait for thread's init");
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -121,12 +131,15 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     void addT(T t,ExecutorService executorService){
+        int osLength=queues.length;
+        Object[] temp=new Object[osLength+1];
+        temp[osLength]=t;
+        System.arraycopy(queues,0,temp,0,osLength);
 
     }
 
      void en(TaskWrapper taskWrapper){
         while(!threadsInit){
-//            System.out.println(taskWrapper.getAbstractTask().getTaskName());
             try {
                 Thread.sleep(10000L);
             } catch (InterruptedException e) {
@@ -135,18 +148,13 @@ import java.util.concurrent.locks.ReentrantLock;
             continue;
         }
         enQueue(taskWrapper);
-        if(threadsInit){
+        unPark();
+        decUnParkTime.getAndDecrement();
+        Integer result=incUnParkTime.get()+decUnParkTime.get();
+        while(result > 0){
             unPark();
             decUnParkTime.getAndDecrement();
-            Integer result=incUnParkTime.get()+decUnParkTime.get();
-            while(result > 0){
-                unPark();
-                decUnParkTime.getAndDecrement();
-                result=incUnParkTime.get()+decUnParkTime.get();
-            }
-        }else{
-             unPark();
-             incUnParkTime.getAndIncrement();
+            result=incUnParkTime.get()+decUnParkTime.get();
         }
      }
 
@@ -158,21 +166,28 @@ import java.util.concurrent.locks.ReentrantLock;
          }
      }
 
-    private void exeTasks() {
+     private void exeTasks() {
         int threadId=tId.getAndIncrement();
+        AtomicInteger incInteger=incParkTimes[threadId];
         ts[threadId]=Thread.currentThread();
+        tFlags[threadId]=0;//init success;
         Long delayTime=null;
         while(true){
             TaskWrapper[] taskWrappers=deQueue();
             int currentTaskCount=taskWrappers.length;
             if(currentTaskCount==0){
-                incUnParkTime.get();
+                incUnParkTime.getAndIncrement();
+                incInteger.getAndIncrement();
+                tFlags[threadId]=1;
                 LockSupport.park();
             }else{
+                tFlags[threadId]=2;
                 int index=0;
                 TaskWrapper tempTaskWrapper;
                 for(;index < currentTaskCount;index++){
+                    incInteger.getAndIncrement();
                     tempTaskWrapper=taskWrappers[index];
+                    delayTime=tempTaskWrapper.getDelayTime();
                     sleep(tempTaskWrapper,delayTime);
                     if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
                         removeMonitor(tempTaskWrapper.getAbstractTask().getgTaskId());
@@ -286,32 +301,30 @@ import java.util.concurrent.locks.ReentrantLock;
     * */
     protected static LinkedList<TaskWrapper> getBalanceList(AbstractEnAndDeStgy abstractEnAndDeStgy) {
         Object[] queues=abstractEnAndDeStgy.getQueues();
+        ReentrantLock[] qLocks=abstractEnAndDeStgy.getQLocks();
         LinkedList<TaskWrapper> consumerList=new LinkedList<TaskWrapper>();
         int queueSize=queues.length;
         BlockingQueue temp;
-//        Thread[] ts=abstractEnAndDeStgy.getTs();
-//        int tCount=ts.length;
-//        int totalCount=0;
-//        int tempSize;
-//        for(int index=0;index < queueSize;index++){
-//            temp=(BlockingQueue) queues[index];
-//            tempSize=temp.size();
-//            totalCount+=tempSize;
-//        }
-//        int loadCount=tCount*queueSize;
-//        int avlCount=totalCount/loadCount;
-//        if(totalCount%loadCount!=0){
-//            avlCount+=1;
-//        }
-//        for(int index=0;index < queueSize;index++){
-//            temp=(BlockingQueue) queues[index];
-//            temp.drainTo(consumerList,avlCount);
-//        }
         int tempSize;
+        ReentrantLock qLock;
+        boolean locked=false;
         for(int index=0;index < queueSize;index++){
-            temp=(BlockingQueue) queues[index];
-            tempSize=temp.size();
-            temp.drainTo(consumerList,tempSize);
+            qLock=qLocks[index];
+            try{
+                if(qLock.tryLock()){
+                    locked=true;
+                    temp=(BlockingQueue) queues[index];
+                    tempSize=temp.size();
+                    temp.drainTo(consumerList,tempSize);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                if(locked){
+                    qLock.unlock();
+                    locked=false;
+                }
+            }
         }
         return consumerList;
     }
@@ -359,4 +372,12 @@ import java.util.concurrent.locks.ReentrantLock;
      ReentrantLock[] gettLocks() {
         return tLocks;
      }
+
+     ReentrantLock[] getQLocks() {
+        return qLocks;
+    }
+
+     void setQLocks(ReentrantLock[] qLocks) {
+        this.qLocks = qLocks;
+    }
 }

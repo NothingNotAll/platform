@@ -18,7 +18,7 @@ import java.util.concurrent.BlockingQueue;
      private Log log;
 
      MonitorTask(Map monitorMap)  {
-        super("MONITOR",1,1,Marco.SEQ_LINKED_SIZE_TASK,7000L);
+        super(1,1,Marco.SEQ_LINKED_SIZE_TASK,7000L);
         this.map=monitorMap;
          String logPath="LOG";
          String logName="MONITOR";
@@ -51,7 +51,7 @@ import java.util.concurrent.BlockingQueue;
                         e.printStackTrace();
                     }
                     try {
-                        Thread.sleep(2000L);
+                        Thread.sleep(10000L);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -71,25 +71,21 @@ import java.util.concurrent.BlockingQueue;
         System.out.println(str2);
         log.log(str2, Log.INFO);
         abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
-        if(abstractEnAndDeStgy.getStrategyType()==Marco.NO_SEQ_LINKED_SIZE_TASK){
-            if(abstractTask.getTaskName().startsWith("NIO_SERVER")){
-                System.out.println(abstractTask.getTaskName());
-                Thread[] ts=abstractEnAndDeStgy.getTs();
-                Object[] os=abstractEnAndDeStgy.getQueues();
-                int count=os.length;
-                int index=0;
-                for(Thread t:ts){
-                    System.out.println(t.getState());
-                    log.log("No."+index+":"+t.getState(), Log.INFO);
-                    index++;
-                }
-                index=0;
+        System.out.println(abstractTask.getTaskName());
+        Thread[] ts=abstractEnAndDeStgy.getTs();
+        Object[] os=abstractEnAndDeStgy.getQueues();
+        int count=os.length;
+        int index=0;
+        for(Thread t:ts){
+            System.out.println(t.getState());
+            log.log("No."+index+":"+t.getState(), Log.INFO);
+            index++;
+        }
+            index=0;
                 for(;index < count;index++){
                     BlockingQueue temp=(BlockingQueue) os[index];
                     System.out.println(temp.size());
                     log.log("No."+index+":"+temp.size(), Log.INFO);
                 }
             }
-        }
-    }
 }
