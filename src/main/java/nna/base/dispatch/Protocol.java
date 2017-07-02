@@ -2,18 +2,19 @@ package nna.base.dispatch;
 
 import nna.Marco;
 import nna.base.util.CharUtil;
+import nna.base.util.XmlUtil;
 import nna.base.util.orm.ObjectUtil;
+import org.dom4j.DocumentException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -91,64 +92,68 @@ public class Protocol {
     }
 
     public static String processHttp(SocketChannel socketChannel) throws IOException {
-//        read(channel);
-        try {
-            Thread.sleep(5000L);
-            System.out.println(Thread.currentThread().getName());
-            System.out.println(Thread.currentThread().getId());
-            System.out.println(Thread.currentThread().getState());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
-        byte[] bytes;
-        int size;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        while ((size = socketChannel.read(buffer)) > 0) {
-            buffer.flip();
-            bytes = new byte[size];
-            buffer.get(bytes);
-            baos.write(bytes);
-            buffer.clear();
-        }
-        bytes = baos.toByteArray();
-//        System.out.println(new String(bytes));
-        //
-        socketChannel.close();
+        byte[] bytes=read(socketChannel);
+        System.out.println(new String(bytes));
         return null;
     }
 
-    private static void read(SocketChannel channel) {
-        InputStream inputStream=Channels.newInputStream(channel);
-        ArrayList<byte[]> bytes=new ArrayList<byte[]>();
-        byte[] temp=new byte[1];
-        int count=-1;
+    private static byte[] read(SocketChannel channel) {
+        LinkedList<byte[]> bytes=new LinkedList<byte[]>();
+        byte[] temp;
+        ByteBuffer byteBuffer=ByteBuffer.allocate(1024);
+        int totalCount=0;
+        int readCount;
         while(true){
             try {
-                count=inputStream.read(temp);
+                byteBuffer.clear();
+                readCount=channel.read(byteBuffer);
+                if(readCount==-1){
+                    break;
+                }
+                if(readCount>0){
+                    totalCount+=readCount;
+                    System.out.println(totalCount);
+                    byteBuffer.flip();
+                    temp=new byte[readCount];
+                    byteBuffer.get(temp);
+                    bytes.add(temp);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            if(count==-1){
-                break;
-            }else{
-                bytes.add(temp);
+        }
+        int index2;
+        int index3=0;
+        byte[] byteList=new byte[totalCount];
+        int size=bytes.size();
+        int length;
+        for(int index=0;index < size;index++){
+            temp=bytes.get(index);
+            length=temp.length;
+            index2=0;
+            for(;index2<length;index2++){
+                byteList[index3++]=temp[index2];
             }
         }
-        byte[] byteList=new byte[bytes.size()];
-        int size=bytes.size();
-        for(int index=0;index < size;index++){
-            byteList[index]=bytes.get(0)[0];
+        try {
+            System.out.println(new String(byteList,0,byteList.length,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
-        System.out.println(new String(byteList));
+        try {
+            XmlUtil.parseXmlStr(new String(byteList),new HashMap<String, String[]>());
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return byteList;
     }
 
-    public static String processXml(SocketChannel channel){
+    public static String processXml(SocketChannel channel) throws IOException {
         System.out.println("process XML");
-        read(channel);
+        byte[] bytes=read(channel);
         try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException e) {
+            channel.write(ByteBuffer.wrap(bytes));
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
