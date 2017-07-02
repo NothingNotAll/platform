@@ -31,12 +31,12 @@ abstract class AbstractEnAndDeSgy implements Runnable{
         tws=new ThreadWrapper[exeTCount];
         BlockingQueue<TaskWrapper> temp;
         for(int index=0;index < queueSize;index++){
-            temp=getQueue();
+            temp=initQueue();
             qws[index]=new QueueWrapper(temp);
         }
     }
 
-    abstract BlockingQueue<TaskWrapper> getQueue();
+    abstract BlockingQueue<TaskWrapper> initQueue();
 
     abstract void enQueue(TaskWrapper taskWrapper);
 
