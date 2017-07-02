@@ -1,9 +1,7 @@
 package nna.base.util.concurrent;
 
 import java.util.LinkedList;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -97,5 +95,29 @@ import java.util.concurrent.locks.ReentrantLock;
             }
         }
         return temp.toArray(new TaskWrapper[0]);
+    }
+
+    public BlockingQueue<TaskWrapper> getQueue() {
+        return queue;
+    }
+
+    public void setQueue(BlockingQueue<TaskWrapper> queue) {
+        this.queue = queue;
+    }
+
+    public ReentrantLock getqLock() {
+        return qLock;
+    }
+
+    public void setqLock(ReentrantLock qLock) {
+        this.qLock = qLock;
+    }
+
+    public Integer getDeCount() {
+        return deCount;
+    }
+
+    public void setDeCount(Integer deCount) {
+        this.deCount = deCount;
     }
 }

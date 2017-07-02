@@ -25,7 +25,7 @@ public class TaskSchedule {
 
     static void submitTask(AbstractTask abstractTask,int exeThreadPoolType){
         monitorMap.put(abstractTask.getgTaskId(),abstractTask);
-        AbstractEnAndDeStgy abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
+        AbstractEnAndDeSgy abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
         int exeThreadCount=abstractEnAndDeStgy.getExeTCount();
         switch (exeThreadPoolType){
             case Marco.FIX_THREAD_TYPE:

@@ -30,7 +30,7 @@ public class Template extends Clone{
         String tempStr;
         for(int index=0;index <count;index++){
             temp=strs[index];
-            if(temp!=null&&!temp.trim().equals("")){
+            if(temp!=null){
                 renderStr.append(temp);
             }else {
                 view=views[viewIndex];

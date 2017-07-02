@@ -1,7 +1,11 @@
 package nna.base.util.concurrent;
 
 
+import nna.Marco;
+import nna.base.util.SystemUtil;
+
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -13,20 +17,20 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  **/
 
 abstract class AbstractEnAndDeSgy implements Runnable{
+    public static final ConcurrentHashMap<String,AbstractEnAndDeSgy> strategies=new ConcurrentHashMap<String, AbstractEnAndDeSgy>();
 
     private volatile QueueWrapper[] qws;
     private volatile ThreadWrapper[] tws;
     private AtomicInteger twSeqGen=new AtomicInteger();
     private ReadWriteLock rwLock=new ReentrantReadWriteLock();
-
-    protected QueueWrapper deFaultDeQueue(TaskWrapper taskWrapper){
-        QueueWrapper minLoad=QueueWrapper.enQueue(qws,taskWrapper);
-        return minLoad;
-    }
+    private Boolean needSubmit=true;
+    private Integer strategyType;
+    private Integer exeTCount;
+    private volatile boolean threadsInit=false;
 
     AbstractEnAndDeSgy(Integer queueSize,
                        Integer exeTCount){
-        exeTCount=exeTCount>queueSize?queueSize:exeTCount;
+        this.exeTCount=exeTCount>queueSize?queueSize:exeTCount;
         qws=new QueueWrapper[queueSize];
         tws=new ThreadWrapper[exeTCount];
         BlockingQueue<TaskWrapper> temp;
@@ -36,11 +40,27 @@ abstract class AbstractEnAndDeSgy implements Runnable{
         }
     }
 
-    abstract BlockingQueue<TaskWrapper> initQueue();
+    protected QueueWrapper defaultEnQueue(TaskWrapper taskWrapper){
+        QueueWrapper minLoad=QueueWrapper.enQueue(qws,taskWrapper);
+        return minLoad;
+    }
 
-    abstract void enQueue(TaskWrapper taskWrapper);
+    protected TaskWrapper[] defaultDeQueue(){
+        return QueueWrapper.deQueues(qws);
+    }
 
-    abstract TaskWrapper[] deQueue();
+    protected abstract BlockingQueue<TaskWrapper> initQueue();
+
+    protected abstract void enQueue(TaskWrapper taskWrapper);
+
+    protected abstract TaskWrapper[] deQueue();
+
+    void init(ExecutorService executorService){
+        for(int index=0;index < exeTCount;index++){
+                executorService.submit(this);
+        }
+        threadsInit=true;
+    }
 
     //dynamic to add worker for high business count;
     void addThreadAndQueue(ExecutorService executorService,BlockingQueue<TaskWrapper> queue){
@@ -131,5 +151,84 @@ abstract class AbstractEnAndDeSgy implements Runnable{
             }else{
                 tempTaskWrapper.doTask();
             }
+    }
+    static AbstractEnAndDeSgy getStrategy(Integer queueSize,Integer exeTCount,Integer strategyType,Integer executorServiceType) {
+        AbstractEnAndDeSgy abstractEnAndDeStgy =null;
+        switch (strategyType){
+            case Marco.NO_SEQ_FIX_SIZE_TASK:
+                abstractEnAndDeStgy=new NoSeqFixSizeStgy(queueSize,exeTCount);
+                break;
+            case Marco.NO_SEQ_LINKED_SIZE_TASK:
+                abstractEnAndDeStgy=new NoSeqLinkedStgy(queueSize,exeTCount);
+                break;
+            case Marco.SEQ_FIX_SIZE_TASK:
+                abstractEnAndDeStgy=new SeqFixSizeStgy(queueSize,exeTCount);
+                break;
+            case Marco.SEQ_LINKED_SIZE_TASK:
+                abstractEnAndDeStgy=new SeqLinkedStgy(queueSize,exeTCount);
+                break;
+        }
+        abstractEnAndDeStgy.setStrategyType(strategyType);
+        if(executorServiceType!=Marco.TIMER_THREAD_TYPE&&!SystemUtil.isSystemLoadPermit()){
+            AbstractEnAndDeSgy temp=strategies.putIfAbsent(strategyType+"-"+executorServiceType,abstractEnAndDeStgy);
+            if(temp!=null){
+                abstractEnAndDeStgy=temp;
+                abstractEnAndDeStgy.setNeedSubmit(false);
+            }else{
+                abstractEnAndDeStgy.setNeedSubmit(true);
+            }
+            return abstractEnAndDeStgy;
+        }
+        abstractEnAndDeStgy.setNeedSubmit(true);
+        return abstractEnAndDeStgy;
+    }
+
+    public Boolean getNeedSubmit() {
+        return needSubmit;
+    }
+
+    public void setNeedSubmit(Boolean needSubmit) {
+        this.needSubmit = needSubmit;
+    }
+
+    public Integer getStrategyType() {
+        return strategyType;
+    }
+
+    public void setStrategyType(Integer strategyType) {
+        this.strategyType = strategyType;
+    }
+
+    public boolean isThreadsInit() {
+        return threadsInit;
+    }
+
+    public void setThreadsInit(boolean threadsInit) {
+        this.threadsInit = threadsInit;
+    }
+
+    public Integer getExeTCount() {
+        return exeTCount;
+    }
+
+    public void setExeTCount(Integer exeTCount) {
+        this.exeTCount = exeTCount;
+    }
+
+
+    public QueueWrapper[] getQws() {
+        return qws;
+    }
+
+    public void setQws(QueueWrapper[] qws) {
+        this.qws = qws;
+    }
+
+    public ThreadWrapper[] getTws() {
+        return tws;
+    }
+
+    public void setTws(ThreadWrapper[] tws) {
+        this.tws = tws;
     }
 }

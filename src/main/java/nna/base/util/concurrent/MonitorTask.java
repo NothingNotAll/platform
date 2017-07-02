@@ -62,7 +62,7 @@ import java.util.concurrent.BlockingQueue;
             return null;
     }
 
-    AbstractEnAndDeStgy abstractEnAndDeStgy;
+    AbstractEnAndDeSgy abstractEnAndDeStgy;
     private void monitor(AbstractTask abstractTask) {
         String str1="GLOBAL TASK ID:"+abstractTask.getgTaskId();
         System.out.println(str1);
@@ -72,18 +72,18 @@ import java.util.concurrent.BlockingQueue;
         log.log(str2, Log.INFO);
         abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
         System.out.println(abstractTask.getTaskName());
-        Thread[] ts=abstractEnAndDeStgy.getTs();
-        Object[] os=abstractEnAndDeStgy.getQueues();
+        ThreadWrapper[] ts=abstractEnAndDeStgy.getTws();
+        QueueWrapper[] os=abstractEnAndDeStgy.getQws();
         int count=os.length;
         int index=0;
-        for(Thread t:ts){
-            System.out.println(t.getState());
-            log.log("No."+index+":"+t.getState(), Log.INFO);
+        for(ThreadWrapper t:ts){
+            System.out.println(t.getThread().getState());
+            log.log("No."+index+":"+t.getThread().getState(), Log.INFO);
             index++;
         }
             index=0;
                 for(;index < count;index++){
-                    BlockingQueue temp=(BlockingQueue) os[index];
+                    BlockingQueue temp= os[index].getQueue();
                     System.out.println(temp.size());
                     log.log("No."+index+":"+temp.size(), Log.INFO);
                 }

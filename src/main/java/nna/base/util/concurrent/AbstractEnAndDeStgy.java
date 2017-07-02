@@ -237,36 +237,36 @@ import java.util.concurrent.locks.ReentrantLock;
         this.tLocks = tLocks;
     }
 
-     static AbstractEnAndDeStgy getStrategy(Integer queueSize,Integer exeTCount,Integer strategyType,Integer executorServiceType) {
-         AbstractEnAndDeStgy abstractEnAndDeStgy =null;
-         switch (strategyType){
-             case Marco.NO_SEQ_FIX_SIZE_TASK:
-                 abstractEnAndDeStgy=new NoSeqFixSizeStgy(queueSize,exeTCount);
-                 break;
-             case Marco.NO_SEQ_LINKED_SIZE_TASK:
-                 abstractEnAndDeStgy=new NoSeqLinkedStgy(queueSize,exeTCount);
-                 break;
-             case Marco.SEQ_FIX_SIZE_TASK:
-                 abstractEnAndDeStgy=new SeqFixSizeStgy(queueSize,exeTCount);
-                 break;
-             case Marco.SEQ_LINKED_SIZE_TASK:
-                 abstractEnAndDeStgy=new SeqLinkedStgy(queueSize,exeTCount);
-                 break;
-         }
-         abstractEnAndDeStgy.setStrategyType(strategyType);
-         if(executorServiceType!=Marco.TIMER_THREAD_TYPE&&!isSystemLoadPermit()){
-             AbstractEnAndDeStgy temp=strategies.putIfAbsent(strategyType+"-"+executorServiceType,abstractEnAndDeStgy);
-             if(temp!=null){
-                abstractEnAndDeStgy=temp;
-                abstractEnAndDeStgy.setNeedSubmit(false);
-             }else{
-                 abstractEnAndDeStgy.setNeedSubmit(true);
-             }
-             return abstractEnAndDeStgy;
-         }
-         abstractEnAndDeStgy.setNeedSubmit(true);
-         return abstractEnAndDeStgy;
-    }
+//     static AbstractEnAndDeStgy getStrategy(Integer queueSize,Integer exeTCount,Integer strategyType,Integer executorServiceType) {
+//         AbstractEnAndDeStgy abstractEnAndDeStgy =null;
+//         switch (strategyType){
+//             case Marco.NO_SEQ_FIX_SIZE_TASK:
+//                 abstractEnAndDeStgy=new NoSeqFixSizeStgy(queueSize,exeTCount);
+//                 break;
+//             case Marco.NO_SEQ_LINKED_SIZE_TASK:
+//                 abstractEnAndDeStgy=new NoSeqLinkedStgy(queueSize,exeTCount);
+//                 break;
+//             case Marco.SEQ_FIX_SIZE_TASK:
+//                 abstractEnAndDeStgy=new SeqFixSizeStgy(queueSize,exeTCount);
+//                 break;
+//             case Marco.SEQ_LINKED_SIZE_TASK:
+//                 abstractEnAndDeStgy=new SeqLinkedStgy(queueSize,exeTCount);
+//                 break;
+//         }
+//         abstractEnAndDeStgy.setStrategyType(strategyType);
+//         if(executorServiceType!=Marco.TIMER_THREAD_TYPE&&!isSystemLoadPermit()){
+//             AbstractEnAndDeStgy temp=strategies.putIfAbsent(strategyType+"-"+executorServiceType,abstractEnAndDeStgy);
+//             if(temp!=null){
+//                abstractEnAndDeStgy=temp;
+//                abstractEnAndDeStgy.setNeedSubmit(false);
+//             }else{
+//                 abstractEnAndDeStgy.setNeedSubmit(true);
+//             }
+//             return abstractEnAndDeStgy;
+//         }
+//         abstractEnAndDeStgy.setNeedSubmit(true);
+//         return abstractEnAndDeStgy;
+//    }
 
     protected static BlockingQueue<TaskWrapper> getLoadBalance(Object[] queues) {
         LinkedBlockingQueue temp;

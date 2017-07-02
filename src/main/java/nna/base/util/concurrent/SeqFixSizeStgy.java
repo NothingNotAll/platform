@@ -1,26 +1,28 @@
 package nna.base.util.concurrent;
 
+import java.util.concurrent.BlockingQueue;
+
 /**
  * @author NNA-SHUAI
  * @create 2017-06-23 8:58
  **/
 
-public class SeqFixSizeStgy extends AbstractEnAndDeStgy {
+public class SeqFixSizeStgy extends AbstractEnAndDeSgy {
 
 
     SeqFixSizeStgy(Integer queueSize, Integer exeTCount) {
         super(queueSize, exeTCount);
     }
 
-    protected void initQueue(Object[] queues, int index) {
-        queues[index]=null;
+    protected BlockingQueue<TaskWrapper> initQueue() {
+        return null;
     }
 
     protected void enQueue(TaskWrapper taskWrapper) {
-
+        defaultEnQueue(taskWrapper);
     }
 
-    protected nna.base.util.concurrent.TaskWrapper[] deQueue() {
-        return new nna.base.util.concurrent.TaskWrapper[0];
+    protected TaskWrapper[] deQueue() {
+        return new TaskWrapper[0];
     }
 }

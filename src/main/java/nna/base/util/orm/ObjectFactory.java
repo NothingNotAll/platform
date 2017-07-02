@@ -170,7 +170,7 @@ import java.util.*;
         }
     }
 
-    public void setParameterV2(PreparedStatement pst, int index,Clone clone) throws SQLException {
+    public void setParameterV2(PreparedStatement pst, int index,Object clone) throws SQLException {
         Object value = null;
         Method method;
         method=getMethods[index];
@@ -327,11 +327,10 @@ import java.util.*;
         return clones.toArray(new Clone[0]);
     }
 
-    public static boolean saveBean(PreparedStatement pst, int serialVersionUID) throws SQLException {
+    public static boolean saveBean(PreparedStatement pst,int serialVersionUID,Object object) throws SQLException {
         nna.base.util.List<ObjectFactory> container=MetaBean.getObjectFactoryCache();
         ObjectFactory objectFactory = container.get(serialVersionUID);
         int length=objectFactory.getFieldsCount();
-        Clone object=objectFactory.getClone();
         for(int index=1;index <= length;index++){
             objectFactory.setParameterV2(pst,index,object);
         }
@@ -343,7 +342,7 @@ import java.util.*;
         Object object;
         while(iterator.hasNext()){
             object=iterator.next();
-            if(!saveBean(pst,serialVersionUID)){
+            if(!saveBean(pst,serialVersionUID,object)){
                 throw new SQLException("update failed !");
             }
         }

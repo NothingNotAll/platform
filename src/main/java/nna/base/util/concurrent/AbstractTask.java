@@ -24,7 +24,7 @@ public abstract class AbstractTask {
     public static final int END_STATUS=3;
     public static final int FAIL_STATUS=4;
 
-    private AbstractEnAndDeStgy abstractEnAndDeStgy;
+    private AbstractEnAndDeSgy abstractEnAndDeStgy;
     private Long gTaskId;
     private String taskName;
     private int taskCount;
@@ -44,12 +44,10 @@ public abstract class AbstractTask {
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,executorServiceType);
+        this.abstractEnAndDeStgy = AbstractEnAndDeSgy.getStrategy(queueSize,exeThreadCount,strategyType,executorServiceType);
         if(abstractEnAndDeStgy.getNeedSubmit()){
-//            System.out.println(taskName);
             TaskSchedule.submitTask(this,executorServiceType);
         }
-        addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
     }
 
     public AbstractTask(
@@ -62,7 +60,7 @@ public abstract class AbstractTask {
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.abstractEnAndDeStgy = AbstractEnAndDeStgy.getStrategy(queueSize,exeThreadCount,strategyType,Marco.TIMER_THREAD_TYPE);
+        this.abstractEnAndDeStgy = AbstractEnAndDeSgy.getStrategy(queueSize,exeThreadCount,strategyType,Marco.TIMER_THREAD_TYPE);
         if(abstractEnAndDeStgy.getNeedSubmit()){
             TaskSchedule.submitTask(this);
         }
@@ -78,14 +76,14 @@ public abstract class AbstractTask {
             Boolean isNewTToExe,
             Long delayTime){
         TaskWrapper taskWrapper=new TaskWrapper(abstractTask,att,taskType,isNewTToExe,delayTime);
-        abstractEnAndDeStgy.en(taskWrapper);
+        abstractEnAndDeStgy.enQueue(taskWrapper);
     }
 
-    public AbstractEnAndDeStgy getAbstractEnAndDeStgy() {
+    public AbstractEnAndDeSgy getAbstractEnAndDeStgy() {
         return abstractEnAndDeStgy;
     }
 
-    public void setAbstractEnAndDeStgy(AbstractEnAndDeStgy abstractEnAndDeStgy) {
+    public void setAbstractEnAndDeStgy(AbstractEnAndDeSgy abstractEnAndDeStgy) {
         this.abstractEnAndDeStgy = abstractEnAndDeStgy;
     }
 
