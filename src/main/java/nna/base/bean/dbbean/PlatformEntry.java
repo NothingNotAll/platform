@@ -17,11 +17,11 @@ public class PlatformEntry extends Clone {
     private int entryAppId;
     private int entryControllerId;
     private String entryServiceId;
+    private String entryTranId;
     private int entryDBId;
     private int entryLogId;
     private int entryTempSize;
     private float entryTimeout;
-    private String entryTransactions;
     private String entryReqId;
     private String entryRspId;
     private String entryDesc;
@@ -110,14 +110,6 @@ public class PlatformEntry extends Clone {
         this.entryTempSize = entryTempSize;
     }
 
-    public String getEntryTransactions() {
-        return entryTransactions;
-    }
-
-    public void setEntryTransactions(String entryTransactions) {
-        this.entryTransactions = entryTransactions;
-    }
-
     public String getEntryReqId() {
         return entryReqId;
     }
@@ -142,4 +134,11 @@ public class PlatformEntry extends Clone {
         this.entryFree = entryFree;
     }
 
+    public String getEntryTranId() {
+        return entryTranId;
+    }
+
+    public void setEntryTranId(String entryTranId) {
+        this.entryTranId = entryTranId;
+    }
 }

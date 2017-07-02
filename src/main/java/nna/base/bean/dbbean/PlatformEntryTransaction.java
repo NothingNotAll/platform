@@ -15,15 +15,16 @@ import java.sql.Timestamp;
 public class PlatformEntryTransaction extends Clone {
     private static final Long serialVersionUID=7L;
 
-    private String transactions;
+    private String transactionEntryName;
     private String transactionName;
     private int serviceTransactionSequence;
-    private int previousTransactionIndex;
+    private Integer previousTransactionIndex;
     private DBTranPpgType transactionPropagation;
     private DBTranLvlType transactionLevel;
+    private Boolean currentExceptionCommit;
+    private Boolean previousExceptionCommit;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
-    private Integer failIndex;
     private String transactionDesc;
 
     public PlatformEntryTransaction(){
@@ -38,11 +39,11 @@ public class PlatformEntryTransaction extends Clone {
         this.transactionName = transactionName;
     }
 
-    public int getPreviousTransactionIndex() {
+    public Integer getPreviousTransactionIndex() {
         return previousTransactionIndex;
     }
 
-    public void setPreviousTransactionIndex(int previousTransactionIndex) {
+    public void setPreviousTransactionIndex(Integer previousTransactionIndex) {
         this.previousTransactionIndex = previousTransactionIndex;
     }
 
@@ -94,19 +95,27 @@ public class PlatformEntryTransaction extends Clone {
         this.transactionLevel = transactionLevel;
     }
 
-    public Integer getFailIndex() {
-        return failIndex;
+    public String getTransactionEntryName() {
+        return transactionEntryName;
     }
 
-    public void setFailIndex(Integer failIndex) {
-        this.failIndex = failIndex;
+    public void setTransactionEntryName(String transactionEntryName) {
+        this.transactionEntryName = transactionEntryName;
     }
 
-    public String getTransactions() {
-        return transactions;
+    public Boolean getCurrentExceptionCommit() {
+        return currentExceptionCommit;
     }
 
-    public void setTransactions(String transactions) {
-        this.transactions = transactions;
+    public void setCurrentExceptionCommit(Boolean currentExceptionCommit) {
+        this.currentExceptionCommit = currentExceptionCommit;
+    }
+
+    public Boolean getPreviousExceptionCommit() {
+        return previousExceptionCommit;
+    }
+
+    public void setPreviousExceptionCommit(Boolean previousExceptionCommit) {
+        this.previousExceptionCommit = previousExceptionCommit;
     }
 }
