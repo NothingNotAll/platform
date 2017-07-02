@@ -1,6 +1,7 @@
 package nna.base.log;
 
 import nna.Marco;
+import nna.base.util.SystemUtil;
 import nna.base.util.concurrent.AbstractTask;
 
 import java.io.*;
@@ -40,7 +41,6 @@ public class Log extends AbstractTask {
                int closeTimeout,
                String encode) throws Exception {
         super(
-                "LOG",
                 20,
                 1,
                 Marco.SEQ_LINKED_SIZE_TASK,
@@ -52,9 +52,9 @@ public class Log extends AbstractTask {
         this.flushLimit=flushLimit;
         this.closeTimeout=closeTimeout;
         this.encode=encode;
-        if(checkSystemLoad()){
+        if(SystemUtil.isSystemLoadPermit()){
             isSynWrite=false;
-//            addNewTask(this,null,INIT_TASK_TYPE,false,null);
+            addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
         }else{
             isSynWrite=true;
             init(null);
@@ -139,10 +139,6 @@ public class Log extends AbstractTask {
     public void close(){
         setTaskStatus(CLOSE);
         addNewTask(this,null,CLOSE,false,null);
-    }
-
-    private boolean checkSystemLoad() {
-        return true;
     }
 
     private Object destroy(Object object) throws IOException {
