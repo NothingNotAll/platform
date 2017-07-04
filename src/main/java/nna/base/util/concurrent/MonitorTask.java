@@ -1,11 +1,12 @@
 package nna.base.util.concurrent;
 
-import nna.Marco;
 import nna.base.log.Log;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author NNA-SHUAI
@@ -13,13 +14,19 @@ import java.util.concurrent.BlockingQueue;
  **/
 
  class MonitorTask extends AbstractTask {
-
-     private Map map;
+    public static final ConcurrentHashMap<Long,AbstractTask> abstractTaskMonitorMap=new ConcurrentHashMap<Long, AbstractTask>();
      private Log log;
 
-     MonitorTask(Map monitorMap)  {
-        super(1,1,Marco.SEQ_LINKED_SIZE_TASK,7000L);
-        this.map=monitorMap;
+     static void addMonitor(AbstractTask abstractTask){
+         abstractTaskMonitorMap.putIfAbsent(abstractTask.getgTaskId(),abstractTask);
+     }
+
+     static void removeMonitor(AbstractTask abstractTask){
+         abstractTaskMonitorMap.remove(abstractTask.getgTaskId());
+     }
+
+     MonitorTask()  {
+        super(false);
          String logPath="LOG";
          String logName="MONITOR";
          try {
@@ -33,19 +40,28 @@ import java.util.concurrent.BlockingQueue;
          } catch (Exception e) {
              e.printStackTrace();
          }
+//         addNewTask(this,null,INIT_TASK_TYPE,true,null);
      }
 
-    AbstractTask abstractTask;
-    Iterator<Map.Entry<Long,AbstractTask>> iterator;
+    QueueWrapper[] qws;
+    String clazzNm;
+    Iterator<Map.Entry<String,QueueWrapper[]>> iterator;
+    ConcurrentHashMap<String,QueueWrapper[]> map=new ConcurrentHashMap<String, QueueWrapper[]>();
     public Object doTask(Object att, int taskType) {
             try{
+                twMap.putAll(ThreadWrapper.noSeqTwMap);
+                twMap.putAll(ThreadWrapper.seqTwMap);
+                map.putAll(QueueWrapper.noSeqQwMap);
+                map.putAll(QueueWrapper.noSeqQwMap);
+                System.out.println("-----------");
                 while(true){
                     try{
                         iterator=map.entrySet().iterator();
                         while(iterator.hasNext()){
-                            Map.Entry<Long,AbstractTask> entry=iterator.next();
-                            abstractTask=entry.getValue();
-                            monitor(abstractTask);
+                            Map.Entry<String,QueueWrapper[]> entry=iterator.next();
+                            qws=entry.getValue();
+                            clazzNm=entry.getKey();
+                            monitor(clazzNm,qws);
                         }
                     }catch (Exception e){
                         e.printStackTrace();
@@ -62,30 +78,36 @@ import java.util.concurrent.BlockingQueue;
             return null;
     }
 
-    AbstractEnAndDeSgy abstractEnAndDeStgy;
-    private void monitor(AbstractTask abstractTask) {
-        String str1="GLOBAL TASK ID:"+abstractTask.getgTaskId();
-        System.out.println(str1);
-        log.log(str1, Log.INFO);
-        String str2="GLOBAL TASK NAME:"+abstractTask.getTaskName();
-        System.out.println(str2);
-        log.log(str2, Log.INFO);
-        abstractEnAndDeStgy=abstractTask.getAbstractEnAndDeStgy();
-        System.out.println(abstractTask.getTaskName());
-        ThreadWrapper[] ts=abstractEnAndDeStgy.getTws();
-        QueueWrapper[] os=abstractEnAndDeStgy.getQws();
-        int count=os.length;
-        int index=0;
-        for(ThreadWrapper t:ts){
+    HashMap<Long,ThreadWrapper> twMap=new HashMap<Long, ThreadWrapper>();
+    Iterator<Map.Entry<Long, ThreadWrapper>> ts;
+    int count;
+    BlockingQueue temp;
+    private void monitor(String clazzNm,QueueWrapper[] qws) {
+         ts = twMap.entrySet().iterator();
+        Long index;
+        while(ts.hasNext()){
+            Map.Entry<Long,ThreadWrapper> entry=ts.next();
+            ThreadWrapper t=entry.getValue();
+            index=entry.getKey();
             System.out.println(t.getThread().getState());
             log.log("No."+index+":"+t.getThread().getState(), Log.INFO);
-            index++;
         }
-            index=0;
-                for(;index < count;index++){
-                    BlockingQueue temp= os[index].getQueue();
-                    System.out.println(temp.size());
-                    log.log("No."+index+":"+temp.size(), Log.INFO);
-                }
-            }
+        String str1="GLOBAL TASK ID:"+clazzNm;
+        log.log(str1, Log.INFO);
+        System.out.println(str1);
+        AbstractTask abstractTask=abstractTaskMonitorMap.get(clazzNm);
+        if(abstractTask!=null){
+            String str2="GLOBAL TASK NAME:"+abstractTask.getTaskName();
+            System.out.println(str2);
+            log.log(str2, Log.INFO);
+        }
+        int index2=0;
+        count=qws.length;
+        for(;index2 < count;index2++){
+            log.log("consumered:"+qws[index2].getDeCount()+":"+temp.size(), Log.INFO);
+            temp= qws[index2].getQueue();
+            System.out.println(temp.size());
+            log.log("No."+index2+":"+temp.size(), Log.INFO);
+        }
+    }
 }

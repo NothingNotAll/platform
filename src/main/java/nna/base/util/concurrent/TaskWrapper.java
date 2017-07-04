@@ -1,29 +1,33 @@
 package nna.base.util.concurrent;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * @author NNA-SHUAI
  * @create 2017-06-22 21:52
  **/
 
  class TaskWrapper implements Runnable{
+    static final TaskWrapper DO_NOTHING=new TaskWrapper(null,null,null,null,null);
 
     private AbstractTask abstractTask;
     private Object att;
-    private int taskType;
-    private int taskStatus=AbstractTask.INIT_STATUS;
+    private Integer taskType;
+    private Integer taskStatus=AbstractTask.INIT_STATUS;
     private Object returnObject;
     private Long enQueueTime=System.currentTimeMillis();
     private Long deQueueTime;
     private Long delayTime=0L;
 
-    private int taskPriorLevel;
+    private Integer taskPriorLevel;
     private Integer failTryTime;
     private Boolean isNewThreadToExe;
 
      TaskWrapper(
              AbstractTask abstractTask,
              Object att,
-             int taskType,
+             Integer taskType,
              Boolean isNewThreadToExe,
              Long delayTime){
         this.delayTime=delayTime;
@@ -36,22 +40,23 @@ package nna.base.util.concurrent;
 
      boolean doTask(){
          if(isNewThreadToExe){
-            this.taskStatus=AbstractTask.WORK_STATUS;
-            TaskSchedule.submitTask(this);
-            return true;
+             this.taskStatus=AbstractTask.WORK_STATUS;
+             ExecutorService executorService= Executors.newFixedThreadPool(1);
+             executorService.submit(this);
+             return true;
          }
          boolean isSuccess=false;
-        try{
-            this.taskStatus=AbstractTask.WORK_STATUS;
-            returnObject=abstractTask.doTask(att,taskType);
-            this.deQueueTime=System.currentTimeMillis();
-            this.taskStatus=AbstractTask.END_STATUS;
-            isSuccess=true;
-        }catch (Exception e){
-            e.printStackTrace();
-            this.taskStatus=AbstractTask.FAIL_STATUS;
-        }
-        return isSuccess;
+         try{
+             this.taskStatus=AbstractTask.WORK_STATUS;
+             returnObject=abstractTask.doTask(att,taskType);
+             this.deQueueTime=System.currentTimeMillis();
+             this.taskStatus=AbstractTask.END_STATUS;
+             isSuccess=true;
+         }catch (Exception e){
+             e.printStackTrace();
+             this.taskStatus=AbstractTask.FAIL_STATUS;
+         }
+         return isSuccess;
      }
 
      AbstractTask getAbstractTask() {
@@ -148,6 +153,18 @@ package nna.base.util.concurrent;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        returnObject=doTask();
+        if(isNewThreadToExe){
+            try{
+                this.taskStatus=AbstractTask.WORK_STATUS;
+                returnObject=abstractTask.doTask(att,taskType);
+                this.deQueueTime=System.currentTimeMillis();
+                this.taskStatus=AbstractTask.END_STATUS;
+            }catch (Exception e){
+                e.printStackTrace();
+                this.taskStatus=AbstractTask.FAIL_STATUS;
+            }
+        }else{
+            returnObject=doTask();
+        }
     }
 }

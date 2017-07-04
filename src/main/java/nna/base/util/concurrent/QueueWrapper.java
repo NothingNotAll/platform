@@ -1,7 +1,10 @@
 package nna.base.util.concurrent;
 
-import java.util.LinkedList;
+
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -10,6 +13,9 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
  class QueueWrapper {
+    static final ConcurrentHashMap<String,QueueWrapper[]> noSeqQwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
+    static final ConcurrentHashMap<String,QueueWrapper[]> seqQwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
+
     private BlockingQueue<TaskWrapper> queue;
     private ReentrantLock qLock;
     private volatile Integer deCount=0;//the total Count of been worked;
@@ -19,35 +25,52 @@ import java.util.concurrent.locks.ReentrantLock;
         this.qLock=new ReentrantLock();
     }
 
-    static QueueWrapper enQueue(QueueWrapper[] qws,TaskWrapper taskWrapper){
-        QueueWrapper minLoadQW=getMinLoadQueueWrapper(qws);
-        //check queue load
+    static QueueWrapper enQueue(QueueWrapper[] qws,Integer leftCount,TaskWrapper taskWrapper){
+        ArrayList<QueueWrapper> minLoadQWs=getMinLoadQueueWrapper(qws);
+        QueueWrapper minLoadQW=minLoadQWs.remove(qws.length-1);
         minLoadQW.queue.add(taskWrapper);
-        return minLoadQW;
-    }
-
-    static TaskWrapper waitTask(QueueWrapper queueWrapper){
-        ReentrantLock lock=queueWrapper.qLock;
-        Boolean locked=false;
-        try{
-            if(lock.tryLock()){
-                locked=true;
-                TaskWrapper taskWrapper=queueWrapper.queue.take();
-                return taskWrapper;
-            }else{
-                return null;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(locked){
-                lock.unlock();
+        if(leftCount>0){
+            QueueWrapper temp;
+            for(int index=1;index < leftCount;index++){
+                qws=minLoadQWs.toArray(new QueueWrapper[0]);
+                minLoadQWs=getMinLoadQueueWrapper(qws);
+                temp=minLoadQWs.remove(qws.length-1);
+                temp.queue.add(TaskWrapper.DO_NOTHING);
             }
         }
         return null;
     }
 
-    private static QueueWrapper getMinLoadQueueWrapper(QueueWrapper[] qws){
+    static TaskWrapper waitTask(ConcurrentHashMap<String,QueueWrapper[]> qwMap){
+        Iterator<Map.Entry<String,QueueWrapper[]>> iterator=qwMap.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<String,QueueWrapper[]> entry=iterator.next();
+            QueueWrapper[] qws=entry.getValue();
+            for(QueueWrapper queueWrapper:qws){
+                ReentrantLock lock=queueWrapper.qLock;
+                Boolean locked=false;
+                try{
+                    if(lock.tryLock()){
+                        locked=true;
+                        TaskWrapper taskWrapper=queueWrapper.queue.take();
+                        return taskWrapper;
+                    }else{
+                        continue;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    if(locked){
+                        lock.unlock();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private static ArrayList<QueueWrapper> getMinLoadQueueWrapper(QueueWrapper[] qws){
+        ArrayList<QueueWrapper> tempList=new ArrayList<QueueWrapper>(qws.length);
         QueueWrapper minLoadQW=null;
         Integer minCount = 0;
         Integer tempCount;
@@ -58,16 +81,30 @@ import java.util.concurrent.locks.ReentrantLock;
             }else{
                 tempCount=temp.queue.size();
                 if(tempCount<minCount){
+                    tempList.add(minLoadQW);
                     minLoadQW=temp;
                     minCount=temp.queue.size();
+                }else{
+                    tempList.add(temp);
                 }
             }
         }
-        return minLoadQW;
+        tempList.add(minLoadQW);
+        return tempList;
     }
 
-    static TaskWrapper[] deQueues(QueueWrapper[] qws){
+    static TaskWrapper[] deQueues(ConcurrentHashMap<String,QueueWrapper[]> qwMap){
+        Iterator<Map.Entry<String,QueueWrapper[]>> iterator=qwMap.entrySet().iterator();
         LinkedList<TaskWrapper> temp=new LinkedList<TaskWrapper>();
+        while(iterator.hasNext()){
+            Map.Entry<String,QueueWrapper[]> entry=iterator.next();
+            QueueWrapper[] qws=entry.getValue();
+            deQueues(temp,qws);
+        }
+        return temp.toArray(new TaskWrapper[0]);
+    }
+
+    private static void deQueues(LinkedList<TaskWrapper> temp,QueueWrapper[] qws){
         QueueWrapper queueWrapper;
         ReentrantLock lock;
         BlockingQueue<TaskWrapper> queue;
@@ -94,7 +131,14 @@ import java.util.concurrent.locks.ReentrantLock;
                 }
             }
         }
-        return temp.toArray(new TaskWrapper[0]);
+    }
+
+    static QueueWrapper[] addQueue(int addQWCount){
+        QueueWrapper[] newQws=new QueueWrapper[addQWCount];
+        for(int index=0;index < addQWCount;index++){
+            newQws[index]=new QueueWrapper(new LinkedBlockingDeque<TaskWrapper>());
+        }
+        return newQws;
     }
 
     public BlockingQueue<TaskWrapper> getQueue() {
@@ -120,4 +164,5 @@ import java.util.concurrent.locks.ReentrantLock;
     public void setDeCount(Integer deCount) {
         this.deCount = deCount;
     }
+
 }

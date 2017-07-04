@@ -1,8 +1,6 @@
 package nna.base.util.concurrent;
 
 
-import nna.Marco;
-
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -12,19 +10,18 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 public abstract class AbstractTask {
+    private static final AtomicLong gTaskIdGen=new AtomicLong();
 
     public static final int INIT_TASK_TYPE=0;
-    public static final int WORK_TASK_TYPE=5;
-    public static final int OVER_TASK_TYPE=-1;
-    private static final AtomicLong gTaskIdGen=new AtomicLong();
-    public static final int OVER = -2;
-    public static final int INIT_STATUS=0;
-    public static final int START_STATUS=1;
-    public static final int WORK_STATUS=2;
-    public static final int END_STATUS=3;
-    public static final int FAIL_STATUS=4;
+    public static final int WORK_TASK_TYPE=1;
+    public static final int OVER_TASK_TYPE=2;
+    public static final int OVER = -1;
+    public static final int INIT_STATUS=3;
+    public static final int START_STATUS=4;
+    public static final int WORK_STATUS=5;
+    public static final int END_STATUS=6;
+    public static final int FAIL_STATUS=7;
 
-    private AbstractEnAndDeSgy abstractEnAndDeStgy;
     private Long gTaskId;
     private String taskName;
     private int taskCount;
@@ -34,37 +31,15 @@ public abstract class AbstractTask {
     private Long threadId;
     private String threadName;
 
-    public AbstractTask(
-            Integer queueSize,
-            Integer exeThreadCount,
-            Integer strategyType,
-            int executorServiceType){
+    public AbstractTask(Boolean isSeq){
         gTaskId=gTaskIdGen.getAndIncrement();
-        this.taskName=getClass().getCanonicalName()+"_"+gTaskId;
+        String className=getClass().getCanonicalName();
+        this.taskName=className+"_"+gTaskId;
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.abstractEnAndDeStgy = AbstractEnAndDeSgy.getStrategy(queueSize,exeThreadCount,strategyType,executorServiceType);
-        if(abstractEnAndDeStgy.getNeedSubmit()){
-            TaskSchedule.submitTask(this,executorServiceType);
-        }
-    }
-
-    public AbstractTask(
-            Integer queueSize,
-            Integer exeThreadCount,
-            Integer strategyType,
-            Long delayTime){
-        gTaskId=gTaskIdGen.getAndIncrement();
-        this.taskName=getClass().getCanonicalName()+"_"+gTaskId;
-        Thread thread=Thread.currentThread();
-        threadId=thread.getId();
-        threadName=thread.getName();
-        this.abstractEnAndDeStgy = AbstractEnAndDeSgy.getStrategy(queueSize,exeThreadCount,strategyType,Marco.TIMER_THREAD_TYPE);
-        if(abstractEnAndDeStgy.getNeedSubmit()){
-            TaskSchedule.submitTask(this);
-        }
-        addNewTask(this,null,INIT_TASK_TYPE,false, delayTime);
+        AbstractEnAndDeSgy.initStrategy(gTaskId,className,isSeq);
+        MonitorTask.addMonitor(this);
     }
 
     protected abstract Object doTask(Object att,int taskType) throws Exception;
@@ -76,15 +51,7 @@ public abstract class AbstractTask {
             Boolean isNewTToExe,
             Long delayTime){
         TaskWrapper taskWrapper=new TaskWrapper(abstractTask,att,taskType,isNewTToExe,delayTime);
-        abstractEnAndDeStgy.enQueue(taskWrapper);
-    }
-
-    public AbstractEnAndDeSgy getAbstractEnAndDeStgy() {
-        return abstractEnAndDeStgy;
-    }
-
-    public void setAbstractEnAndDeStgy(AbstractEnAndDeSgy abstractEnAndDeStgy) {
-        this.abstractEnAndDeStgy = abstractEnAndDeStgy;
+        AbstractEnAndDeSgy.addNewTask(gTaskId,taskWrapper);
     }
 
     public Long getgTaskId() {
