@@ -111,39 +111,13 @@ public interface Marco {
     int FREE=2;
     int LOGIN_PASSWORD_ERROR = 3;
 
-    //global transaction name;
-    String TRAN_SEL_ALL_ROLE="selAllRole";
-    String TRAN_SEL_USER_INFO="selUserInfo";
-    String TRAN_NAME="TRANSACTION_NAME";
     String ARRAY_COUNT="count";
     String HEAD_ENTRY_CODE = "/head/entryCode";
-    String HEAD_ENTRY_SESSION_NM = "";
 
     String LOG_TIME_DIR = "HH-mm-ss-SSS";
     String YYYYMMDD_DIR = "yyyyMMdd";
     int HTTP_PROTOCOL=0;
     int XML_PROTOCOL=1;
-    int CON_TEST_COUNT = 0;
+    int CON_TEST_COUNT = 10;
     int CON_WORK_COUNT=11900;
-
-    int ONE_TASK=0;
-    int NO_SEQ_FIX_SIZE_TASK=1;
-    int NO_SEQ_LINKED_SIZE_TASK=2;
-    int SEQ_FIX_SIZE_TASK=4;
-    int SEQ_LINKED_SIZE_TASK=5;
-
-    int FIX_THREAD_TYPE=0;
-    int CACHED_THREAD_TYPE=1;
-    int TIMER_THREAD_TYPE=2;
-
-    int IO_BLOCKQUEUE_COUNT = 15;
-    int IO_PROCESS_COUNT = 15;
-
-    boolean NIO_SERVER=true;
-    boolean NIO_CLIENT=true;
-    boolean LOG=true;
-    boolean DB_CON_PUT_BACK=true;
-    boolean DB_KEEP_ALIVE=true;
-    boolean MONITOR=true;
-    boolean NIO_SELECTOR = true;
 }
