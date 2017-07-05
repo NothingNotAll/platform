@@ -13,8 +13,8 @@ import java.io.IOException;
 public class FileWatchTask extends AbstractTask{
 //    private static final WatchService fileMonitor=FileSystems.getDefault().newWatchService();
 
-    public FileWatchTask(String taskName) {
-        super("FILE_CHANGE_WATCH",1,1,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.TIMER_THREAD_TYPE);
+    public FileWatchTask() {
+        super(false);
 //        addNewTask(this,null,WORK_TASK_TYPE,false,null);
     }
 

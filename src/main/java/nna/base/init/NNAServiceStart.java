@@ -20,7 +20,7 @@ public class NNAServiceStart {
     }
 
     static{
-        Test.testCon();
+//        Test.testCon();
         try {
             Util.loadNIOSelector();
             NNAServiceInit0 nna0=new NNAServiceInit0();

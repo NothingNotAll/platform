@@ -28,7 +28,7 @@ import java.sql.SQLException;
  public interface TransExecutor<V>{
 	/*
 	 * transaction means a group of sql that completes a complex of business;
-	 * u must conf the transaction in the db with the help of web conf view or meta file;
+	 * u must conf the transaction in the db with the help of app conf view or meta file;
 	 * */
 	V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException;
 }

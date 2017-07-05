@@ -16,27 +16,6 @@ import java.util.HashMap;
 
 public class DefaultTransExecutor<V> implements TransExecutor<V> {
 
-    /*
-    * the logic of exes of trans
-    * for(Transaction tran:Transactions){
-    *   exeTran(tran){
-    *       String[] SQLS=tran.getSQLS();
-    *       for(String SQL in SQLS){
-    *           exeSQL(SQL){
-    *               switch(type of SQL){
-    *                   case procedure:
-    *                   ;
-    *                   case select:
-    *                   ;
-    *                   case update:
-    *                   ;
-    *               }
-    *           };
-    *       }
-    *   };
-    * }
-    *
-    * */
     public V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException {
         PlatformEntryTransaction[] serviceTrans=metaBeanWrapper.getServiceTrans();
         PlatformEntryTransaction tempSevTran;
@@ -58,7 +37,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
             if(isExeTranSuccess){
                 nextTranIndex=index++;
             }else {
-                nextTranIndex=tempSevTran.getFailIndex();
+                nextTranIndex=null;
             }
             if(nextTranIndex==null){
                 return null;
@@ -151,10 +130,10 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
                 index++;
             }catch (Exception e){
                 if(!isExeSQLSuccess){
-                    nextSQLIndex=platformTransaction.getExceptionIndex();
+                    nextSQLIndex=platformTransaction.getExceptionNextIndex();
                 }else{
                     if(isExeSQLSuccess==null){}
-                    nextSQLIndex=platformTransaction.getNothingIndex();
+                    nextSQLIndex=platformTransaction.getExceptionNextIndex();
                 }
             }
             if(nextSQLIndex!=null){
