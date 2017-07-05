@@ -1,11 +1,11 @@
 package nna.base.util.concurrent;
 
+
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
- * 无序工作其实依赖于 addNewWork的isNewThread参数来实现。
  * 也就是 生产者线程和消费者线程双方来决定，
  * 到时有一个定时任务。
  * @author NNA-SHUAI
@@ -13,70 +13,75 @@ import java.util.concurrent.atomic.AtomicBoolean;
  **/
 
  class AbstractEnAndDeSgy{
-    private static final ExecutorService cached= Executors.newCachedThreadPool();
-    static AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
+    static final ExecutorService cached= Executors.newCachedThreadPool();
+    private static volatile AbstractEnAndDeSgy abstractEnAndDeSgy;
+    private static ReentrantLock initLock=new ReentrantLock();
 
-    private  ConcurrentHashMap<Long,String> noSeqIdToClazzNmMap=new ConcurrentHashMap<Long, String>();
-    private  ConcurrentHashMap<Long,String> seqIdToClazzNmMap=new ConcurrentHashMap<Long, String>();
+    private  ConcurrentHashMap<String,Long> gTaskIdStrToTwId=new ConcurrentHashMap<String, Long>();
+    private  ConcurrentHashMap<Long,String> gTaskIdToClazzNmMap=new ConcurrentHashMap<Long, String>();
 
-    private static QueueWrapper enQueue(QueueWrapper[] qws,TaskWrapper taskWrapper,Integer leftCount) {
-        QueueWrapper minLoad=QueueWrapper.enQueue(qws,leftCount,taskWrapper);
+    private static QueueWrapper enQueue(QueueWrapper[] qws,TaskWrapper taskWrapper) {
+        QueueWrapper minLoad=QueueWrapper.enQueue(qws,taskWrapper);
         return minLoad;
     }
 
+    private static void init(){
+        if(abstractEnAndDeSgy==null){
+            try{
+                initLock.lock();
+                if(abstractEnAndDeSgy==null){
+                    abstractEnAndDeSgy=new AbstractEnAndDeSgy();
+                    for(int index=0;index <15;index++){
+                        ThreadWrapper tw=new ThreadWrapper(QueueWrapper.noSeqQwMap,false);
+                        cached.submit(tw);
+                        ThreadWrapper.noSeqTwMap.put(ThreadWrapper.noSeqTwSeqGen.getAndIncrement(),tw);
+                    }
+                }
+            }catch (Exception e){
+                e.fillInStackTrace();
+            }finally {
+                initLock.unlock();
+            }
+        }
+    }
+
     static void initStrategy(Long gTaskId,String className,Boolean isSeq) {
+        init();
         if(isSeq){
+            abstractEnAndDeSgy.gTaskIdToClazzNmMap.put(gTaskId,gTaskId.toString());
             QueueWrapper[] qws=QueueWrapper.addQueue(1);
-            abstractEnAndDeSgy.seqIdToClazzNmMap.put(gTaskId,gTaskId.toString());
             QueueWrapper.seqQwMap.putIfAbsent(gTaskId.toString(),qws);
             if(ThreadWrapper.isSeqInit.compareAndSet(false,true)){
-                ThreadWrapper tw=new ThreadWrapper(QueueWrapper.seqQwMap);
-                ThreadWrapper.seqTwMap.put(ThreadWrapper.seqTwSeqGen.getAndIncrement(),tw);
+                ThreadWrapper tw=new ThreadWrapper(QueueWrapper.seqQwMap,true);
+                Long seqTw=ThreadWrapper.seqTwSeqGen.getAndIncrement();
+                ThreadWrapper.seqTwMap.put(seqTw,tw);
                 cached.submit(tw);
             }
         }else{
+            abstractEnAndDeSgy.gTaskIdToClazzNmMap.putIfAbsent(gTaskId,className);
             QueueWrapper[] qws=QueueWrapper.addQueue(15);
-            abstractEnAndDeSgy.noSeqIdToClazzNmMap.put(gTaskId,className);
             QueueWrapper.noSeqQwMap.putIfAbsent(className,qws);
-            if(ThreadWrapper.isNoSeqInit.compareAndSet(false,true)){
-                for(int index=0;index <15;index++){
-                    ThreadWrapper tw=new ThreadWrapper(QueueWrapper.noSeqQwMap);
-                    cached.submit(tw);
-                    ThreadWrapper.noSeqTwMap.put(ThreadWrapper.noSeqTwSeqGen.getAndIncrement(),tw);
-                }
-            }
         }
     }
 
     static void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
-        QueueWrapper[] qws;
-        String clazzNm=abstractEnAndDeSgy.noSeqIdToClazzNmMap.get(gTaskId);
-        Integer lefCount;
-        if(clazzNm==null){
-            clazzNm=abstractEnAndDeSgy.seqIdToClazzNmMap.get(gTaskId);
-            qws=QueueWrapper.seqQwMap.get(clazzNm);
-            lefCount=qws.length-1;
-        }else{
+        String clazzNm=abstractEnAndDeSgy.gTaskIdToClazzNmMap.get(gTaskId);
+        QueueWrapper[] qws=QueueWrapper.seqQwMap.get(clazzNm);
+        if(qws==null){
             qws=QueueWrapper.noSeqQwMap.get(clazzNm);
-            lefCount=qws.length-ThreadWrapper.noSeqTwMap.size();
+            enQueue(qws,taskWrapper);
+            ThreadWrapper.unPark(ThreadWrapper.noSeqTwMap);
+        }else{
+            enQueue(qws,taskWrapper);
+            ThreadWrapper.unPark(ThreadWrapper.seqTwMap);
         }
-        enQueue(qws,taskWrapper,lefCount);
     }
 
     static void addNoSeqThread(Integer threadCount){
         ThreadWrapper tw;
         for(int index=0;index < threadCount;index++){
-            tw=new ThreadWrapper(QueueWrapper.noSeqQwMap);
-            ThreadWrapper.noSeqTwMap.put(ThreadWrapper.noSeqTwSeqGen.getAndIncrement(),tw);
-            cached.submit(tw);
-        }
-    }
-
-    static void addSeqThread(Integer threadCount){
-        ThreadWrapper tw;
-        for(int index=0;index < threadCount;index++){
-            tw=new ThreadWrapper(QueueWrapper.seqQwMap);
-            ThreadWrapper.noSeqTwMap.put(ThreadWrapper.seqTwSeqGen.getAndIncrement(),tw);
+            tw=new ThreadWrapper(QueueWrapper.noSeqQwMap,false);
+            ThreadWrapper.seqTwMap.put(ThreadWrapper.seqTwSeqGen.getAndIncrement(),tw);
             cached.submit(tw);
         }
     }

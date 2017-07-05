@@ -1,8 +1,11 @@
 package nna.base.util.concurrent;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * @author NNA-SHUAI
@@ -10,7 +13,6 @@ import java.util.concurrent.atomic.AtomicLong;
  **/
 
  class ThreadWrapper implements Runnable{
-     static AtomicBoolean isNoSeqInit=new AtomicBoolean(false);
      static AtomicBoolean isSeqInit=new AtomicBoolean(false);
      static ConcurrentHashMap<Long,ThreadWrapper> noSeqTwMap=new ConcurrentHashMap<Long, ThreadWrapper>();
      static ConcurrentHashMap<Long,ThreadWrapper> seqTwMap=new ConcurrentHashMap<Long, ThreadWrapper>();
@@ -20,9 +22,11 @@ import java.util.concurrent.atomic.AtomicLong;
      private Thread thread;
      private ConcurrentHashMap<String,QueueWrapper[]> qwMap;
      private Boolean isSeq=false;
+     private AtomicLong unParkTimes=new AtomicLong();
 
-     ThreadWrapper(ConcurrentHashMap<String,QueueWrapper[]> qwMap){
+     ThreadWrapper(ConcurrentHashMap<String,QueueWrapper[]> qwMap,Boolean isSeq){
         this.qwMap=qwMap;
+        this.isSeq=isSeq;
     }
 
     /*
@@ -39,16 +43,51 @@ import java.util.concurrent.atomic.AtomicLong;
             taskWrappers=QueueWrapper.deQueues(qwMap);
             taskCount=taskWrappers.length;
             if(taskCount==0){
-                TaskWrapper taskWrapper=QueueWrapper.waitTask(qwMap);
-                doTask(taskWrapper);
+                park();
             }else{
                 index=0;
                 for(;index < taskCount;index++){
                     tempTaskWrapper=taskWrappers[index];
                     doTask(tempTaskWrapper);
+                    unParkTimes.getAndIncrement();
                 }
             }
         }
+    }
+
+    private void park() {
+        LockSupport.park();
+    }
+
+    private void unPark(){
+        LockSupport.unpark(thread);
+        unParkTimes.getAndIncrement();
+    }
+
+    static void unPark(ThreadWrapper tw){
+        LockSupport.unpark(tw.thread);
+    }
+
+    static void unPark(Map<Long,ThreadWrapper> map){
+        Iterator<Map.Entry<Long,ThreadWrapper>> iterator=map.entrySet().iterator();
+        Map.Entry<Long,ThreadWrapper> entry;
+        ThreadWrapper minLoadTw = null;
+        ThreadWrapper tempLoadTw;
+        Long minWorkTimes=null;
+        while(iterator.hasNext()){
+            entry=iterator.next();
+            if(minLoadTw==null){
+                minLoadTw=entry.getValue();
+                minWorkTimes=minLoadTw.unParkTimes.get();
+            }else{
+                tempLoadTw=entry.getValue();
+                if(minWorkTimes>tempLoadTw.unParkTimes.get()){
+                    minLoadTw=entry.getValue();
+                    minWorkTimes=minLoadTw.unParkTimes.get();
+                }
+            }
+        }
+        minLoadTw.unPark();
     }
 
     private Boolean doTask(TaskWrapper tempTaskWrapper) {

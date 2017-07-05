@@ -7,8 +7,12 @@ package nna.base.util;
 
 public class SystemUtil {
     public static boolean isSystemLoadPermit() {
-        boolean systemLoadPermit=false;
+        boolean systemLoadPermit=true;
 
         return systemLoadPermit;
+    }
+
+    public static boolean checkLoad() {
+        return false;
     }
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
     private Object returnObject;
     private Long enQueueTime=System.currentTimeMillis();
     private Long deQueueTime;
-    private Long delayTime=0L;
+    private Long delayTime;
 
     private Integer taskPriorLevel;
     private Integer failTryTime;
@@ -38,26 +38,39 @@ import java.util.concurrent.Executors;
         this.taskStatus=AbstractTask.START_STATUS;
     }
 
-     boolean doTask(){
-         if(isNewThreadToExe){
-             this.taskStatus=AbstractTask.WORK_STATUS;
-             ExecutorService executorService= Executors.newFixedThreadPool(1);
-             executorService.submit(this);
-             return true;
-         }
-         boolean isSuccess=false;
-         try{
-             this.taskStatus=AbstractTask.WORK_STATUS;
-             returnObject=abstractTask.doTask(att,taskType);
-             this.deQueueTime=System.currentTimeMillis();
-             this.taskStatus=AbstractTask.END_STATUS;
-             isSuccess=true;
-         }catch (Exception e){
-             e.printStackTrace();
-             this.taskStatus=AbstractTask.FAIL_STATUS;
-         }
-         return isSuccess;
-     }
+    public void run() {
+        System.out.println("run asy worker");
+        try {
+            Thread.sleep(delayTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        doInTask();
+    }
+
+    boolean doTask(){
+        if(isNewThreadToExe){
+            this.taskStatus=AbstractTask.WORK_STATUS;
+            AbstractEnAndDeSgy.cached.submit(this);
+            return true;
+        }
+        return doInTask();
+    }
+
+    private boolean doInTask() {
+        boolean isSuccess=false;
+        try{
+            this.taskStatus=AbstractTask.WORK_STATUS;
+            returnObject=abstractTask.doTask(att,taskType);
+            this.deQueueTime=System.currentTimeMillis();
+            this.taskStatus=AbstractTask.END_STATUS;
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            this.taskStatus=AbstractTask.FAIL_STATUS;
+        }
+        return isSuccess;
+    }
 
      AbstractTask getAbstractTask() {
         return abstractTask;
@@ -145,26 +158,5 @@ import java.util.concurrent.Executors;
 
     public void setDelayTime(Long delayTime) {
         this.delayTime = delayTime;
-    }
-
-    public void run() {
-        try {
-            Thread.sleep(delayTime);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if(isNewThreadToExe){
-            try{
-                this.taskStatus=AbstractTask.WORK_STATUS;
-                returnObject=abstractTask.doTask(att,taskType);
-                this.deQueueTime=System.currentTimeMillis();
-                this.taskStatus=AbstractTask.END_STATUS;
-            }catch (Exception e){
-                e.printStackTrace();
-                this.taskStatus=AbstractTask.FAIL_STATUS;
-            }
-        }else{
-            returnObject=doTask();
-        }
     }
 }

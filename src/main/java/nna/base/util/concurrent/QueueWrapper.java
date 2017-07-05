@@ -25,47 +25,10 @@ import java.util.concurrent.locks.ReentrantLock;
         this.qLock=new ReentrantLock();
     }
 
-    static QueueWrapper enQueue(QueueWrapper[] qws,Integer leftCount,TaskWrapper taskWrapper){
+    static QueueWrapper enQueue(QueueWrapper[] qws,TaskWrapper taskWrapper){
         ArrayList<QueueWrapper> minLoadQWs=getMinLoadQueueWrapper(qws);
         QueueWrapper minLoadQW=minLoadQWs.remove(qws.length-1);
         minLoadQW.queue.add(taskWrapper);
-        if(leftCount>0){
-            QueueWrapper temp;
-            for(int index=1;index < leftCount;index++){
-                qws=minLoadQWs.toArray(new QueueWrapper[0]);
-                minLoadQWs=getMinLoadQueueWrapper(qws);
-                temp=minLoadQWs.remove(qws.length-1);
-                temp.queue.add(TaskWrapper.DO_NOTHING);
-            }
-        }
-        return null;
-    }
-
-    static TaskWrapper waitTask(ConcurrentHashMap<String,QueueWrapper[]> qwMap){
-        Iterator<Map.Entry<String,QueueWrapper[]>> iterator=qwMap.entrySet().iterator();
-        while(iterator.hasNext()){
-            Map.Entry<String,QueueWrapper[]> entry=iterator.next();
-            QueueWrapper[] qws=entry.getValue();
-            for(QueueWrapper queueWrapper:qws){
-                ReentrantLock lock=queueWrapper.qLock;
-                Boolean locked=false;
-                try{
-                    if(lock.tryLock()){
-                        locked=true;
-                        TaskWrapper taskWrapper=queueWrapper.queue.take();
-                        return taskWrapper;
-                    }else{
-                        continue;
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }finally {
-                    if(locked){
-                        lock.unlock();
-                    }
-                }
-            }
-        }
         return null;
     }
 

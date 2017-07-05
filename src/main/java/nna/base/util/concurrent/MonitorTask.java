@@ -25,6 +25,10 @@ import java.util.concurrent.ConcurrentHashMap;
          abstractTaskMonitorMap.remove(abstractTask.getgTaskId());
      }
 
+     static {
+         MonitorTask monitorTask=new MonitorTask();
+     }
+
      MonitorTask()  {
         super(false);
          String logPath="LOG";
@@ -40,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
          } catch (Exception e) {
              e.printStackTrace();
          }
-//         addNewTask(this,null,INIT_TASK_TYPE,true,null);
+         addNewTask(this,null,INIT_TASK_TYPE,true,null);
      }
 
     QueueWrapper[] qws;
@@ -52,9 +56,9 @@ import java.util.concurrent.ConcurrentHashMap;
                 twMap.putAll(ThreadWrapper.noSeqTwMap);
                 twMap.putAll(ThreadWrapper.seqTwMap);
                 map.putAll(QueueWrapper.noSeqQwMap);
-                map.putAll(QueueWrapper.noSeqQwMap);
-                System.out.println("-----------");
+                map.putAll(QueueWrapper.seqQwMap);
                 while(true){
+                    System.out.println("monitor asy worker");
                     try{
                         iterator=map.entrySet().iterator();
                         while(iterator.hasNext()){
