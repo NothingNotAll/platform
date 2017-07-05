@@ -55,8 +55,10 @@ import java.util.concurrent.locks.ReentrantLock;
                 ThreadWrapper tw=new ThreadWrapper(QueueWrapper.seqQwMap,true);
                 Long seqTw=ThreadWrapper.seqTwSeqGen.getAndIncrement();
                 ThreadWrapper.seqTwMap.put(seqTw,tw);
+                abstractEnAndDeSgy.gTaskIdStrToTwId.put("-1L",seqTw);
                 cached.submit(tw);
             }
+            abstractEnAndDeSgy.gTaskIdStrToTwId.putIfAbsent(gTaskId.toString(),abstractEnAndDeSgy.gTaskIdStrToTwId.get("-1L"));
         }else{
             abstractEnAndDeSgy.gTaskIdToClazzNmMap.putIfAbsent(gTaskId,className);
             QueueWrapper[] qws=QueueWrapper.addQueue(15);
@@ -65,6 +67,7 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     static void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
+        //
         String clazzNm=abstractEnAndDeSgy.gTaskIdToClazzNmMap.get(gTaskId);
         QueueWrapper[] qws=QueueWrapper.seqQwMap.get(clazzNm);
         if(qws==null){
@@ -72,8 +75,11 @@ import java.util.concurrent.locks.ReentrantLock;
             enQueue(qws,taskWrapper);
             ThreadWrapper.unPark(ThreadWrapper.noSeqTwMap);
         }else{
+            Long twSeqId=abstractEnAndDeSgy.gTaskIdStrToTwId.get(gTaskId.toString());
+            ThreadWrapper tw=ThreadWrapper.seqTwMap.get(twSeqId);
             enQueue(qws,taskWrapper);
-            ThreadWrapper.unPark(ThreadWrapper.seqTwMap);
+//            ThreadWrapper.unPark(ThreadWrapper.seqTwMap);
+            ThreadWrapper.unPark(tw);
         }
     }
 
