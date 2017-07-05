@@ -31,3 +31,8 @@ The goal is that config with person instead of write with hand
 the rules of config db trans:
 firstly we can search in the platform_entry and platform_entry_transaction to search the fit
 trans_name to avoid config repeatedly more once;
+
+10: Seq Work is worked by only one BlockingQueue and is Only consumed by the same thread
+    noSeq Work is worked by multi BlocikingQUeue and can consumed by multi threads.
+    but we must think of the dynamic strategy to adapter the load of system.as that we can dynamic add seq Work Threads.
+    to solve the large of requests
