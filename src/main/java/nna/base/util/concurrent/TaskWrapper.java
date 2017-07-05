@@ -39,9 +39,10 @@ import java.util.concurrent.Executors;
     }
 
     public void run() {
-        System.out.println("run asy worker");
         try {
-            Thread.sleep(delayTime);
+            if(delayTime!=null){
+                Thread.sleep(delayTime);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
