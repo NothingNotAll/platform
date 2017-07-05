@@ -1,9 +1,6 @@
-package nna.app.web;
+package nna.app;
 
-import nna.app.tran.ext.TranSelPriUser;
-import nna.base.bean.dbbean.PlatformUser;
 import nna.base.proxy.Logic;
-import nna.transaction.TransExecutor;
 
 import java.lang.reflect.Method;
 
@@ -14,7 +11,6 @@ import java.lang.reflect.Method;
  **/
 
 public class NNALogin {
-    TransExecutor<PlatformUser> tranSelPriUser=new TranSelPriUser();//next step is to cancel the new action;
 
     //next optimize is that we can take place of the TRAN*
     // with the unify Logic class:
