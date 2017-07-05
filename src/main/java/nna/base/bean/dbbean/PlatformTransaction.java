@@ -16,12 +16,15 @@ public class PlatformTransaction extends Clone {
     private String transactionName;
     private String sqlId;
     private int sqlSequence;
+    private int selectNextIndex0;
+    private int updateNextIndex0;
+    private int deleteNextIndex0;
+    private int insertNextIndex0;
+    private int exceptionNextIndex;
+    private Boolean currentExceptionCommit;
+    private Boolean previousExceptionCommit;
     private Timestamp createTimestamp;
     private Timestamp updateTimestamp;
-    private Integer exceptionIndex;
-    private Integer nothingIndex;
-    private Boolean exceptionCommit;
-    private Boolean exceptionCommitPropagation;
     private String sqlDesc;
 
     public PlatformTransaction(){
@@ -76,35 +79,59 @@ public class PlatformTransaction extends Clone {
         this.sqlSequence = sqlSequence;
     }
 
-    public Integer getExceptionIndex() {
-        return exceptionIndex;
+    public int getSelectNextIndex0() {
+        return selectNextIndex0;
     }
 
-    public void setExceptionIndex(Integer exceptionIndex) {
-        this.exceptionIndex = exceptionIndex;
+    public void setSelectNextIndex0(int selectNextIndex0) {
+        this.selectNextIndex0 = selectNextIndex0;
     }
 
-    public Integer getNothingIndex() {
-        return nothingIndex;
+    public int getUpdateNextIndex0() {
+        return updateNextIndex0;
     }
 
-    public void setNothingIndex(Integer nothingIndex) {
-        this.nothingIndex = nothingIndex;
+    public void setUpdateNextIndex0(int updateNextIndex0) {
+        this.updateNextIndex0 = updateNextIndex0;
     }
 
-    public Boolean getExceptionCommitPropagation() {
-        return exceptionCommitPropagation;
+    public int getDeleteNextIndex0() {
+        return deleteNextIndex0;
     }
 
-    public void setExceptionCommitPropagation(Boolean exceptionCommitPropagation) {
-        this.exceptionCommitPropagation = exceptionCommitPropagation;
+    public void setDeleteNextIndex0(int deleteNextIndex0) {
+        this.deleteNextIndex0 = deleteNextIndex0;
     }
 
-    public Boolean getExceptionCommit() {
-        return exceptionCommit;
+    public int getInsertNextIndex0() {
+        return insertNextIndex0;
     }
 
-    public void setExceptionCommit(Boolean exceptionCommit) {
-        this.exceptionCommit = exceptionCommit;
+    public void setInsertNextIndex0(int insertNextIndex0) {
+        this.insertNextIndex0 = insertNextIndex0;
+    }
+
+    public int getExceptionNextIndex() {
+        return exceptionNextIndex;
+    }
+
+    public void setExceptionNextIndex(int exceptionNextIndex) {
+        this.exceptionNextIndex = exceptionNextIndex;
+    }
+
+    public Boolean getCurrentExceptionCommit() {
+        return currentExceptionCommit;
+    }
+
+    public void setCurrentExceptionCommit(Boolean currentExceptionCommit) {
+        this.currentExceptionCommit = currentExceptionCommit;
+    }
+
+    public Boolean getPreviousExceptionCommit() {
+        return previousExceptionCommit;
+    }
+
+    public void setPreviousExceptionCommit(Boolean previousExceptionCommit) {
+        this.previousExceptionCommit = previousExceptionCommit;
     }
 }
