@@ -1,6 +1,5 @@
 package nna.base.server;
 
-import nna.Marco;
 import nna.base.util.concurrent.AbstractTask;
 
 import java.io.IOException;
@@ -18,8 +17,6 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
  abstract class AbstractNIOTask extends AbstractTask {
-    private static final ReentrantLock initLock=new ReentrantLock();
-    private static boolean isInit=false;
     protected int protocolType;
     protected EndConfig endConfig;
     protected Object object;
@@ -30,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
     public AbstractNIOTask(EndConfig endConfig,
                            Object object,
                            Method method) throws IOException {
-        super(15,15,Marco.NO_SEQ_LINKED_SIZE_TASK,Marco.CACHED_THREAD_TYPE);
+        super(false);
         this.protocolType=endConfig.getProtocolType();
         this.object=object;
         this.method=method;
