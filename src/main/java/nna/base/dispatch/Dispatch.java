@@ -1,6 +1,7 @@
 package nna.base.dispatch;
 
 
+import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformApp;
 import nna.base.bean.dbbean.PlatformColumn;
 import nna.base.bean.dbbean.PlatformController;
@@ -14,7 +15,7 @@ import java.util.Map;
 
  final class Dispatch {
 
-	 static void dispatch(MetaBeanWrapper metaBean) throws Exception{
+	 static void dispatch(MetaBean metaBean) throws Exception{
          Log log= metaBean.getLog();
         PlatformApp platformApp=metaBean.getPlatformApp();
         log.log("开始校验应用状态",Log.INFO);
@@ -25,14 +26,14 @@ import java.util.Map;
         PlatformService platformService=metaBean.getPlatformService();
         PlatformColumn[] reqColumns=metaBean.getReqColConfig();
         log.log("开始校验入参字段",Log.INFO);
-        Map<String,String[]> reqMap=metaBean.getReq();
-        checkReq(metaBean.getOutReq(),reqMap,reqColumns,log);
+        Map<String,String[]> reqMap=metaBean.getInnerColumns();
+        checkReq(metaBean.getOutColumns(),reqMap,reqColumns,log);
         log.log("开始校验服务状态",Log.INFO);
         check(platformService,log);
         metaBean.getServiceMethod().invoke(metaBean.getServiceObject());
         PlatformColumn[] rspColumns=metaBean.getRspColConfig();
         log.log("开始校验出参字段",Log.INFO);
-        Map<String,String[]> rspMap=metaBean.getRsp();
+        Map<String,String[]> rspMap=metaBean.getOutColumns();
         checkRsp(reqMap,rspMap,rspColumns,log);
         String appEncode=platformApp.getAppEncode();
         log.log("应用编码："+appEncode,Log.INFO);

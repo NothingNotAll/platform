@@ -1,5 +1,7 @@
 package nna.transaction;
 
+import nna.MetaBean;
+
 import java.sql.SQLException;
 
 /*
@@ -30,5 +32,5 @@ import java.sql.SQLException;
 	 * transaction means a group of sql that completes a complex of business;
 	 * u must conf the transaction in the db with the help of app conf view or meta file;
 	 * */
-	V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException;
+	V executeTransactions(MetaBean metaBean) throws SQLException;
 }

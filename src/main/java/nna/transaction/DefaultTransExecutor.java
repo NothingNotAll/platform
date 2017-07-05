@@ -1,5 +1,6 @@
 package nna.transaction;
 
+import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformEntryTransaction;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.bean.dbbean.PlatformTransaction;
@@ -16,23 +17,23 @@ import java.util.HashMap;
 
 public class DefaultTransExecutor<V> implements TransExecutor<V> {
 
-    public V executeTransactions(MetaBeanWrapper metaBeanWrapper) throws SQLException {
-        PlatformEntryTransaction[] serviceTrans=metaBeanWrapper.getServiceTrans();
+    public V executeTransactions(MetaBean metaBean) throws SQLException {
+        PlatformEntryTransaction[] serviceTrans=metaBean.getServiceTrans();
         PlatformEntryTransaction tempSevTran;
         int sevTranCount=serviceTrans.length;
         boolean isExeTranSuccess;
         Integer nextTranIndex;
-        ArrayList<PlatformEntryTransaction> tranStack=metaBeanWrapper.getTranStack();
+        ArrayList<PlatformEntryTransaction> tranStack=metaBean.getTranStack();
         for(int index=0;index < sevTranCount;){
-            metaBeanWrapper.setCurrentServTranIndex(index);
+            metaBean.setCurrentServTranIndex(index);
             tempSevTran=serviceTrans[index];
             tranStack.add(tempSevTran);
             try{
-                isExeTranSuccess=executeTempSevTran(metaBeanWrapper,tempSevTran,index);
+                isExeTranSuccess=executeTempSevTran(metaBean,tempSevTran,index);
             }catch (Exception e){
                 isExeTranSuccess=false;
             }finally {
-                destroy(metaBeanWrapper,tempSevTran);
+                destroy(metaBean,tempSevTran);
             }
             if(isExeTranSuccess){
                 nextTranIndex=index++;
@@ -48,32 +49,32 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         return null;
     }
 
-    private void destroy(MetaBeanWrapper metaBeanWrapper, PlatformEntryTransaction tempSevTran) throws SQLException {
-        int index=metaBeanWrapper.getConStack().size();
-        metaBeanWrapper.getTranStack().remove(index-1);
-        metaBeanWrapper.getConStack().remove(index-1);
-        metaBeanWrapper.getCurrentCon().commit();
-        metaBeanWrapper.setCurrentCon(null);
+    private void destroy(MetaBean metaBean, PlatformEntryTransaction tempSevTran) throws SQLException {
+        int index=metaBean.getConStack().size();
+        metaBean.getTranStack().remove(index-1);
+        metaBean.getConStack().remove(index-1);
+        metaBean.getCurrentCon().commit();
+        metaBean.setCurrentCon(null);
     }
 
     private boolean executeTempSevTran(
-            MetaBeanWrapper metaBeanWrapper,
+            MetaBean metaBean,
             PlatformEntryTransaction currentSevTran,
             int currentSevTranIndex
     ) throws SQLException {
-        ArrayList<PlatformEntryTransaction> stack=metaBeanWrapper.getTranStack();
-        Connection con=getCon(metaBeanWrapper,stack,currentSevTran);//得到执行此次事务的Connection
-        metaBeanWrapper.getConStack().add(con);
-        metaBeanWrapper.setCurrentCon(con);
-        setTranPgl(metaBeanWrapper,currentSevTran,con);//设置事务的隔离级别
-        ArrayList<String[]> SQLArray=metaBeanWrapper.getSQLS();
-        ArrayList<PlatformTransaction[]> trans=metaBeanWrapper.getTrans();
-        ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray=metaBeanWrapper.getDbsqlConValTypes();
-        ArrayList<PlatformSql[]> platformSqls=metaBeanWrapper.getTranPlatformSql();
-        ArrayList<ArrayList<String[]>> conArray=metaBeanWrapper.getCons();
-        ArrayList<ArrayList<String[]>> colArray=metaBeanWrapper.getCols();
+        ArrayList<PlatformEntryTransaction> stack=metaBean.getTranStack();
+        Connection con=getCon(metaBean,stack,currentSevTran);//得到执行此次事务的Connection
+        metaBean.getConStack().add(con);
+        metaBean.setCurrentCon(con);
+        setTranPgl(metaBean,currentSevTran,con);//设置事务的隔离级别
+        ArrayList<String[]> SQLArray=metaBean.getSQLS();
+        ArrayList<PlatformTransaction[]> trans=metaBean.getTrans();
+        ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray=metaBean.getDbsqlConValTypes();
+        ArrayList<PlatformSql[]> platformSqls=metaBean.getTranPlatformSql();
+        ArrayList<ArrayList<String[]>> conArray=metaBean.getCons();
+        ArrayList<ArrayList<String[]>> colArray=metaBean.getCols();
         return executeSQLS(
-                metaBeanWrapper,
+                metaBean,
                 SQLArray,
                 trans,
                 valTypeArray,
@@ -85,7 +86,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
     }
 
     private boolean executeSQLS(
-            MetaBeanWrapper metaBeanWrapper,
+            MetaBean metaBean,
             ArrayList<String[]> SQLArray,
             ArrayList<PlatformTransaction[]> trans,
             ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray,
@@ -94,8 +95,8 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
             ArrayList<ArrayList<String[]>> colArray,
             Connection con,
             int currentIndex) throws SQLException {
-        metaBeanWrapper.setCurrentSQLS(SQLArray.toArray(new String[0]));
-        metaBeanWrapper.setCurrentPlatformSqls(platformSqls.toArray(new PlatformSql[0]));
+        metaBean.setCurrentSQLS(SQLArray.toArray(new String[0]));
+        metaBean.setCurrentPlatformSqls(platformSqls.toArray(new PlatformSql[0]));
         ArrayList<String[]> selCols=colArray.get(currentIndex);
         PlatformTransaction[] tranCfg=trans.get(currentIndex);
         String[] SQLS=SQLArray.get(currentIndex);
@@ -120,7 +121,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
             platformTransaction=tranCfg[index];
             try{
                 isExeSQLSuccess=executeOneSql(
-                        metaBeanWrapper,
+                        metaBean,
                         con,
                         sqlType,
                         SQL,
@@ -144,7 +145,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
     }
 
     private boolean executeOneSql(
-            MetaBeanWrapper metaBeanWrapper,
+            MetaBean metaBean,
             Connection con,
             PlatformSql platformSql,
             String sql,
@@ -152,8 +153,8 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
             String[] cons,
             DBSQLConValType[] conValTypes
     ) throws SQLException {
-        metaBeanWrapper.setCurrentSQL(sql);
-        HashMap<String,String[]> req=metaBeanWrapper.getReq();
+        metaBean.setCurrentSQL(sql);
+        HashMap<String,String[]> req=metaBean.getInnerColumns();
         DBOperType dbOperType=platformSql.getOpertype();
         if(platformSql.isPage()){
             //how to solve it
@@ -281,7 +282,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
     }
 
     private void setTranPgl(
-            MetaBeanWrapper metaBeanWrapper,
+            MetaBean metaBean,
             PlatformEntryTransaction currentSevTran,
             Connection con
     ) throws SQLException {
@@ -306,7 +307,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
     }
 
     private Connection getCon(
-            MetaBeanWrapper metaBeanWrapper,
+            MetaBean metaBean,
             ArrayList<PlatformEntryTransaction> tranStack,
             PlatformEntryTransaction currentSevTran
     ) throws SQLException {
@@ -320,10 +321,10 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         }
         switch (dbTranPpgType){
             case NONE:
-                dbCon=metaBeanWrapper.getDbCon();
+                dbCon=metaBean.getDbCon();
                 return dbCon.getCon();
             case PROPAGATION_NEVER:
-                dbCon=metaBeanWrapper.getDbCon();
+                dbCon=metaBean.getDbCon();
                 return dbCon.getCon();
             case PROPAGATION_NESTED:
                 ;
@@ -338,7 +339,7 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
                 ;
                 break;
             case PROPAGATION_REQUIRES_NEW:
-                dbCon=metaBeanWrapper.getDbCon();
+                dbCon=metaBean.getDbCon();
                 return dbCon.getCon();
             case PROPAGATION_NOT_SUPPORTED:
                 ;

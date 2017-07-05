@@ -27,23 +27,22 @@ public class NNAService {
     public static String service(Map<String,String[]> map){
         String entryCode=map.get(Marco.HEAD_ENTRY_CODE)[0];
         MetaBean metaBean=getMetaBean(entryCode);
-        MetaBeanWrapper metaBeanWrapper=new MetaBeanWrapper(metaBean);
-        getAndSetLog(metaBeanWrapper);
+        getAndSetLog(metaBean);
         String rspStr="";
         try {
-            dispatch(metaBeanWrapper);
-            rspStr=getRspStr(metaBeanWrapper);
+            dispatch(metaBean);
+            rspStr=getRspStr(metaBean);
         } catch (Exception e) {
             e.printStackTrace();
         }catch (Throwable e){
             e.printStackTrace();
         }finally {
-            destroy(metaBeanWrapper);
+            destroy(metaBean);
         }
         return rspStr;
     }
 
-    private static void getAndSetLog(MetaBeanWrapper metaBean) {
+    private static void getAndSetLog(MetaBean metaBean) {
         PlatformApp platformApp=metaBean.getPlatformApp();
         PlatformService platformService=metaBean.getPlatformService();
         PlatformSession platformSession=metaBean.getPlatformSession();
@@ -64,13 +63,13 @@ public class NNAService {
         metaBean.setLog(log);
     }
 
-    private static void destroy(MetaBeanWrapper metaBeanWrapper) {
-        metaBeanWrapper.getLog().close();
+    private static void destroy(MetaBean metaBean) {
+        metaBean.getLog().close();
     }
 
-    private static String getRspStr(MetaBeanWrapper metaBeanWrapper) throws InvocationTargetException, IllegalAccessException {
-        int protocolType=metaBeanWrapper.getProtocolType();
-        return Protocol.protocolAdapter(metaBeanWrapper,protocolType);
+    private static String getRspStr(MetaBean metaBean) throws InvocationTargetException, IllegalAccessException {
+        int protocolType=metaBean.getProtocolType();
+        return Protocol.protocolAdapter(metaBean,protocolType);
     }
 
     private static MetaBean getMetaBean(String entryCode) {

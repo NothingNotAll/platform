@@ -1,6 +1,7 @@
 package nna.base.dispatch;
 
 import nna.Marco;
+import nna.MetaBean;
 import nna.base.util.CharUtil;
 import nna.base.util.XmlUtil;
 import nna.base.util.orm.ObjectUtil;
@@ -34,27 +35,27 @@ public class Protocol {
 
     }
 
-    public static String protocolAdapter(MetaBeanWrapper metaBeanWrapper, int protocolType) throws InvocationTargetException, IllegalAccessException {
+    public static String protocolAdapter(MetaBean metaBean, int protocolType) throws InvocationTargetException, IllegalAccessException {
         switch (protocolType){
             case Marco.XML_PROTOCOL:
-                return HTTP(metaBeanWrapper);
+                return HTTP(metaBean);
             case Marco.HTTP_PROTOCOL:
-                return XML(metaBeanWrapper);
+                return XML(metaBean);
         }
         return "";
     }
 
 
-    private static String XML(MetaBeanWrapper metaBeanWrapper) {
+    private static String XML(MetaBean metaBean) {
         return "";
     }
 
-    private static String HTTP(MetaBeanWrapper metaBeanWrapper) throws InvocationTargetException, IllegalAccessException {
-        Map<String,String[]> rsp=metaBeanWrapper.getRsp();
-        Method method=metaBeanWrapper.getRenderMethod();
+    private static String HTTP(MetaBean metaBean) throws InvocationTargetException, IllegalAccessException {
+        Map<String,String[]> rsp=metaBean.getOutColumns();
+        Method method=metaBean.getRenderMethod();
         if(method!=null){
-            Object object=metaBeanWrapper.getRenderObject();
-            object=metaBeanWrapper.getRenderMethod().invoke(object,rsp);
+            Object object=metaBean.getRenderObject();
+            object=metaBean.getRenderMethod().invoke(object,rsp);
             return object==null?"":object.toString();
         }
         int size=rsp.size();
@@ -93,7 +94,8 @@ public class Protocol {
 
     public static String processHttp(SocketChannel socketChannel) throws IOException {
         byte[] bytes=read(socketChannel);
-        System.out.println(new String(bytes));
+        socketChannel.write(ByteBuffer.wrap(bytes));
+        socketChannel.close();
         return null;
     }
 
@@ -140,22 +142,22 @@ public class Protocol {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        try {
-            XmlUtil.parseXmlStr(new String(byteList),new HashMap<String, String[]>());
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
         return byteList;
     }
 
     public static String processXml(SocketChannel channel) throws IOException {
-        System.out.println("process XML");
         byte[] bytes=read(channel);
+        try {
+            XmlUtil.parseXmlStr(new String(bytes),new HashMap<String, String[]>());
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
         try {
             channel.write(ByteBuffer.wrap(bytes));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        channel.close();
         return null;
     }
 

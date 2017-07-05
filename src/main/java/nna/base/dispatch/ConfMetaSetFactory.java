@@ -15,8 +15,8 @@ public class ConfMetaSetFactory {
         return StoreData.getConfig();
     }
 
-    public static MetaBeanWrapper getMetaBeanWrapper(){
-        return new MetaBeanWrapper(StoreData.getConfig());
+    public static MetaBean getMetaBean(){
+        return StoreData.getConfig();
     }
 
     public static void setConfMeta(MetaBean meta){
