@@ -1,4 +1,4 @@
-1:monitor the change of all file and can push the message to the app.
+1:monitor the change of all files and can push the message to the app.
 2:add the unify transactions working
 3:add the http protocol parsing
 4:add distribute module , this is very easy ,just like the GFS
