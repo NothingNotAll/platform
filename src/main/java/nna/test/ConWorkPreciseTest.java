@@ -8,7 +8,7 @@ import java.io.*;
  */
 public class ConWorkPreciseTest {
     public static void main(String[] args) throws IOException {
-        test("C:\\LOG\\20170704\\TEST-CON-LOG");
+        test("C:\\LOG\\20170705\\TEST-CON-LOG\\");
     }
     static void test(String path) throws IOException {
         File file=new File(path);
@@ -30,7 +30,7 @@ public class ConWorkPreciseTest {
         while((line=br.readLine())!=null){
             if(index%2!=0){
                 String line2=line.substring(line.lastIndexOf("]")+1);
-                if(Integer.valueOf(line2.trim()).equals(index2)){
+                if(!Integer.valueOf(line2.trim()).equals(index2)){
                     System.out.println(line2+"-"+index2+"-"+(Integer.valueOf(line2.trim()).equals(index2)));
                 }
                 index2+=1;
