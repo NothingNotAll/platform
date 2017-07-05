@@ -40,11 +40,7 @@ public class Log extends AbstractTask {
                int flushLimit,
                int closeTimeout,
                String encode) throws Exception {
-        super(
-                20,
-                1,
-                Marco.SEQ_LINKED_SIZE_TASK,
-                Marco.CACHED_THREAD_TYPE);//这里已经提交了一个任务，但是 encode 还没有完全初始化完全。
+        super(true);
         startTime=System.currentTimeMillis();
         this.logDir=logDir;
         this.logName=logFileName;
@@ -86,7 +82,7 @@ public class Log extends AbstractTask {
                 }
             }else{
                 if(canFlush()){
-                    Long start=System.currentTimeMillis();
+//                    Long start=System.currentTimeMillis();
                     addNewTask(this,logStr,WORK_TASK_TYPE,false,null);
                     logStrBuilder=new StringBuilder("");
 //                    System.out.println("日志路径:"+logDir+" 线程 id:"+getThreadId()+" 名称:"+getThreadName()+" 进入日志队列耗费毫秒："+String.valueOf(System.currentTimeMillis()-start)+"L");
@@ -100,9 +96,6 @@ public class Log extends AbstractTask {
     }
 
     private Object init(Object object) throws Exception {
-        while(encode==null){
-            continue;
-        }// in case of that log's constructor did not fully complete;
         boolean locked=false;
         try{
             if(!isInit()&&getInitLock().tryLock()){
@@ -165,6 +158,11 @@ public class Log extends AbstractTask {
                 break;
         }
         return null;
+    }
+
+    @Override
+    protected void addNewTask(AbstractTask abstractTask, Object att, int taskType, Boolean isNewTToExe, Long delayTime) {
+        super.addNewTask(abstractTask, att, taskType, isNewTToExe, delayTime);
     }
 
     public static Log getLog(
