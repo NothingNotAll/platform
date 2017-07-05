@@ -2,7 +2,6 @@ package nna.base.init;
 
 import nna.Marco;
 import nna.base.bean.Clone;
-import nna.base.bean.dbbean.PlatformLog;
 import nna.base.bean.dbbean.PlatformProtocol;
 import nna.base.util.orm.ObjectUtil;
 

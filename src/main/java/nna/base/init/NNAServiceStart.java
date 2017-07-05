@@ -20,6 +20,7 @@ public class NNAServiceStart {
     }
 
     static{
+        Test.testCon();
         try {
             Util.loadNIOSelector();
             NNAServiceInit0 nna0=new NNAServiceInit0();
@@ -29,7 +30,6 @@ public class NNAServiceStart {
             NNAServiceInit2 nna2=new NNAServiceInit2();
             nna2.build();
             ConfMetaSetFactory.getConfMeta().getLog().close();
-            Test.testCon();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

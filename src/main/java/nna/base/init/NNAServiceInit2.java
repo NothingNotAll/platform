@@ -121,7 +121,7 @@ public class NNAServiceInit2 {
         Integer tempSize=entry.getEntryTempSize();
         temp.setTemp(new HashMap<String, Object>(tempSize));
 
-        String tranName=entry.getEntryTransactions();
+        String tranName=entry.getEntryTranId();
         if(tranName!=null&&!tranName.toString().trim().equals("")){
             ArrayList<PlatformEntryTransaction> trans=NNAServiceInit1.serviceTranMap.get(tranName.trim());
             PlatformEntryTransaction[] tranList=trans.toArray(new PlatformEntryTransaction[0]);

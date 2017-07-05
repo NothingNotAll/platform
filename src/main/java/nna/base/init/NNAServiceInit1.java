@@ -69,7 +69,7 @@ public class NNAServiceInit1 {
 
         reduceSList(columns,"getColumnId",(Map)columnMap);
         reduceIList(roleResources,"getRoleId",(Map)roleResourceMap);
-        reduceSList(serviceTrans,"getTransactions",(Map)serviceTranMap);
+        reduceSList(serviceTrans,"getTransactionEntryName",(Map)serviceTranMap);
         reduceSList(trans,"getTransactionName",(Map)tranMap);
         reduceIList(userRoles,"getUserId",(Map)userRoleMap);
         reducePlatformProxies();
