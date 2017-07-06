@@ -108,9 +108,9 @@ import java.util.concurrent.ConcurrentHashMap;
         int index2=0;
         count=qws.length;
         for(;index2 < count;index2++){
-//            log.log("consumered:"+qws[index2].getDeCount()+":"+temp.size(), Log.INFO);
             temp= qws[index2].getQueue();
-            System.out.println(temp.size());
+            log.log("consumered:"+qws[index2].getDeCount()+":"+temp.size(), Log.INFO);
+            System.out.println("consumered:"+temp.size());
             log.log("No."+index2+":"+temp.size(), Log.INFO);
         }
     }
