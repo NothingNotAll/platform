@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
 /**
+ * lead to CPU is too High
  * @author NNA-SHUAI
  * @create 2017-06-24 17:15
  **/
