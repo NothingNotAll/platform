@@ -33,11 +33,11 @@ import java.util.concurrent.locks.LockSupport;
     /*
     * for minus gc
     * */
-    LinkedList<TaskWrapper> temp=new LinkedList<TaskWrapper>();
-    int taskCount;
-    TaskWrapper tempTaskWrapper;
-    int index;
-    Long delayTime;
+    private LinkedList<TaskWrapper> temp=new LinkedList<TaskWrapper>();
+    private int taskCount;
+    private TaskWrapper tempTaskWrapper;
+    private int index;
+    private Long delayTime;
     public void run() {
         thread=Thread.currentThread();
         while(true){
@@ -46,8 +46,7 @@ import java.util.concurrent.locks.LockSupport;
             if(taskCount==0){
                 park();
             }else{
-                index=0;
-                for(;index < taskCount;index++){
+                for(index=0;index < taskCount;index++){
                     tempTaskWrapper=temp.poll();
                     tempTaskWrapper=doTask(tempTaskWrapper);
                     if(tempTaskWrapper!=null){
