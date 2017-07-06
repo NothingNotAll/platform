@@ -1,6 +1,7 @@
 package nna.base.util.concurrent;
 
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -30,6 +31,9 @@ public abstract class AbstractTask {
     private ReentrantLock initLock=new ReentrantLock();
     private Long threadId;
     private String threadName;
+    private Boolean isSeq;
+    private AtomicInteger workIndexGen;
+    private volatile Integer currentWorkIndex;
 
     public AbstractTask(Boolean isSeq){
         gTaskId=gTaskIdGen.getAndIncrement();
@@ -38,6 +42,9 @@ public abstract class AbstractTask {
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
+        this.isSeq=isSeq;
+        currentWorkIndex=0;
+        workIndexGen=new AtomicInteger();
         AbstractEnAndDeSgy.initStrategy(gTaskId,className,isSeq);
         MonitorTask.addMonitor(this);
     }
@@ -120,5 +127,29 @@ public abstract class AbstractTask {
 
     public static void init() {
 
+    }
+
+    public Boolean getSeq() {
+        return isSeq;
+    }
+
+    public void setSeq(Boolean seq) {
+        isSeq = seq;
+    }
+
+    public Integer getCurrentWorkIndex() {
+        return currentWorkIndex;
+    }
+
+    public void setCurrentWorkIndex(Integer currentWorkIndex) {
+        this.currentWorkIndex = currentWorkIndex;
+    }
+
+    public AtomicInteger getWorkIndexGen() {
+        return workIndexGen;
+    }
+
+    public void setWorkIndexGen(AtomicInteger workIndexGen) {
+        this.workIndexGen = workIndexGen;
     }
 }

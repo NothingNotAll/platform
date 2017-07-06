@@ -67,7 +67,6 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     static void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
-        //
         String clazzNm=abstractEnAndDeSgy.gTaskIdToClazzNmMap.get(gTaskId);
         QueueWrapper[] qws=QueueWrapper.seqQwMap.get(clazzNm);
         if(qws==null){
@@ -78,7 +77,6 @@ import java.util.concurrent.locks.ReentrantLock;
             Long twSeqId=abstractEnAndDeSgy.gTaskIdStrToTwId.get(gTaskId.toString());
             ThreadWrapper tw=ThreadWrapper.seqTwMap.get(twSeqId);
             enQueue(qws,taskWrapper);
-//            ThreadWrapper.unPark(ThreadWrapper.seqTwMap);
             ThreadWrapper.unPark(tw);
         }
     }

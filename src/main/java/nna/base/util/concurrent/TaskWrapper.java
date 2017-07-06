@@ -1,7 +1,5 @@
 package nna.base.util.concurrent;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author NNA-SHUAI
@@ -9,7 +7,6 @@ import java.util.concurrent.Executors;
  **/
 
  class TaskWrapper implements Runnable{
-    static final TaskWrapper DO_NOTHING=new TaskWrapper(null,null,null,null,null);
 
     private AbstractTask abstractTask;
     private Object att;
@@ -19,6 +16,8 @@ import java.util.concurrent.Executors;
     private Long enQueueTime=System.currentTimeMillis();
     private Long deQueueTime;
     private Long delayTime;
+    private Boolean isSeq;
+    private Integer workIndex;//
 
     private Integer taskPriorLevel;
     private Integer failTryTime;
@@ -30,12 +29,14 @@ import java.util.concurrent.Executors;
              Integer taskType,
              Boolean isNewThreadToExe,
              Long delayTime){
+        this.workIndex=abstractTask.getWorkIndexGen().getAndIncrement();
         this.delayTime=delayTime;
         this.isNewThreadToExe=isNewThreadToExe;
         this.att=att;
         this.abstractTask=abstractTask;
         this.taskType=taskType;
         this.taskStatus=AbstractTask.START_STATUS;
+        this.isSeq=abstractTask.getSeq();
     }
 
     public void run() {
@@ -49,28 +50,41 @@ import java.util.concurrent.Executors;
         doInTask();
     }
 
-    boolean doTask(){
+    TaskWrapper doTask(){
         if(isNewThreadToExe){
             this.taskStatus=AbstractTask.WORK_STATUS;
             AbstractEnAndDeSgy.cached.submit(this);
-            return true;
+            return null;
         }
         return doInTask();
     }
 
-    private boolean doInTask() {
-        boolean isSuccess=false;
+    private TaskWrapper doInTask() {
         try{
-            this.taskStatus=AbstractTask.WORK_STATUS;
-            returnObject=abstractTask.doTask(att,taskType);
-            this.deQueueTime=System.currentTimeMillis();
-            this.taskStatus=AbstractTask.END_STATUS;
-            return true;
+            if(!isSeq){
+                this.taskStatus=AbstractTask.WORK_STATUS;
+                returnObject=abstractTask.doTask(att,taskType);
+                this.deQueueTime=System.currentTimeMillis();
+                this.taskStatus=AbstractTask.END_STATUS;
+                return null;
+            }else{
+                Integer currentWorkIndex=abstractTask.getCurrentWorkIndex();
+                if(workIndex==currentWorkIndex){
+                    this.taskStatus=AbstractTask.WORK_STATUS;
+                    returnObject=abstractTask.doTask(att,taskType);
+                    this.deQueueTime=System.currentTimeMillis();
+                    this.taskStatus=AbstractTask.END_STATUS;
+                    abstractTask.setCurrentWorkIndex(++currentWorkIndex);
+                    return null;
+                }else{
+                    return this;
+                }
+            }
         }catch (Exception e){
             e.printStackTrace();
             this.taskStatus=AbstractTask.FAIL_STATUS;
+            return null;
         }
-        return isSuccess;
     }
 
      AbstractTask getAbstractTask() {
@@ -159,5 +173,21 @@ import java.util.concurrent.Executors;
 
     public void setDelayTime(Long delayTime) {
         this.delayTime = delayTime;
+    }
+
+    public Boolean getSeq() {
+        return isSeq;
+    }
+
+    public void setSeq(Boolean seq) {
+        isSeq = seq;
+    }
+
+    public Integer getWorkIndex() {
+        return workIndex;
+    }
+
+    public void setWorkIndex(Integer workIndex) {
+        this.workIndex = workIndex;
     }
 }

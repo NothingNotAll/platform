@@ -56,15 +56,13 @@ import java.util.concurrent.locks.ReentrantLock;
         return tempList;
     }
 
-    static TaskWrapper[] deQueues(ConcurrentHashMap<String,QueueWrapper[]> qwMap){
+    static void deQueues(LinkedList<TaskWrapper> temp,ConcurrentHashMap<String,QueueWrapper[]> qwMap){
         Iterator<Map.Entry<String,QueueWrapper[]>> iterator=qwMap.entrySet().iterator();
-        LinkedList<TaskWrapper> temp=new LinkedList<TaskWrapper>();
         while(iterator.hasNext()){
             Map.Entry<String,QueueWrapper[]> entry=iterator.next();
             QueueWrapper[] qws=entry.getValue();
             deQueues(temp,qws);
         }
-        return temp.toArray(new TaskWrapper[0]);
     }
 
     private static void deQueues(LinkedList<TaskWrapper> temp,QueueWrapper[] qws){

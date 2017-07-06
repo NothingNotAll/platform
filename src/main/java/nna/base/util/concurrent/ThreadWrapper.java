@@ -1,6 +1,7 @@
 package nna.base.util.concurrent;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,7 +33,8 @@ import java.util.concurrent.locks.LockSupport;
     /*
     * for minus gc
     * */
-    TaskWrapper[] taskWrappers;
+    LinkedList<TaskWrapper> temp=new LinkedList<TaskWrapper>();
+    Iterator<TaskWrapper> iterator=temp.iterator();
     int taskCount;
     TaskWrapper tempTaskWrapper;
     int index;
@@ -40,15 +42,18 @@ import java.util.concurrent.locks.LockSupport;
     public void run() {
         thread=Thread.currentThread();
         while(true){
-            taskWrappers=QueueWrapper.deQueues(qwMap);
-            taskCount=taskWrappers.length;
+            QueueWrapper.deQueues(temp,qwMap);
+            taskCount=temp.size();
             if(taskCount==0){
                 park();
             }else{
                 index=0;
                 for(;index < taskCount;index++){
-                    tempTaskWrapper=taskWrappers[index];
-                    doTask(tempTaskWrapper);
+                    tempTaskWrapper=temp.poll();
+                    tempTaskWrapper=doTask(tempTaskWrapper);
+                    if(tempTaskWrapper!=null){
+                        temp.add(tempTaskWrapper);
+                    }
                     unParkTimes.getAndIncrement();
                 }
             }
@@ -90,19 +95,16 @@ import java.util.concurrent.locks.LockSupport;
         minLoadTw.unPark();
     }
 
-    private Boolean doTask(TaskWrapper tempTaskWrapper) {
-        if(tempTaskWrapper.equals(TaskWrapper.DO_NOTHING)){
-            return false;
-        }
+    private TaskWrapper doTask(TaskWrapper tempTaskWrapper) {
         delayTime=tempTaskWrapper.getDelayTime();
         sleep(tempTaskWrapper,delayTime);
+        TaskWrapper taskWrapper=tempTaskWrapper.doTask();
         if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
             MonitorTask.removeMonitor(tempTaskWrapper.getAbstractTask());
             qwMap.remove(tempTaskWrapper.getAbstractTask().getgTaskId());
             tempTaskWrapper.getAbstractTask().setTaskStatus(AbstractTask.OVER);
-            return true;
         }
-        return false;
+        return taskWrapper;
     }
 
     private void sleep(TaskWrapper tempTaskWrapper, Long delayTime) {
@@ -114,7 +116,6 @@ import java.util.concurrent.locks.LockSupport;
                 e.printStackTrace();
             }
         }
-        tempTaskWrapper.doTask();
     }
 
     public Thread getThread() {
