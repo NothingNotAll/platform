@@ -54,10 +54,8 @@ import java.util.concurrent.ConcurrentHashMap;
     private ConcurrentHashMap<String,QueueWrapper[]> map=new ConcurrentHashMap<String, QueueWrapper[]>();
     public Object doTask(Object att, int taskType) {
             try{
-                twMap.putAll(ThreadWrapper.noSeqTwMap);
-//                twMap.putAll(ThreadWrapper.seqTwMap);
+                twMap=ThreadWrapper.twMap;
                 map.putAll(QueueWrapper.noSeqQwMap);
-//                map.putAll(QueueWrapper.seqQwMap);
                 while(true){
                     try{
                         iterator=map.entrySet().iterator();
@@ -82,19 +80,23 @@ import java.util.concurrent.ConcurrentHashMap;
             return null;
     }
 
-    HashMap<Long,ThreadWrapper> twMap=new HashMap<Long, ThreadWrapper>();
+    ConcurrentHashMap<Long,ThreadWrapper> twMap;
     Iterator<Map.Entry<Long, ThreadWrapper>> ts;
     int count;
     BlockingQueue temp;
     private void monitor(String clazzNm,QueueWrapper[] qws) {
          ts = twMap.entrySet().iterator();
         Long index;
-        while(ts.hasNext()){
-            Map.Entry<Long,ThreadWrapper> entry=ts.next();
-            ThreadWrapper t=entry.getValue();
-            index=entry.getKey();
-            System.out.println(t.getThread().getState());
-            log.log("No."+index+":"+t.getThread().getState(), Log.INFO);
+        try{
+            while(ts.hasNext()){
+                Map.Entry<Long,ThreadWrapper> entry=ts.next();
+                ThreadWrapper t=entry.getValue();
+                index=entry.getKey();
+                System.out.println(t.getThread().getState());
+                log.log("No."+index+":"+t.getThread().getState(), Log.INFO);
+            }
+        }catch (Exception e){
+            e.fillInStackTrace();
         }
         String str1="GLOBAL TASK ID:"+clazzNm;
         log.log(str1, Log.INFO);

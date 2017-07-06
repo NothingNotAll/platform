@@ -14,7 +14,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
  class QueueWrapper {
     static final ConcurrentHashMap<String,QueueWrapper[]> noSeqQwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
-//    static final ConcurrentHashMap<String,QueueWrapper[]> seqQwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
 
     private BlockingQueue<TaskWrapper> queue;
     private ReentrantLock qLock;
