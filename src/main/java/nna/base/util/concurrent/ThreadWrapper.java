@@ -14,11 +14,11 @@ import java.util.concurrent.locks.LockSupport;
  **/
 
  class ThreadWrapper implements Runnable{
-     static AtomicBoolean isSeqInit=new AtomicBoolean(false);
+//     static AtomicBoolean isSeqInit=new AtomicBoolean(false);
      static ConcurrentHashMap<Long,ThreadWrapper> noSeqTwMap=new ConcurrentHashMap<Long, ThreadWrapper>();
-     static ConcurrentHashMap<Long,ThreadWrapper> seqTwMap=new ConcurrentHashMap<Long, ThreadWrapper>();
+//     static ConcurrentHashMap<Long,ThreadWrapper> seqTwMap=new ConcurrentHashMap<Long, ThreadWrapper>();
      static AtomicLong noSeqTwSeqGen=new AtomicLong();
-     static AtomicLong seqTwSeqGen=new AtomicLong();
+//     static AtomicLong seqTwSeqGen=new AtomicLong();
 
      private Thread thread;
      private ConcurrentHashMap<String,QueueWrapper[]> qwMap;

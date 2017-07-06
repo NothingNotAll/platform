@@ -55,9 +55,9 @@ import java.util.concurrent.ConcurrentHashMap;
     public Object doTask(Object att, int taskType) {
             try{
                 twMap.putAll(ThreadWrapper.noSeqTwMap);
-                twMap.putAll(ThreadWrapper.seqTwMap);
+//                twMap.putAll(ThreadWrapper.seqTwMap);
                 map.putAll(QueueWrapper.noSeqQwMap);
-                map.putAll(QueueWrapper.seqQwMap);
+//                map.putAll(QueueWrapper.seqQwMap);
                 while(true){
                     try{
                         iterator=map.entrySet().iterator();

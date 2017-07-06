@@ -29,7 +29,7 @@ package nna.base.util.concurrent;
              Integer taskType,
              Boolean isNewThreadToExe,
              Long delayTime){
-         this.isSeq=abstractTask.getSeq();
+        this.isSeq=abstractTask.getSeq();
         this.workIndex=isSeq?abstractTask.getWorkIndexGen().getAndIncrement():null;
         this.delayTime=delayTime;
         this.isNewThreadToExe=isNewThreadToExe;
@@ -66,7 +66,7 @@ package nna.base.util.concurrent;
                 return null;
             }else{
                 Integer currentWorkIndex=abstractTask.getCurrentWorkIndex();
-                if(workIndex==currentWorkIndex){
+                if(workIndex.equals(currentWorkIndex)){
                     doInnerTask();
                     abstractTask.setCurrentWorkIndex(++currentWorkIndex);
                     return null;
