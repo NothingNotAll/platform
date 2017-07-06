@@ -34,7 +34,6 @@ import java.util.concurrent.locks.LockSupport;
     * for minus gc
     * */
     LinkedList<TaskWrapper> temp=new LinkedList<TaskWrapper>();
-    Iterator<TaskWrapper> iterator=temp.iterator();
     int taskCount;
     TaskWrapper tempTaskWrapper;
     int index;

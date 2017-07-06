@@ -29,14 +29,14 @@ package nna.base.util.concurrent;
              Integer taskType,
              Boolean isNewThreadToExe,
              Long delayTime){
-        this.workIndex=abstractTask.getWorkIndexGen().getAndIncrement();
+         this.isSeq=abstractTask.getSeq();
+        this.workIndex=isSeq?abstractTask.getWorkIndexGen().getAndIncrement():null;
         this.delayTime=delayTime;
         this.isNewThreadToExe=isNewThreadToExe;
         this.att=att;
         this.abstractTask=abstractTask;
         this.taskType=taskType;
         this.taskStatus=AbstractTask.START_STATUS;
-        this.isSeq=abstractTask.getSeq();
     }
 
     public void run() {
