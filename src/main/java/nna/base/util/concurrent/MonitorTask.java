@@ -47,10 +47,11 @@ import java.util.concurrent.ConcurrentHashMap;
          addNewTask(this,null,INIT_TASK_TYPE,true,null);
      }
 
-    QueueWrapper[] qws;
-    String clazzNm;
-    Iterator<Map.Entry<String,QueueWrapper[]>> iterator;
-    ConcurrentHashMap<String,QueueWrapper[]> map=new ConcurrentHashMap<String, QueueWrapper[]>();
+    //for minus gc
+    private QueueWrapper[] qws;
+    private String clazzNm;
+    private Iterator<Map.Entry<String,QueueWrapper[]>> iterator;
+    private ConcurrentHashMap<String,QueueWrapper[]> map=new ConcurrentHashMap<String, QueueWrapper[]>();
     public Object doTask(Object att, int taskType) {
             try{
                 twMap.putAll(ThreadWrapper.noSeqTwMap);
