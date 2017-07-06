@@ -62,18 +62,12 @@ package nna.base.util.concurrent;
     private TaskWrapper doInTask() {
         try{
             if(!isSeq){
-                this.taskStatus=AbstractTask.WORK_STATUS;
-                returnObject=abstractTask.doTask(att,taskType);
-                this.deQueueTime=System.currentTimeMillis();
-                this.taskStatus=AbstractTask.END_STATUS;
+                doInnerTask();
                 return null;
             }else{
                 Integer currentWorkIndex=abstractTask.getCurrentWorkIndex();
                 if(workIndex==currentWorkIndex){
-                    this.taskStatus=AbstractTask.WORK_STATUS;
-                    returnObject=abstractTask.doTask(att,taskType);
-                    this.deQueueTime=System.currentTimeMillis();
-                    this.taskStatus=AbstractTask.END_STATUS;
+                    doInnerTask();
                     abstractTask.setCurrentWorkIndex(++currentWorkIndex);
                     return null;
                 }else{
@@ -85,6 +79,12 @@ package nna.base.util.concurrent;
             this.taskStatus=AbstractTask.FAIL_STATUS;
             return null;
         }
+    }
+    private void doInnerTask() throws Exception {
+        this.taskStatus=AbstractTask.WORK_STATUS;
+        returnObject=abstractTask.doTask(att,taskType);
+        this.deQueueTime=System.currentTimeMillis();
+        this.taskStatus=AbstractTask.END_STATUS;
     }
 
      AbstractTask getAbstractTask() {
