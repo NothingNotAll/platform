@@ -26,32 +26,33 @@ public abstract class AbstractTask {
 
     private Long gTaskId;
     private String taskName;
-    private int taskCount;
     private volatile int taskStatus;
-    private volatile boolean isInit=false;
-    private ReentrantLock initLock=new ReentrantLock();
-    private Long threadId;
-    private String threadName;
-    private Boolean isSeq;
+    private Long initThreadId;
+    private String initThreadNm;
     private AtomicInteger workIndexGen;
     private volatile Integer currentWorkIndex;
+    private Boolean isSeq;
+
+    //for Seq Task
     private Long twId;
-    private ReentrantLock setLock;
+    private Integer abstractEnAndDeSgyId;
 
     public AbstractTask(Boolean isSeq){
         this.isSeq=isSeq;
-        if(isSeq){
-            setLock=new ReentrantLock();
-        }
         gTaskId=gTaskIdGen.getAndIncrement();
         String className=getClass().getCanonicalName();
         this.taskName=className+"_NO."+gTaskId;
         Thread thread=Thread.currentThread();
-        threadId=thread.getId();
-        threadName=thread.getName();
+        initThreadId=thread.getId();
+        initThreadNm=thread.getName();
         currentWorkIndex=0;
         workIndexGen=new AtomicInteger();
-        AbstractEnAndDeSgy.abstractEnAndDeSgy.initStrategy(gTaskId,taskName,isSeq);
+        AbstractEnAndDeSgy abstractEnAndDeSgy=AbstractEnAndDeSgy.getMinLoad(null);
+        if(isSeq){
+            abstractEnAndDeSgyId=abstractEnAndDeSgy.getWorkerId();
+            this.twId=abstractEnAndDeSgy.getThreadWrapper().getTwSeqId();
+        }
+        abstractEnAndDeSgy.initStrategy(gTaskId,taskName,isSeq);
         MonitorTask.addMonitor(this);
     }
 
@@ -64,14 +65,18 @@ public abstract class AbstractTask {
             Boolean isNewTToExe,
             Long delayTime){
         TaskWrapper taskWrapper=new TaskWrapper(abstractTask,att,taskType,isNewTToExe,delayTime);
-        AbstractEnAndDeSgy.abstractEnAndDeSgy.addNewTask(gTaskId,taskWrapper);
+        if(isSeq){
+            AbstractEnAndDeSgy.getMinLoad(abstractEnAndDeSgyId).addNewTask(gTaskId,taskWrapper);
+        }else{
+            AbstractEnAndDeSgy.getMinLoad(null).addNewTask(gTaskId,taskWrapper);
+        }
     }
 
     public Long getgTaskId() {
         return gTaskId;
     }
 
-    public void setgTaskId(Long gTaskId) {
+    public void setGTaskId(Long gTaskId) {
         this.gTaskId = gTaskId;
     }
 
@@ -83,52 +88,12 @@ public abstract class AbstractTask {
         this.taskName = taskName;
     }
 
-    public int getTaskCount() {
-        return taskCount;
-    }
-
-    public void setTaskCount(int taskCount) {
-        this.taskCount = taskCount;
-    }
-
     public int getTaskStatus() {
         return taskStatus;
     }
 
     public void setTaskStatus(int taskStatus) {
         this.taskStatus = taskStatus;
-    }
-
-    public boolean isInit() {
-        return isInit;
-    }
-
-    public void setInit(boolean init) {
-        isInit = init;
-    }
-
-    public ReentrantLock getInitLock() {
-        return initLock;
-    }
-
-    public void setInitLock(ReentrantLock initLock) {
-        this.initLock = initLock;
-    }
-
-    public Long getThreadId() {
-        return threadId;
-    }
-
-    public void setThreadId(Long threadId) {
-        this.threadId = threadId;
-    }
-
-    public String getThreadName() {
-        return threadName;
-    }
-
-    public void setThreadName(String threadName) {
-        this.threadName = threadName;
     }
 
     public Boolean getSeq() {
@@ -163,37 +128,27 @@ public abstract class AbstractTask {
         return twId;
     }
 
-    public void setTwId(Long twId) {
-        if(this.twId!=null){
-            return ;
-        }
-        boolean locked=false;
-        try{
-            if(setLock.tryLock()){
-                locked=true;
-                if(this.twId!=null){
-                    return ;
-                }
-                this.twId=twId;
-                return ;
-            }else{
-                return ;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(locked){
-                setLock.unlock();
-            }
-        }
-        this.twId = twId;
+    public Integer getAbstractEnAndDeSgyId() {
+        return abstractEnAndDeSgyId;
     }
 
-    public ReentrantLock getSetLock() {
-        return setLock;
+    public void setAbstractEnAndDeSgyId(Integer abstractEnAndDeSgyId) {
+        this.abstractEnAndDeSgyId = abstractEnAndDeSgyId;
     }
 
-    public void setSetLock(ReentrantLock setLock) {
-        this.setLock = setLock;
+    public Long getInitThreadId() {
+        return initThreadId;
+    }
+
+    public void setInitThreadId(Long initThreadId) {
+        this.initThreadId = initThreadId;
+    }
+
+    public String getInitThreadNm() {
+        return initThreadNm;
+    }
+
+    public void setInitThreadNm(String initThreadNm) {
+        this.initThreadNm = initThreadNm;
     }
 }

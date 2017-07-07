@@ -114,6 +114,21 @@ import java.util.concurrent.locks.LockSupport;
         }
     }
 
+    static int getLoadCount(ThreadWrapper threadWrapper){
+       ConcurrentHashMap<String,QueueWrapper[]> map=threadWrapper.getQwMap();
+       Iterator<Map.Entry<String,QueueWrapper[]>> iterator=map.entrySet().iterator();
+       Map.Entry<String,QueueWrapper[]> entry;
+       int loadCount=0;
+       while(iterator.hasNext()){
+           entry=iterator.next();
+           QueueWrapper[] qws=entry.getValue();
+           for(QueueWrapper qw:qws){
+               loadCount+=qw.getQueue().size();
+           }
+       }
+       return loadCount;
+    }
+
     static ThreadWrapper unPark(){
         ThreadWrapper minLoadTw = null;
         Iterator<Map.Entry<Long,ThreadWrapper>> iterator=twMap.entrySet().iterator();
@@ -143,7 +158,7 @@ import java.util.concurrent.locks.LockSupport;
     private TaskWrapper doTask(TaskWrapper tempTaskWrapper) {
         delayTime=tempTaskWrapper.getDelayTime();
         sleep(tempTaskWrapper,delayTime);
-        TaskWrapper taskWrapper=tempTaskWrapper.doTask(twSeqId);
+        TaskWrapper taskWrapper=tempTaskWrapper.doTask();
         if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
             MonitorTask.removeMonitor(tempTaskWrapper.getAbstractTask());
             qwMap.remove(tempTaskWrapper.getAbstractTask().getgTaskId());

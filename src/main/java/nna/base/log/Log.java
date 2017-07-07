@@ -7,6 +7,7 @@ import nna.base.util.concurrent.AbstractTask;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author NNA-SHUAI
@@ -33,6 +34,8 @@ public class Log extends AbstractTask {
     private volatile boolean isSynWrite=false;
     private BufferedWriter writer;
     private StringBuilder logStrBuilder=new StringBuilder("");
+    private ReentrantLock initLock=new ReentrantLock();
+    private volatile boolean isInit=false;
 
     public Log(String logDir,
                String logFileName,
@@ -65,7 +68,7 @@ public class Log extends AbstractTask {
             String codeExecuteMethodName=ste.getMethodName();
             int codeExecuteLine=ste.getLineNumber();
             String time="["+format.format(System.currentTimeMillis())+"]";
-            String exeInfo=time+"["+getThreadName()+"]"+"["+getThreadId()+"]"+"["+codeExecuteClassName+"-"+codeExecuteMethodName+"-"+codeExecuteLine+"]\r\n";
+            String exeInfo=time+"["+getInitThreadNm()+"]"+"["+getInitThreadId()+"]"+"["+codeExecuteClassName+"-"+codeExecuteMethodName+"-"+codeExecuteLine+"]\r\n";
             time="["+format.format(System.currentTimeMillis())+"]";
             time+="["+logLevel+"] ";
             time+=log;
@@ -162,6 +165,22 @@ public class Log extends AbstractTask {
     @Override
     protected void addNewTask(AbstractTask abstractTask, Object att, int taskType, Boolean isNewTToExe, Long delayTime) {
         super.addNewTask(abstractTask, att, taskType, isNewTToExe, delayTime);
+    }
+
+    public ReentrantLock getInitLock() {
+        return initLock;
+    }
+
+    public void setInitLock(ReentrantLock initLock) {
+        this.initLock = initLock;
+    }
+
+    public boolean isInit() {
+        return isInit;
+    }
+
+    public void setInit(boolean init) {
+        isInit = init;
     }
 
     public static Log getLog(

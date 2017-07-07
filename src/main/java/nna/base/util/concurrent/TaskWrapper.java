@@ -44,28 +44,25 @@ package nna.base.util.concurrent;
             if(delayTime!=null){
                 Thread.sleep(delayTime);
             }
+            doInnerTask();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        doInTask(-1L);
     }
 
-    TaskWrapper doTask(Long twId){
+    TaskWrapper doTask()  {
         if(isNewThreadToExe){
             this.taskStatus=AbstractTask.WORK_STATUS;
-            AbstractEnAndDeSgy.abstractEnAndDeSgy.cached.submit(this);
+            AbstractEnAndDeSgy.cached.submit(this);
             return null;
         }
-        return doInTask(twId);
-    }
-
-    private TaskWrapper doInTask(Long twId) {
         try{
             if(!isSeq){
                 doInnerTask();
                 return null;
             }else{
-                abstractTask.setTwId(twId);
                 Integer currentWorkIndex=abstractTask.getCurrentWorkIndex();
                 if(workIndex.equals(currentWorkIndex)){
                     doInnerTask();
@@ -81,6 +78,7 @@ package nna.base.util.concurrent;
             return null;
         }
     }
+
     private void doInnerTask() throws Exception {
         this.taskStatus=AbstractTask.WORK_STATUS;
         returnObject=abstractTask.doTask(att,taskType);

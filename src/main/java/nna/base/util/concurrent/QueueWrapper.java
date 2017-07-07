@@ -69,7 +69,9 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    private static void deQueues(LinkedList<TaskWrapper> temp,QueueWrapper[] qws,Long twId){
+    private static void deQueues(LinkedList<TaskWrapper> temp,
+                                 QueueWrapper[] qws,
+                                 Long twId){
         QueueWrapper queueWrapper;
         ReentrantLock lock;
         BlockingQueue<TaskWrapper> queue;
@@ -101,7 +103,11 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    static QueueWrapper[] addQueue(String gTaskIdStr,Long gTaskId,Long twId,Integer queueCount,Boolean isSeq){
+    static QueueWrapper[] initQws(String gTaskIdStr,
+                                   Long gTaskId,
+                                   Long twId,
+                                   Integer queueCount,
+                                   Boolean isSeq){
         QueueWrapper[] newQws=new QueueWrapper[queueCount];
         for(int index=0;index < queueCount;index++){
             newQws[index]=new QueueWrapper(new LinkedBlockingDeque<TaskWrapper>());
