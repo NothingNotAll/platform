@@ -71,9 +71,7 @@ package nna.base.util.concurrent;
                     abstractTask.setCurrentWorkIndex(++currentWorkIndex);
                     return null;
                 }else{
-//                    Long gTaskId=AbstractTask.getGTaskIdGen().getAndIncrement();
-//                    AbstractEnAndDeSgy.initStrategy(gTaskId,"GLOBAL_SEQ_TASK_NO_"+gTaskId);
-//                    AbstractEnAndDeSgy.addNewTask(gTaskId,this);
+                    AbstractEnAndDeSgy.addNewTask(this);
                     return this;
                 }
             }

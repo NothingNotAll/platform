@@ -41,25 +41,27 @@ import java.util.concurrent.locks.LockSupport;
         while(true){
             QueueWrapper.deQueues(temp,qwMap);
             taskCount=temp.size();
-            if(taskCount==0){
-                park();
-            }else{
-                for(index=0;index < taskCount;index++){
-                    tempTaskWrapper=temp.poll();
-                    tempTaskWrapper=doTask(tempTaskWrapper);
-                    if(tempTaskWrapper!=null){
-                        temp.add(tempTaskWrapper);
-                    }
-                    unParkTimes.getAndIncrement();
-                }
+            Integer effectiveCount=0;
+            for(index=0;index < taskCount;index++){
+                tempTaskWrapper=temp.poll();
+                Object object=doTask(tempTaskWrapper);
+                effectiveCount=object==null?effectiveCount+=0:effectiveCount++;
+                unParkTimes.getAndIncrement();
             }
-
-//            for(index=0;index < taskCount;index++){
-//                tempTaskWrapper=temp.poll();
-//                doTask(tempTaskWrapper);
-//                unParkTimes.getAndIncrement();
+            System.out.println(effectiveCount/taskCount+"."+effectiveCount%taskCount+"%");
+            park();
+//            if(taskCount==0){
+//                park();
+//            }else{
+//                for(index=0;index < taskCount;index++){
+//                    tempTaskWrapper=temp.poll();
+//                    tempTaskWrapper=doTask(tempTaskWrapper);
+//                    if(tempTaskWrapper!=null){
+//                        temp.add(tempTaskWrapper);
+//                    }
+//                    unParkTimes.getAndIncrement();
+//                }
 //            }
-//            park();
         }
     }
 

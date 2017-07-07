@@ -14,6 +14,17 @@ import java.util.concurrent.*;
  class AbstractEnAndDeSgy{
     static final ExecutorService cached= Executors.newCachedThreadPool();
     private static volatile AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
+    static{
+        AbstractEnAndDeSgy.initStrategy(AbstractTask.getGTaskIdGen().getAndIncrement(),"GLOBAL_SEQ_QUEUE");
+    }
+
+    static void addNewTask(TaskWrapper taskWrapper){
+        while(QueueWrapper.noSeqQwMap.get("GLOBAL_SEQ_QUEUE")==null){
+            continue;
+        }
+        QueueWrapper.enQueue(QueueWrapper.noSeqQwMap.get("GLOBAL_SEQ_QUEUE"),taskWrapper);
+        ThreadWrapper.unPark(ThreadWrapper.twMap);
+    }
 
     private  ConcurrentHashMap<Long,String> gTaskIdToClazzNmMap=new ConcurrentHashMap<Long, String>();
 
