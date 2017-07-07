@@ -109,7 +109,6 @@ public class Log extends AbstractTask {
                 }
                 Long logSeq=logSeqGen.getAndIncrement();
                 File logFile=new File(logFileName+"-"+logSeq+".log");
-                //threadSafe
                 if(!logFile.exists()){
                     logFile.createNewFile();
                 }

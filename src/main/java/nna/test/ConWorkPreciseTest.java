@@ -8,7 +8,7 @@ import java.io.*;
  */
 public class ConWorkPreciseTest {
     public static void main(String[] args) throws IOException {
-        test("C:\\LOG\\20170705\\TEST-CON-LOG\\");
+        test("C:\\LOG\\20170707\\TEST-CON-LOG");
     }
     static void test(String path) throws IOException {
         File file=new File(path);

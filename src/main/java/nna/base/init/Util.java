@@ -116,8 +116,4 @@ import java.sql.SQLException;
     public static void initTaskManager() {
 
     }
-
-//    public static void initTaskManager() {
-//        AbstractTask.init();
-//    }
 }

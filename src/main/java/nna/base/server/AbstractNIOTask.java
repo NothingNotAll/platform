@@ -35,8 +35,8 @@ import java.util.concurrent.locks.ReentrantLock;
         String ip=endConfig.getIp();
         int port=endConfig.getPort();
         this.socketAddress=new InetSocketAddress(ip,port);
-        addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
         register();
+        addNewTask(this,null,INIT_TASK_TYPE,false, 0L);
     }
 
     protected abstract void register() throws IOException;

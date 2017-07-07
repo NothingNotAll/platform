@@ -17,15 +17,18 @@ import java.util.concurrent.locks.LockSupport;
  class ThreadWrapper implements Runnable{
      static ConcurrentHashMap<Long,ThreadWrapper> twMap=new ConcurrentHashMap<Long, ThreadWrapper>();
      static AtomicLong twSeqGen=new AtomicLong();
+    static AtomicLong twSeqGen2=new AtomicLong();
 
      private Thread thread;
      private ConcurrentHashMap<String,QueueWrapper[]> qwMap;
      private Boolean isSeq=false;
      private AtomicLong unParkTimes=new AtomicLong();
+     private Long twSeqId;
 
      ThreadWrapper(ConcurrentHashMap<String,QueueWrapper[]> qwMap,Boolean isSeq){
         this.qwMap=qwMap;
         this.isSeq=isSeq;
+        this.twSeqId=twSeqGen2.getAndIncrement();
     }
 
     /*
@@ -39,29 +42,23 @@ import java.util.concurrent.locks.LockSupport;
     public void run() {
         thread=Thread.currentThread();
         while(true){
-            QueueWrapper.deQueues(temp,qwMap);
-            taskCount=temp.size();
-            Integer effectiveCount=0;
-            for(index=0;index < taskCount;index++){
-                tempTaskWrapper=temp.poll();
-                Object object=doTask(tempTaskWrapper);
-                effectiveCount=object==null?effectiveCount+=0:effectiveCount++;
-                unParkTimes.getAndIncrement();
+            try{
+                QueueWrapper.deQueues(temp,qwMap);
+                taskCount=temp.size();
+                Integer effectiveCount=0;
+                for(index=0;index < taskCount;index++){
+                    tempTaskWrapper=temp.poll();
+                    Object object=doTask(tempTaskWrapper);
+                    if(object==null){
+                        effectiveCount++;
+                    }
+                    unParkTimes.getAndIncrement();
+                }
+                System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount);
+                park();
+            }catch (Exception e){
+                e.fillInStackTrace();
             }
-            System.out.println(effectiveCount/taskCount+"."+effectiveCount%taskCount+"%");
-            park();
-//            if(taskCount==0){
-//                park();
-//            }else{
-//                for(index=0;index < taskCount;index++){
-//                    tempTaskWrapper=temp.poll();
-//                    tempTaskWrapper=doTask(tempTaskWrapper);
-//                    if(tempTaskWrapper!=null){
-//                        temp.add(tempTaskWrapper);
-//                    }
-//                    unParkTimes.getAndIncrement();
-//                }
-//            }
         }
     }
 

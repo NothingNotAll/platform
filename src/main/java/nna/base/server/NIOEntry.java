@@ -22,9 +22,9 @@ public class NIOEntry {
         nioTask=new NIOClientTask(clientConfig,protocolProcessObject,protocolProcessMethod);
     }
 
-    public static void initSelector(){
+    public static void initSelector() {
         new NIOSelector();
-        System.out.println("NIO Selector");
+        System.out.println("NIO Selector init");
     }
 
     public AbstractNIOTask getNioTask() {

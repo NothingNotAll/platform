@@ -21,14 +21,20 @@ public class NIOSelector extends AbstractTask{
     private static NIOEventProcessor NIOEventProcessor =new NIOEventProcessor();
     private static volatile boolean isInit=false;
 
-    public NIOSelector() {
+    public NIOSelector()  {
         super(false);
-        addNewTask(this,null,INIT_TASK_TYPE,true, 0L);
+        addNewTask(this,null,INIT_TASK_TYPE,true,null);
     }
 
     static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
         System.out.println("registerChannel start");
         while(!isInit){
+            Thread.yield();
+            try {
+                Thread.sleep(10000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             continue;
         }
         selectableChannel.register(selector,ops,att);
