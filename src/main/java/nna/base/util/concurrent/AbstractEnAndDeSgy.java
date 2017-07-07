@@ -13,33 +13,23 @@ import java.util.concurrent.*;
 
  class AbstractEnAndDeSgy{
     static final ExecutorService cached= Executors.newCachedThreadPool();
-    private static final Long GSQID=AbstractTask.getGTaskIdGen().getAndIncrement();
     static{
-        AbstractEnAndDeSgy.initStrategy(GSQID,"GLOBAL_SEQ_QUEUE");
+        new AbstractEnAndDeSgy();
     }
-
-    static void addNewTask(TaskWrapper taskWrapper){
-        while(QueueWrapper.getQwMap().get("GLOBAL_SEQ_QUEUE")==null){
-            continue;
-        }
-        QueueWrapper.enQueue(GSQID,taskWrapper);
-        ThreadWrapper.unPark(ThreadWrapper.getTwMap());
-    }
-
     private AbstractEnAndDeSgy(){
-        for(int index=0;index <15;index++){
+        for(int index=0;index <1;index++){
             ThreadWrapper tw=new ThreadWrapper(QueueWrapper.getQwMap(),false);
             cached.submit(tw);
         }
     }
 
-    static void initStrategy(Long gTaskId,String className) {
-        QueueWrapper.addQueue(className,gTaskId);
+    static void initStrategy(Long gTaskId,String gTaskIdStr) {
+        QueueWrapper.addQueue(gTaskIdStr,gTaskId);
     }
 
     static void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
         QueueWrapper.enQueue(gTaskId,taskWrapper);
-        ThreadWrapper.unPark(ThreadWrapper.getTwMap());
+        ThreadWrapper.unPark(taskWrapper);
     }
 
     static void addThreads(Integer threadCount){

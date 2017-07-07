@@ -35,18 +35,20 @@ public abstract class AbstractTask {
     private Boolean isSeq;
     private AtomicInteger workIndexGen;
     private volatile Integer currentWorkIndex;
+    private volatile ThreadWrapper tw;
+    private ReentrantLock twLock=new ReentrantLock();
 
     public AbstractTask(Boolean isSeq){
         gTaskId=gTaskIdGen.getAndIncrement();
         String className=getClass().getCanonicalName();
-        this.taskName=className+"_"+gTaskId;
+        this.taskName=className+"_NO."+gTaskId;
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
         this.isSeq=isSeq;
         currentWorkIndex=0;
         workIndexGen=new AtomicInteger();
-        AbstractEnAndDeSgy.initStrategy(gTaskId,className);
+        AbstractEnAndDeSgy.initStrategy(gTaskId,taskName);
         MonitorTask.addMonitor(this);
     }
 
@@ -156,5 +158,32 @@ public abstract class AbstractTask {
 
     public static AtomicLong getGTaskIdGen() {
         return gTaskIdGen;
+    }
+
+    ThreadWrapper getTw() {
+        boolean locked=false;
+        try{
+            while(!twLock.tryLock()){
+                locked=true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(locked){
+                twLock.unlock();
+            }
+        }
+        return tw;
+    }
+
+    void setTw(ThreadWrapper tw) {
+        try{
+            twLock.lock();
+            this.tw = tw;
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            twLock.unlock();
+        }
     }
 }

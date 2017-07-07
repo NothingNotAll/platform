@@ -55,30 +55,30 @@ import java.util.concurrent.locks.LockSupport;
                 Integer effectiveCount=0;
                 for(index=0;index < taskCount;index++){
                     tempTaskWrapper=temp.poll();
-                    if(doTask(tempTaskWrapper)==null){
+                    TaskWrapper taskWrapper=doTask(tempTaskWrapper);
+                    if(taskWrapper!=null){
+                        temp.add(taskWrapper);
+                        taskWrapper.getAbstractTask().setTw(this);
+                    }else{
                         effectiveCount++;
                     }
                     unParkTimes.getAndIncrement();
                 }
-                System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount);
-                park();
+                if(taskCount==0){
+                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:0%");
+                }else{
+                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:"+effectiveCount/taskCount+"."+effectiveCount%taskCount+"%");
+                }
+                LockSupport.park();
             }catch (Exception e){
-                e.fillInStackTrace();
+                e.printStackTrace();
             }
         }
-    }
-
-    private void park() {
-        LockSupport.park();
     }
 
     private void unPark(){
         LockSupport.unpark(thread);
         unParkTimes.getAndIncrement();
-    }
-
-    static void unPark(ThreadWrapper tw){
-        LockSupport.unpark(tw.thread);
     }
 
     static ThreadWrapper[] addThreads(Integer addThreadCount){
@@ -92,8 +92,11 @@ import java.util.concurrent.locks.LockSupport;
         return newTws;
     }
 
-    static ThreadWrapper unPark(Map<Long,ThreadWrapper> map){
-        Iterator<Map.Entry<Long,ThreadWrapper>> iterator=map.entrySet().iterator();
+    static ThreadWrapper unPark(TaskWrapper tw){
+        if(tw.getSeq()){
+            return tw.getAbstractTask().getTw();
+        }
+        Iterator<Map.Entry<Long,ThreadWrapper>> iterator=twMap.entrySet().iterator();
         Map.Entry<Long,ThreadWrapper> entry;
         ThreadWrapper minLoadTw = null;
         ThreadWrapper tempLoadTw;
@@ -111,7 +114,9 @@ import java.util.concurrent.locks.LockSupport;
                 }
             }
         }
-        minLoadTw.unPark();
+        if(minLoadTw!=null){
+            minLoadTw.unPark();
+        }
         return minLoadTw;
     }
 

@@ -38,8 +38,8 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
     static QueueWrapper enQueue(Long gTaskId,TaskWrapper taskWrapper){
-        String clazzNm=QueueWrapper.gTaskIdToTaskNmMap.get(gTaskId);
-        QueueWrapper[] qws=QueueWrapper.qwMap.get(clazzNm);
+        String gTaskNm=QueueWrapper.gTaskIdToTaskNmMap.get(gTaskId);
+        QueueWrapper[] qws=QueueWrapper.qwMap.get(gTaskNm);
         ArrayList<QueueWrapper> minLoadQWs=getMinLoadQueueWrapper(qws);
         QueueWrapper minLoadQW=minLoadQWs.remove(qws.length-1);
         minLoadQW.queue.add(taskWrapper);
@@ -108,12 +108,11 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    static QueueWrapper[] addQueue(String clazzNm,Long gTaskId){
+    static QueueWrapper[] addQueue(String gTaskIdStr,Long gTaskId){
         QueueWrapper[] newQws=new QueueWrapper[1];
         for(int index=0;index < 1;index++){
             newQws[index]=new QueueWrapper(new LinkedBlockingDeque<TaskWrapper>());
         }
-        String gTaskIdStr=clazzNm+"_NO."+gTaskId;
         QueueWrapper.gTaskIdToTaskNmMap.put(gTaskId,gTaskIdStr);
         QueueWrapper.qwMap.putIfAbsent(gTaskIdStr,newQws);
         return newQws;

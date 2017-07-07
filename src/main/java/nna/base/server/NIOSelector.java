@@ -7,6 +7,7 @@ import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * NIOSelector
@@ -20,22 +21,22 @@ public class NIOSelector extends AbstractTask{
     private static Selector selector;
     private static NIOEventProcessor NIOEventProcessor =new NIOEventProcessor();
     private static volatile boolean isInit=false;
+    static private AtomicBoolean init=new AtomicBoolean(false);
 
     public NIOSelector()  {
         super(false);
         addNewTask(this,null,INIT_TASK_TYPE,true,null);
     }
 
-    static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws ClosedChannelException {
+    static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws IOException {
         System.out.println("registerChannel start");
-        while(!isInit){
-            Thread.yield();
-            try {
-                Thread.sleep(10000L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if(init.compareAndSet(false,true)){
+            selector=SelectorProvider.provider().openSelector();
+            isInit=true;
+        }else{
+            while(!isInit){
+                continue;
             }
-            continue;
         }
         selectableChannel.register(selector,ops,att);
         System.out.println("registerChannel Success");
@@ -47,13 +48,11 @@ public class NIOSelector extends AbstractTask{
     private Iterator<SelectionKey> iterator;
     private SelectionKey selectionKey;
     public void select() {
-        try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try{
-            while(true){
+        while(true){
+            while(!isInit){
+                continue;
+            }
+            try{
                 ioEventCount=selector.select();
                 Set<SelectionKey> set= selector.selectedKeys();
                 iterator=set.iterator();
@@ -63,11 +62,9 @@ public class NIOSelector extends AbstractTask{
                     iterator.remove();
                 }
                 destroy();
+            }catch (Exception e){
+                e.printStackTrace();
             }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-
         }
     }
 
@@ -81,14 +78,8 @@ public class NIOSelector extends AbstractTask{
     protected Object doTask(Object attach,int taskType) throws Exception {
         switch (taskType){
             case INIT_TASK_TYPE:
-                initSelector(attach);
                 select();
         }
         return null;
-    }
-
-    private void initSelector(Object attach) throws IOException {
-        selector=SelectorProvider.provider().openSelector();
-        isInit=true;
     }
 }

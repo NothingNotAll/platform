@@ -71,7 +71,6 @@ package nna.base.util.concurrent;
                     abstractTask.setCurrentWorkIndex(++currentWorkIndex);
                     return null;
                 }else{
-                    AbstractEnAndDeSgy.addNewTask(this);
                     return this;
                 }
             }

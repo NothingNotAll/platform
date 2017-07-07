@@ -108,7 +108,11 @@ public class Test {
                     public void run() {
                         int count=Marco.CON_WORK_COUNT-2;
                         for(int index = 1; index <= count; index++){
-                            log.log(""+index,10);
+                            try{
+                                log.log(""+index,10);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
                         }
                         log.close();
                     }
