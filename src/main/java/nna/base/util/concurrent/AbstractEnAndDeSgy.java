@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         if(isSeq){
             QueueWrapper.addQueue(gTaskIdStr,gTaskId,1);
         }else{
-            QueueWrapper.addQueue(gTaskIdStr,gTaskId,1);
+            QueueWrapper.addQueue(gTaskIdStr,gTaskId,15);
         }
     }
 
