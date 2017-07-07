@@ -50,32 +50,37 @@ package nna.base.util.concurrent;
         doInTask();
     }
 
-    void doTask(){
+    TaskWrapper doTask(){
         if(isNewThreadToExe){
             this.taskStatus=AbstractTask.WORK_STATUS;
             AbstractEnAndDeSgy.cached.submit(this);
+            return null;
         }
-        doInTask();
+        return doInTask();
     }
 
-    private void doInTask() {
+    private TaskWrapper doInTask() {
         try{
             if(!isSeq){
                 doInnerTask();
+                return null;
             }else{
                 Integer currentWorkIndex=abstractTask.getCurrentWorkIndex();
                 if(workIndex.equals(currentWorkIndex)){
                     doInnerTask();
                     abstractTask.setCurrentWorkIndex(++currentWorkIndex);
+                    return null;
                 }else{
-                    Long gTaskId=AbstractTask.getGTaskIdGen().getAndIncrement();
-                    AbstractEnAndDeSgy.initStrategy(gTaskId,"GLOBAL_SEQ_QUEUE"+gTaskId);
-                    AbstractEnAndDeSgy.addNewTask(gTaskId,this);
+//                    Long gTaskId=AbstractTask.getGTaskIdGen().getAndIncrement();
+//                    AbstractEnAndDeSgy.initStrategy(gTaskId,"GLOBAL_SEQ_TASK_NO_"+gTaskId);
+//                    AbstractEnAndDeSgy.addNewTask(gTaskId,this);
+                    return this;
                 }
             }
         }catch (Exception e){
             e.printStackTrace();
             this.taskStatus=AbstractTask.FAIL_STATUS;
+            return null;
         }
     }
     private void doInnerTask() throws Exception {
