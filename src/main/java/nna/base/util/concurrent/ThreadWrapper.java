@@ -14,9 +14,6 @@ import java.util.concurrent.locks.LockSupport;
  **/
 
  class ThreadWrapper implements Runnable{
-    static ConcurrentHashMap<Long, ThreadWrapper> getTwMap() {
-        return twMap;
-    }
     private static ConcurrentHashMap<Long,ThreadWrapper> twMap=new ConcurrentHashMap<Long, ThreadWrapper>();
     private static AtomicLong twSeqGen=new AtomicLong();
 
@@ -72,11 +69,6 @@ import java.util.concurrent.locks.LockSupport;
         }
     }
 
-    private void unPark(){
-        LockSupport.unpark(thread);
-        unParkTimes.getAndIncrement();
-    }
-
     static ThreadWrapper[] addThreads(Integer addThreadCount){
         if(addThreadCount==null){
             return null;
@@ -88,7 +80,12 @@ import java.util.concurrent.locks.LockSupport;
         return newTws;
     }
 
-    static ThreadWrapper unPark(TaskWrapper tw){
+    void unParkThread(){
+        LockSupport.unpark(thread);
+        unParkTimes.getAndIncrement();
+    }
+
+    static ThreadWrapper unPark(){
         ThreadWrapper minLoadTw = null;
         Iterator<Map.Entry<Long,ThreadWrapper>> iterator=twMap.entrySet().iterator();
         Map.Entry<Long,ThreadWrapper> entry;
@@ -109,6 +106,7 @@ import java.util.concurrent.locks.LockSupport;
         }
         if(minLoadTw!=null){
             minLoadTw.unPark();
+            minLoadTw.unParkTimes.getAndIncrement();
         }
         return minLoadTw;
     }
@@ -158,5 +156,9 @@ import java.util.concurrent.locks.LockSupport;
 
     public void setSeq(Boolean seq) {
         isSeq = seq;
+    }
+
+    static ConcurrentHashMap<Long, ThreadWrapper> getTwMap() {
+        return twMap;
     }
 }

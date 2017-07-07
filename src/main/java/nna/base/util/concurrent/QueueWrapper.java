@@ -96,9 +96,9 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    static QueueWrapper[] addQueue(String gTaskIdStr,Long gTaskId){
-        QueueWrapper[] newQws=new QueueWrapper[1];
-        for(int index=0;index < 1;index++){
+    static QueueWrapper[] addQueue(String gTaskIdStr,Long gTaskId,Integer queueCount){
+        QueueWrapper[] newQws=new QueueWrapper[queueCount];
+        for(int index=0;index < queueCount;index++){
             newQws[index]=new QueueWrapper(new LinkedBlockingDeque<TaskWrapper>());
         }
         QueueWrapper.gTaskIdToTaskNmMap.put(gTaskId,gTaskIdStr);

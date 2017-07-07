@@ -15,51 +15,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  **/
 
  class AbstractEnAndDeSgy{
+    static final ExecutorService cached= Executors.newCachedThreadPool();
     static AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
-    final ExecutorService cached= Executors.newCachedThreadPool();
-    static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> workersMap=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
-    static AtomicInteger wrokerSeqGen=new AtomicInteger();
-    static{
-//        for(int index=0;index < 15;index++){
-//            AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
-//            workersMap.put(wrokerSeqGen.getAndIncrement(),abstractEnAndDeSgy);
-//        }
-    }
 
-    private static void getMinLoadAbstractEnAndDeSgy(){
-        AbstractEnAndDeSgy abstractEnAndDeSgy=null;
-        Iterator<Map.Entry<Integer,AbstractEnAndDeSgy>> iterator=workersMap.entrySet().iterator();
-        while(iterator.hasNext()){
-            Map.Entry<Integer,AbstractEnAndDeSgy> entry=iterator.next();
-            if(abstractEnAndDeSgy==null){
-                abstractEnAndDeSgy=entry.getValue();
-
-            }else{
-
-            }
-        }
-    }
+    private ThreadWrapper threadWrapper;
 
     private AbstractEnAndDeSgy(){
         for(int index=0;index <1;index++){
-            ThreadWrapper tw=new ThreadWrapper(QueueWrapper.getQwMap(),false);
-            cached.submit(tw);
+            threadWrapper=new ThreadWrapper(QueueWrapper.getQwMap(),false);
+            cached.submit(threadWrapper);
         }
     }
 
-     void initStrategy(Long gTaskId,String gTaskIdStr) {
-        QueueWrapper.addQueue(gTaskIdStr,gTaskId);
+    void initStrategy(Long gTaskId,String gTaskIdStr,Integer loadCount) {
+        QueueWrapper.addQueue(gTaskIdStr,gTaskId,loadCount);
     }
 
-     void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
+    void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
         QueueWrapper.enQueue(gTaskId,taskWrapper);
-        ThreadWrapper.unPark(taskWrapper);
-    }
-
-     void addThreads(Integer threadCount){
-        ThreadWrapper[] tws=ThreadWrapper.addThreads(threadCount);
-        for(ThreadWrapper tw:tws){
-            cached.submit(tw);
-        }
+        threadWrapper.unParkThread();
     }
 }
