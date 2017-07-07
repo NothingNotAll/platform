@@ -2,6 +2,7 @@ package nna.base.util.concurrent;
 
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -12,9 +13,15 @@ import java.util.concurrent.*;
  **/
 
  class AbstractEnAndDeSgy{
-    static final ExecutorService cached= Executors.newCachedThreadPool();
+    static AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
+    final ExecutorService cached= Executors.newCachedThreadPool();
+    static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> workersMap=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
+    static AtomicInteger wrokerSeqGen=new AtomicInteger();
     static{
-        new AbstractEnAndDeSgy();
+//        for(int index=0;index < 15;index++){
+//            AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
+//            workersMap.put(wrokerSeqGen.getAndIncrement(),abstractEnAndDeSgy);
+//        }
     }
     private AbstractEnAndDeSgy(){
         for(int index=0;index <1;index++){
@@ -23,16 +30,16 @@ import java.util.concurrent.*;
         }
     }
 
-    static void initStrategy(Long gTaskId,String gTaskIdStr) {
+     void initStrategy(Long gTaskId,String gTaskIdStr) {
         QueueWrapper.addQueue(gTaskIdStr,gTaskId);
     }
 
-    static void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
+     void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
         QueueWrapper.enQueue(gTaskId,taskWrapper);
         ThreadWrapper.unPark(taskWrapper);
     }
 
-    static void addThreads(Integer threadCount){
+     void addThreads(Integer threadCount){
         ThreadWrapper[] tws=ThreadWrapper.addThreads(threadCount);
         for(ThreadWrapper tw:tws){
             cached.submit(tw);

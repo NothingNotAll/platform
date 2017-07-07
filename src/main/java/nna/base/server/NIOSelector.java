@@ -22,6 +22,7 @@ public class NIOSelector extends AbstractTask{
     private static NIOEventProcessor NIOEventProcessor =new NIOEventProcessor();
     private static volatile boolean isInit=false;
     static private AtomicBoolean init=new AtomicBoolean(false);
+    static private Object lock=new Object();
 
     public NIOSelector()  {
         super(false);
@@ -33,9 +34,18 @@ public class NIOSelector extends AbstractTask{
         if(init.compareAndSet(false,true)){
             selector=SelectorProvider.provider().openSelector();
             isInit=true;
+            synchronized (lock){
+                lock.notifyAll();
+            }
         }else{
-            while(!isInit){
-                continue;
+            synchronized (lock){
+                if(!isInit){
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         selectableChannel.register(selector,ops,att);
@@ -49,8 +59,14 @@ public class NIOSelector extends AbstractTask{
     private SelectionKey selectionKey;
     public void select() {
         while(true){
-            while(!isInit){
-                continue;
+            synchronized (lock){
+                if(!isInit){
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             try{
                 ioEventCount=selector.select();

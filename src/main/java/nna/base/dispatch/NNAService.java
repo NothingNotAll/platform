@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NNAService {
 
     private NNAService(){}
-    public static String service(Map<String,String[]> map){
+    public static String service(Map<String,String[]> map) throws Exception {
         String entryCode=map.get(Marco.HEAD_ENTRY_CODE)[0];
         MetaBean metaBean=getMetaBean(entryCode);
         getAndSetLog(metaBean);
@@ -42,7 +42,7 @@ public class NNAService {
         return rspStr;
     }
 
-    private static void getAndSetLog(MetaBean metaBean) {
+    private static void getAndSetLog(MetaBean metaBean) throws Exception {
         PlatformApp platformApp=metaBean.getPlatformApp();
         PlatformService platformService=metaBean.getPlatformService();
         PlatformSession platformSession=metaBean.getPlatformSession();

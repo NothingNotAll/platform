@@ -35,8 +35,6 @@ public abstract class AbstractTask {
     private Boolean isSeq;
     private AtomicInteger workIndexGen;
     private volatile Integer currentWorkIndex;
-    private volatile ThreadWrapper tw;
-    private ReentrantLock twLock=new ReentrantLock();
 
     public AbstractTask(Boolean isSeq){
         gTaskId=gTaskIdGen.getAndIncrement();
@@ -48,7 +46,7 @@ public abstract class AbstractTask {
         this.isSeq=isSeq;
         currentWorkIndex=0;
         workIndexGen=new AtomicInteger();
-        AbstractEnAndDeSgy.initStrategy(gTaskId,taskName);
+        AbstractEnAndDeSgy.abstractEnAndDeSgy.initStrategy(gTaskId,taskName);
         MonitorTask.addMonitor(this);
     }
 
@@ -61,7 +59,7 @@ public abstract class AbstractTask {
             Boolean isNewTToExe,
             Long delayTime){
         TaskWrapper taskWrapper=new TaskWrapper(abstractTask,att,taskType,isNewTToExe,delayTime);
-        AbstractEnAndDeSgy.addNewTask(gTaskId,taskWrapper);
+        AbstractEnAndDeSgy.abstractEnAndDeSgy.addNewTask(gTaskId,taskWrapper);
     }
 
     public Long getgTaskId() {
@@ -160,30 +158,48 @@ public abstract class AbstractTask {
         return gTaskIdGen;
     }
 
-    ThreadWrapper getTw() {
-        boolean locked=false;
-        try{
-            while(!twLock.tryLock()){
-                locked=true;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if(locked){
-                twLock.unlock();
-            }
-        }
-        return tw;
-    }
+//    ThreadWrapper getTw() {
+//        boolean locked=false;
+//        try{
+//            while(tw==null){
+//                System.out.println("locked.............");
+//                continue;
+//            }
+//            while(!twLock.tryLock()){
+//                continue;
+//            }
+//            locked=true;
+//            return tw;
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }finally {
+//            if(locked){
+//                twLock.unlock();
+//            }
+//        }
+//        return null;
+//    }
 
-    void setTw(ThreadWrapper tw) {
-        try{
-            twLock.lock();
-            this.tw = tw;
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            twLock.unlock();
-        }
-    }
+//    void setTw(ThreadWrapper tw) {
+//        boolean locked=false;
+//        try{
+//            if(ownerLock.tryLock()){
+//                locked=true;
+//                try{
+//                    twLock.lock();
+//                    this.tw = tw;
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }finally {
+//                    twLock.unlock();
+//                }
+//            }
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }finally {
+//            if(locked){
+//                ownerLock.unlock();
+//            }
+//        }
+//    }
 }

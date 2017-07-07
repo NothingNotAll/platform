@@ -27,18 +27,33 @@ public class TradeTest {
     private static final String XML_ROOT_NM = "root";
 
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, IllegalAccessException {
-        HashMap<String,String[]> reqMap= TradeReqMap.map;
-        String xmlStr=XmlUtil.buildXML(XML_ROOT_NM,reqMap);
-        System.out.println(xmlStr);
-        SocketChannel client=SocketChannel.open();
-        client.connect(new InetSocketAddress(IP,PORT));
-        byte[] bytes=xmlStr.getBytes(XML_ENCODE);
-        System.out.println(xmlStr);
-        ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
-        client.write(byteBuffer);
-        client.shutdownOutput();
-        client.shutdownInput();
-        client.close();
-        HashMap<String,String[]> rspMap=new HashMap<String, String[]>();
+        for(int index=0;index < 100;index ++){
+            HashMap<String,String[]> reqMap= TradeReqMap.map;
+            String xmlStr=XmlUtil.buildXML(XML_ROOT_NM,reqMap);
+            System.out.println(xmlStr);
+            SocketChannel client=SocketChannel.open();
+            client.configureBlocking(false);
+            client.connect(new InetSocketAddress(IP,PORT));
+            byte[] bytes=xmlStr.getBytes(XML_ENCODE);
+            System.out.println(xmlStr);
+            ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
+            if(!client.isConnected()){
+                while(true){
+                   try{
+                       if(client.finishConnect()){
+                           break;
+                       };
+                   }catch (Exception e){
+                       e.printStackTrace();
+                       break;
+                   }
+                }
+            }
+            client.write(byteBuffer);
+            client.shutdownOutput();
+            client.shutdownInput();
+            client.close();
+            HashMap<String,String[]> rspMap=new HashMap<String, String[]>();
+        }
     }
 }

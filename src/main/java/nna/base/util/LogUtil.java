@@ -19,8 +19,8 @@ public class LogUtil {
             int appLogLevel,
             int flushLimit,
             int closeTimeout,
-            String encode){
-        try {
+            String encode) throws Exception {
+
             return Log.getLog(
                     logDir,
                     logFileName,
@@ -28,10 +28,6 @@ public class LogUtil {
                     flushLimit,
                     closeTimeout,
                     encode);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
     public static void log(PlatformColumn[] columns, Log log, int logLevel){
         if (columns==null)

@@ -94,7 +94,7 @@ public class Test {
         }).start();
     }
 
-    public static void testCon(){
+    public static void testCon() throws Exception {
                     for(int index = 0; index < Marco.CON_TEST_COUNT; index++){
                 final Log log= LogUtil.getLog(
                         "LOG",

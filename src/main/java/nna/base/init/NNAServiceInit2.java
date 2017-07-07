@@ -35,13 +35,13 @@ public class NNAServiceInit2 {
     }
 
     private static HashMap<Integer,DBCon> dbConMap=new HashMap<Integer, DBCon>();
-    public void build() throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException, NoSuchMethodException, ClassNotFoundException, IOException {
+    public void build() throws Exception {
         buildStaticAttribute();
         buildNonStaticAttribute();
         System.out.println("init success!");
     }
 
-    private void buildNonStaticAttribute() throws SQLException, ClassNotFoundException {
+    private void buildNonStaticAttribute() throws Exception {
         List<MetaBean> list=MetaBean.getConfMetaCache();
         int count=list.getCapacity();
         MetaBean temp;
@@ -55,7 +55,7 @@ public class NNAServiceInit2 {
         }
     }
 
-    private void buildMetaBean(MetaBean temp,PlatformEntry entry) throws SQLException, ClassNotFoundException {
+    private void buildMetaBean(MetaBean temp,PlatformEntry entry) throws Exception {
         temp.setPlatformEntry(entry);
         temp.setPublic(entry.getEntryFree());
 
@@ -193,7 +193,7 @@ public class NNAServiceInit2 {
         return types;
     }
 
-    private DBCon getDBCon(PlatformDB platformDB,PlatformLog dbLog) throws SQLException, ClassNotFoundException {
+    private DBCon getDBCon(PlatformDB platformDB,PlatformLog dbLog) throws Exception {
         DBCon dbCon=dbConMap.get(Integer.valueOf(platformDB.getDbId()));
         if(dbCon!=null){
             return dbCon;
@@ -219,7 +219,7 @@ public class NNAServiceInit2 {
         return dbCon;
     }
 
-    public void buildStaticAttribute() throws NoSuchMethodException {
+    public void buildStaticAttribute() throws Exception {
         buildPLog();
         buildFreeResource();
         buildPlatformUser();
@@ -404,7 +404,7 @@ public class NNAServiceInit2 {
         }
     }
 
-    private void buildPLog() {
+    private void buildPLog() throws Exception {
         PlatformLog platformLog=NNAServiceInit1.platformLogMap.get(new Integer(1));
         final Log pLog=LogUtil.getLog(
                 platformLog.getLogDir(),

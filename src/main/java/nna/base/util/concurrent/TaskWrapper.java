@@ -53,7 +53,7 @@ package nna.base.util.concurrent;
     TaskWrapper doTask(){
         if(isNewThreadToExe){
             this.taskStatus=AbstractTask.WORK_STATUS;
-            AbstractEnAndDeSgy.cached.submit(this);
+            AbstractEnAndDeSgy.abstractEnAndDeSgy.cached.submit(this);
             return null;
         }
         return doInTask();

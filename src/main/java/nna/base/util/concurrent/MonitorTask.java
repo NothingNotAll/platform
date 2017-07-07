@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
      }
 
      static {
-//         MonitorTask monitorTask=new MonitorTask();
+         MonitorTask monitorTask=new MonitorTask();
      }
 
      MonitorTask()  {

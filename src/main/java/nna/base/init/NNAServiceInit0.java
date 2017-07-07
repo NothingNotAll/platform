@@ -83,6 +83,8 @@ public class NNAServiceInit0 {
              e.printStackTrace();
          } catch (ClassNotFoundException e) {
              e.printStackTrace();
+         } catch (Exception e) {
+             e.printStackTrace();
          }
          return inits;
      }
@@ -108,7 +110,7 @@ public class NNAServiceInit0 {
         return initPsts(sqls.toArray(new String[]{}));
     }
 
-    private static Log getPlatformLog(PlatformLog platformLog) {
+    private static Log getPlatformLog(PlatformLog platformLog) throws Exception {
         String logPath="LOG";
         String logName="INIT";
         return LogUtil.getLog(
