@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
@@ -16,8 +15,7 @@ import java.util.concurrent.locks.LockSupport;
 
  class ThreadWrapper implements Runnable{
      static ConcurrentHashMap<Long,ThreadWrapper> twMap=new ConcurrentHashMap<Long, ThreadWrapper>();
-     static AtomicLong twSeqGen=new AtomicLong();
-    static AtomicLong twSeqGen2=new AtomicLong();
+     private static AtomicLong twSeqGen=new AtomicLong();
 
      private Thread thread;
      private ConcurrentHashMap<String,QueueWrapper[]> qwMap;
@@ -28,7 +26,8 @@ import java.util.concurrent.locks.LockSupport;
      ThreadWrapper(ConcurrentHashMap<String,QueueWrapper[]> qwMap,Boolean isSeq){
         this.qwMap=qwMap;
         this.isSeq=isSeq;
-        this.twSeqId=twSeqGen2.getAndIncrement();
+        this.twSeqId=twSeqGen.getAndIncrement();
+         ThreadWrapper.twMap.put(twSeqId,this);
     }
 
     /*

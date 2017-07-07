@@ -37,7 +37,6 @@ import java.util.concurrent.*;
         for(int index=0;index <15;index++){
             ThreadWrapper tw=new ThreadWrapper(QueueWrapper.noSeqQwMap,false);
             cached.submit(tw);
-            ThreadWrapper.twMap.put(ThreadWrapper.twSeqGen.getAndIncrement(),tw);
         }
     }
 
@@ -58,7 +57,6 @@ import java.util.concurrent.*;
         ThreadWrapper tw;
         for(int index=0;index < threadCount;index++){
             tw=new ThreadWrapper(QueueWrapper.noSeqQwMap,false);
-            ThreadWrapper.twMap.put(ThreadWrapper.twSeqGen.getAndIncrement(),tw);
             cached.submit(tw);
         }
     }
