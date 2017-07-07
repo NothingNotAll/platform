@@ -14,16 +14,11 @@ import java.util.concurrent.locks.LockSupport;
  **/
 
  class ThreadWrapper implements Runnable{
-    public static ConcurrentHashMap<Long, ThreadWrapper> getTwMap() {
+    static ConcurrentHashMap<Long, ThreadWrapper> getTwMap() {
         return twMap;
     }
-
-    public static void setTwMap(ConcurrentHashMap<Long, ThreadWrapper> twMap) {
-        ThreadWrapper.twMap = twMap;
-    }
-
     private static ConcurrentHashMap<Long,ThreadWrapper> twMap=new ConcurrentHashMap<Long, ThreadWrapper>();
-     private static AtomicLong twSeqGen=new AtomicLong();
+    private static AtomicLong twSeqGen=new AtomicLong();
 
      private Thread thread;
      private ConcurrentHashMap<String,QueueWrapper[]> qwMap;

@@ -13,18 +13,6 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
  class QueueWrapper {
-    public static ConcurrentHashMap<Long, String> getgTaskIdToTaskNmMap() {
-        return gTaskIdToTaskNmMap;
-    }
-
-    public static void setgTaskIdToTaskNmMap(ConcurrentHashMap<Long, String> gTaskIdToTaskNmMap) {
-        QueueWrapper.gTaskIdToTaskNmMap = gTaskIdToTaskNmMap;
-    }
-
-    public static ConcurrentHashMap<String, QueueWrapper[]> getQwMap() {
-        return qwMap;
-    }
-
     private static  ConcurrentHashMap<Long,String> gTaskIdToTaskNmMap=new ConcurrentHashMap<Long, String>();
     private static final ConcurrentHashMap<String,QueueWrapper[]> qwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
 
@@ -142,4 +130,7 @@ import java.util.concurrent.locks.ReentrantLock;
         this.deCount = deCount;
     }
 
+    static ConcurrentHashMap<String, QueueWrapper[]> getQwMap() {
+        return qwMap;
+    }
 }

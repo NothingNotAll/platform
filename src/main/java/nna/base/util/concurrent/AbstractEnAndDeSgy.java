@@ -1,6 +1,8 @@
 package nna.base.util.concurrent;
 
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,6 +25,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 //            workersMap.put(wrokerSeqGen.getAndIncrement(),abstractEnAndDeSgy);
 //        }
     }
+
+    private static void getMinLoadAbstractEnAndDeSgy(){
+        AbstractEnAndDeSgy abstractEnAndDeSgy=null;
+        Iterator<Map.Entry<Integer,AbstractEnAndDeSgy>> iterator=workersMap.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<Integer,AbstractEnAndDeSgy> entry=iterator.next();
+            if(abstractEnAndDeSgy==null){
+                abstractEnAndDeSgy=entry.getValue();
+
+            }else{
+
+            }
+        }
+    }
+
     private AbstractEnAndDeSgy(){
         for(int index=0;index <1;index++){
             ThreadWrapper tw=new ThreadWrapper(QueueWrapper.getQwMap(),false);
