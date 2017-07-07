@@ -99,13 +99,8 @@ import java.util.concurrent.locks.LockSupport;
     void unParkThread(Long twId){
         if(twId!=null){
             ThreadWrapper tw=twMap.get(twId);
-            if(tw!=null&&tw.unParkTimes.get()>= tw.parkTimes.get()){
-                tw.unParkTimes.getAndIncrement();
-                LockSupport.unpark(tw.thread);
-                return ;
-            }else{
-                return ;
-            }
+            LockSupport.unpark(tw.thread);
+            return ;
         }else{
             unParkTimes.getAndIncrement();
             if(unParkTimes.get()>= parkTimes.get()){

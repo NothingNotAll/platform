@@ -70,7 +70,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         if(isSeq){
             QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),1,isSeq);
         }else{
-            QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),15,isSeq);
+            QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),1,isSeq);
         }
     }
 
