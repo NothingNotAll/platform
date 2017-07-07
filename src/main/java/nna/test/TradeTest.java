@@ -35,7 +35,6 @@ public class TradeTest {
             client.configureBlocking(false);
             client.connect(new InetSocketAddress(IP,PORT));
             byte[] bytes=xmlStr.getBytes(XML_ENCODE);
-            System.out.println(xmlStr);
             ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
             if(!client.isConnected()){
                 while(true){
