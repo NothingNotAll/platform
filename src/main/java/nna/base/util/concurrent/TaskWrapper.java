@@ -47,24 +47,25 @@ package nna.base.util.concurrent;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        doInTask();
+        doInTask(-1L);
     }
 
-    TaskWrapper doTask(){
+    TaskWrapper doTask(Long twId){
         if(isNewThreadToExe){
             this.taskStatus=AbstractTask.WORK_STATUS;
             AbstractEnAndDeSgy.abstractEnAndDeSgy.cached.submit(this);
             return null;
         }
-        return doInTask();
+        return doInTask(twId);
     }
 
-    private TaskWrapper doInTask() {
+    private TaskWrapper doInTask(Long twId) {
         try{
             if(!isSeq){
                 doInnerTask();
                 return null;
             }else{
+                abstractTask.setTwId(twId);
                 Integer currentWorkIndex=abstractTask.getCurrentWorkIndex();
                 if(workIndex.equals(currentWorkIndex)){
                     doInnerTask();

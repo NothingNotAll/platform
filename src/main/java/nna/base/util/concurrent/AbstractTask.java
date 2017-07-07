@@ -35,15 +35,20 @@ public abstract class AbstractTask {
     private Boolean isSeq;
     private AtomicInteger workIndexGen;
     private volatile Integer currentWorkIndex;
+    private Long twId;
+    private ReentrantLock setLock;
 
     public AbstractTask(Boolean isSeq){
+        this.isSeq=isSeq;
+        if(isSeq){
+            setLock=new ReentrantLock();
+        }
         gTaskId=gTaskIdGen.getAndIncrement();
         String className=getClass().getCanonicalName();
         this.taskName=className+"_NO."+gTaskId;
         Thread thread=Thread.currentThread();
         threadId=thread.getId();
         threadName=thread.getName();
-        this.isSeq=isSeq;
         currentWorkIndex=0;
         workIndexGen=new AtomicInteger();
         AbstractEnAndDeSgy.abstractEnAndDeSgy.initStrategy(gTaskId,taskName,isSeq);
@@ -126,10 +131,6 @@ public abstract class AbstractTask {
         this.threadName = threadName;
     }
 
-    public static void init() {
-
-    }
-
     public Boolean getSeq() {
         return isSeq;
     }
@@ -158,48 +159,41 @@ public abstract class AbstractTask {
         return gTaskIdGen;
     }
 
-//    ThreadWrapper getTw() {
-//        boolean locked=false;
-//        try{
-//            while(tw==null){
-//                System.out.println("locked.............");
-//                continue;
-//            }
-//            while(!twLock.tryLock()){
-//                continue;
-//            }
-//            locked=true;
-//            return tw;
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }finally {
-//            if(locked){
-//                twLock.unlock();
-//            }
-//        }
-//        return null;
-//    }
+    public Long getTwId() {
+        return twId;
+    }
 
-//    void setTw(ThreadWrapper tw) {
-//        boolean locked=false;
-//        try{
-//            if(ownerLock.tryLock()){
-//                locked=true;
-//                try{
-//                    twLock.lock();
-//                    this.tw = tw;
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }finally {
-//                    twLock.unlock();
-//                }
-//            }
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }finally {
-//            if(locked){
-//                ownerLock.unlock();
-//            }
-//        }
-//    }
+    public void setTwId(Long twId) {
+        if(this.twId!=null){
+            return ;
+        }
+        boolean locked=false;
+        try{
+            if(setLock.tryLock()){
+                locked=true;
+                if(this.twId!=null){
+                    return ;
+                }
+                this.twId=twId;
+                return ;
+            }else{
+                return ;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(locked){
+                setLock.unlock();
+            }
+        }
+        this.twId = twId;
+    }
+
+    public ReentrantLock getSetLock() {
+        return setLock;
+    }
+
+    public void setSetLock(ReentrantLock setLock) {
+        this.setLock = setLock;
+    }
 }

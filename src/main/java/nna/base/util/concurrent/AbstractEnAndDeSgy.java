@@ -34,6 +34,6 @@ import java.util.concurrent.*;
 
     void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
         QueueWrapper.enQueue(gTaskId,taskWrapper);
-        threadWrapper.unParkThread();
+        threadWrapper.unParkThread(taskWrapper.getAbstractTask().getTwId());
     }
 }

@@ -91,9 +91,17 @@ import java.util.concurrent.ConcurrentHashMap;
             while(ts.hasNext()){
                 Map.Entry<Long,ThreadWrapper> entry=ts.next();
                 ThreadWrapper t=entry.getValue();
+                String int1=String.valueOf((t.getMeanfulTimes()/t.getTotalTimes())*100);
+                String int2=String.valueOf((t.getNoMeanfulTimes()/t.getTotalTimes())*100);
+                String yu1=String.valueOf(t.getMeanfulTimes()%t.getTotalTimes());
+                String yu2=String.valueOf(t.getNoMeanfulTimes()%t.getTotalTimes());
+                String percent1=int1+"."+yu1+"%";
+                String percent2=int2+"."+yu2+"%";
                 index=entry.getKey();
-                System.out.println(t.getThread().getState());
-                log.log("No."+index+":"+t.getThread().getState(), Log.INFO);
+                System.out.println("No."+index+".thread.STATE:"+t.getThread().getState()+"-meanfulPercent:"+percent1+"-"+"noMeanfulPercent:"+percent2);
+                log.log("No."+index+".thread.STATE:"+t.getThread().getState()+"meanfulPercent:"+percent1+"-"+"noMeanfulPercent:"+percent2, Log.INFO);
+                log.log("meanfulPercent:"+percent1, Log.INFO);
+                log.log("noMeanfulPercent:"+percent2, Log.INFO);
             }
         }catch (Exception e){
             e.fillInStackTrace();

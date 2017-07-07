@@ -23,6 +23,9 @@ import java.util.concurrent.locks.LockSupport;
      private AtomicLong unParkTimes=new AtomicLong();
      private AtomicLong parkTimes=new AtomicLong();
      private Long twSeqId;
+     private Long noMeanfulTimes=0L;
+     private Long meanfulTimes=0L;
+     private Long totalTimes=0L;
 
      ThreadWrapper(ConcurrentHashMap<String,QueueWrapper[]> qwMap,Boolean isSeq){
         this.qwMap=qwMap;
@@ -57,10 +60,13 @@ import java.util.concurrent.locks.LockSupport;
                     }
                 }
                 if(taskCount==0){
+                    noMeanfulTimes++;
                     System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:0%");
                 }else{
+                    meanfulTimes++;
                     System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:"+effectiveCount/taskCount*100+"."+effectiveCount%taskCount+"%");
                 }
+                totalTimes++;
                 if(temp.size()==0){
                     LockSupport.park();
                 }
@@ -81,10 +87,21 @@ import java.util.concurrent.locks.LockSupport;
         return newTws;
     }
 
-    void unParkThread(){
-        unParkTimes.getAndIncrement();
-        if(unParkTimes.get()>= parkTimes.get()){
-            LockSupport.unpark(thread);
+    void unParkThread(Long twId){
+        if(twId!=null){
+            ThreadWrapper tw=twMap.get(twId);
+            if(tw!=null&&tw.unParkTimes.get()>= tw.parkTimes.get()){
+                tw.unParkTimes.getAndIncrement();
+                LockSupport.unpark(tw.thread);
+                return ;
+            }else{
+                return ;
+            }
+        }else{
+            unParkTimes.getAndIncrement();
+            if(unParkTimes.get()>= parkTimes.get()){
+                LockSupport.unpark(thread);
+            }
         }
     }
 
@@ -117,7 +134,7 @@ import java.util.concurrent.locks.LockSupport;
     private TaskWrapper doTask(TaskWrapper tempTaskWrapper) {
         delayTime=tempTaskWrapper.getDelayTime();
         sleep(tempTaskWrapper,delayTime);
-        TaskWrapper taskWrapper=tempTaskWrapper.doTask();
+        TaskWrapper taskWrapper=tempTaskWrapper.doTask(twSeqId);
         if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
             MonitorTask.removeMonitor(tempTaskWrapper.getAbstractTask());
             qwMap.remove(tempTaskWrapper.getAbstractTask().getgTaskId());
@@ -163,5 +180,29 @@ import java.util.concurrent.locks.LockSupport;
 
     static ConcurrentHashMap<Long, ThreadWrapper> getTwMap() {
         return twMap;
+    }
+
+    public Long getNoMeanfulTimes() {
+        return noMeanfulTimes;
+    }
+
+    public void setNoMeanfulTimes(Long noMeanfulTimes) {
+        this.noMeanfulTimes = noMeanfulTimes;
+    }
+
+    public Long getMeanfulTimes() {
+        return meanfulTimes;
+    }
+
+    public void setMeanfulTimes(Long meanfulTimes) {
+        this.meanfulTimes = meanfulTimes;
+    }
+
+    public Long getTotalTimes() {
+        return totalTimes;
+    }
+
+    public void setTotalTimes(Long totalTimes) {
+        this.totalTimes = totalTimes;
     }
 }
