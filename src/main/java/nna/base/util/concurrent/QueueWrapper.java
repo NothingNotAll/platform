@@ -19,6 +19,8 @@ import java.util.concurrent.locks.ReentrantLock;
     private BlockingQueue<TaskWrapper> queue;
     private ReentrantLock qLock;
     private volatile Integer deCount=0;//the total Count of been worked;
+    private Long twId;
+    private Boolean isSeq;
 
     QueueWrapper(BlockingQueue<TaskWrapper> queue){
         this.queue=queue;
@@ -58,16 +60,16 @@ import java.util.concurrent.locks.ReentrantLock;
         return tempList;
     }
 
-    static void deQueues(LinkedList<TaskWrapper> temp,ConcurrentHashMap<String,QueueWrapper[]> qwMap){
+    static void deQueues(LinkedList<TaskWrapper> temp,ConcurrentHashMap<String,QueueWrapper[]> qwMap,Long twId){
         Iterator<Map.Entry<String,QueueWrapper[]>> iterator=qwMap.entrySet().iterator();
         while(iterator.hasNext()){
             Map.Entry<String,QueueWrapper[]> entry=iterator.next();
             QueueWrapper[] qws=entry.getValue();
-            deQueues(temp,qws);
+            deQueues(temp,qws,twId);
         }
     }
 
-    private static void deQueues(LinkedList<TaskWrapper> temp,QueueWrapper[] qws){
+    private static void deQueues(LinkedList<TaskWrapper> temp,QueueWrapper[] qws,Long twId){
         QueueWrapper queueWrapper;
         ReentrantLock lock;
         BlockingQueue<TaskWrapper> queue;
@@ -76,6 +78,9 @@ import java.util.concurrent.locks.ReentrantLock;
         Boolean locked=false;
         for(int index=0;index < qwsCount;index++){
             queueWrapper=qws[index];
+            if(queueWrapper.isSeq&&!queueWrapper.twId.equals(twId)){
+                continue;
+            }
             lock=queueWrapper.qLock;
             try{
                 if(lock.tryLock()){//for not block
@@ -96,10 +101,12 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    static QueueWrapper[] addQueue(String gTaskIdStr,Long gTaskId,Integer queueCount){
+    static QueueWrapper[] addQueue(String gTaskIdStr,Long gTaskId,Long twId,Integer queueCount,Boolean isSeq){
         QueueWrapper[] newQws=new QueueWrapper[queueCount];
         for(int index=0;index < queueCount;index++){
             newQws[index]=new QueueWrapper(new LinkedBlockingDeque<TaskWrapper>());
+            newQws[index].setTwId(twId);
+            newQws[index].setSeq(isSeq);
         }
         QueueWrapper.gTaskIdToTaskNmMap.put(gTaskId,gTaskIdStr);
         QueueWrapper.qwMap.putIfAbsent(gTaskIdStr,newQws);
@@ -132,5 +139,21 @@ import java.util.concurrent.locks.ReentrantLock;
 
     static ConcurrentHashMap<String, QueueWrapper[]> getQwMap() {
         return qwMap;
+    }
+
+    public Long getTwId() {
+        return twId;
+    }
+
+    public void setTwId(Long twId) {
+        this.twId = twId;
+    }
+
+    public Boolean getSeq() {
+        return isSeq;
+    }
+
+    public void setSeq(Boolean seq) {
+        isSeq = seq;
     }
 }

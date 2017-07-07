@@ -26,9 +26,9 @@ import java.util.concurrent.*;
 
     void initStrategy(Long gTaskId,String gTaskIdStr,boolean isSeq) {
         if(isSeq){
-            QueueWrapper.addQueue(gTaskIdStr,gTaskId,1);
+            QueueWrapper.addQueue(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),1,isSeq);
         }else{
-            QueueWrapper.addQueue(gTaskIdStr,gTaskId,15);
+            QueueWrapper.addQueue(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),15,isSeq);
         }
     }
 

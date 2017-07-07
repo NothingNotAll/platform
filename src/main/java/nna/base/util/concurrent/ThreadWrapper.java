@@ -22,7 +22,16 @@ import java.util.concurrent.locks.LockSupport;
      private Boolean isSeq=false;
      private AtomicLong unParkTimes=new AtomicLong();
      private AtomicLong parkTimes=new AtomicLong();
-     private Long twSeqId;
+
+    public Long getTwSeqId() {
+        return twSeqId;
+    }
+
+    public void setTwSeqId(Long twSeqId) {
+        this.twSeqId = twSeqId;
+    }
+
+    private Long twSeqId;
      private Long noMeanfulTimes=0L;
      private Long meanfulTimes=0L;
      private Long totalTimes=0L;
@@ -46,7 +55,7 @@ import java.util.concurrent.locks.LockSupport;
         thread=Thread.currentThread();
         while(true){
             try{
-                QueueWrapper.deQueues(temp,qwMap);
+                QueueWrapper.deQueues(temp,qwMap,twSeqId);
                 taskCount=temp.size();
                 parkTimes.getAndAdd(taskCount);
                 Integer effectiveCount=0;
