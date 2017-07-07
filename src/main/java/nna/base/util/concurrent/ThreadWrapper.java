@@ -21,6 +21,7 @@ import java.util.concurrent.locks.LockSupport;
      private ConcurrentHashMap<String,QueueWrapper[]> qwMap;
      private Boolean isSeq=false;
      private AtomicLong unParkTimes=new AtomicLong();
+     private AtomicLong parkTimes=new AtomicLong();
      private Long twSeqId;
 
      ThreadWrapper(ConcurrentHashMap<String,QueueWrapper[]> qwMap,Boolean isSeq){
@@ -44,6 +45,7 @@ import java.util.concurrent.locks.LockSupport;
             try{
                 QueueWrapper.deQueues(temp,qwMap);
                 taskCount=temp.size();
+                parkTimes.getAndAdd(taskCount);
                 Integer effectiveCount=0;
                 for(index=0;index < taskCount;index++){
                     tempTaskWrapper=temp.poll();
@@ -53,7 +55,6 @@ import java.util.concurrent.locks.LockSupport;
                     }else{
                         effectiveCount++;
                     }
-                    unParkTimes.getAndIncrement();
                 }
                 if(taskCount==0){
                     System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:0%");
@@ -81,8 +82,10 @@ import java.util.concurrent.locks.LockSupport;
     }
 
     void unParkThread(){
-        LockSupport.unpark(thread);
         unParkTimes.getAndIncrement();
+        if(unParkTimes.get()>= parkTimes.get()){
+            LockSupport.unpark(thread);
+        }
     }
 
     static ThreadWrapper unPark(){
