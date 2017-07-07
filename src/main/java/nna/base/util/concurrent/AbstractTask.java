@@ -11,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
 public abstract class AbstractTask {
+
     private static final AtomicLong gTaskIdGen=new AtomicLong();
 
     public static final int INIT_TASK_TYPE=0;
@@ -151,5 +152,9 @@ public abstract class AbstractTask {
 
     public void setWorkIndexGen(AtomicInteger workIndexGen) {
         this.workIndexGen = workIndexGen;
+    }
+
+    public static AtomicLong getGTaskIdGen() {
+        return gTaskIdGen;
     }
 }

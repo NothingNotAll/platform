@@ -41,18 +41,25 @@ import java.util.concurrent.locks.LockSupport;
         while(true){
             QueueWrapper.deQueues(temp,qwMap);
             taskCount=temp.size();
-            if(taskCount==0){
-                park();
-            }else{
-                for(index=0;index < taskCount;index++){
-                    tempTaskWrapper=temp.poll();
-                    tempTaskWrapper=doTask(tempTaskWrapper);
-                    if(tempTaskWrapper!=null){
-                        temp.add(tempTaskWrapper);
-                    }
-                    unParkTimes.getAndIncrement();
-                }
+//            if(taskCount==0){
+//                park();
+//            }else{
+//                for(index=0;index < taskCount;index++){
+//                    tempTaskWrapper=temp.poll();
+//                    tempTaskWrapper=doTask(tempTaskWrapper);
+//                    if(tempTaskWrapper!=null){
+//                        temp.add(tempTaskWrapper);
+//                    }
+//                    unParkTimes.getAndIncrement();
+//                }
+//            }
+
+            for(index=0;index < taskCount;index++){
+                tempTaskWrapper=temp.poll();
+                doTask(tempTaskWrapper);
+                unParkTimes.getAndIncrement();
             }
+            park();
         }
     }
 
@@ -91,16 +98,15 @@ import java.util.concurrent.locks.LockSupport;
         minLoadTw.unPark();
     }
 
-    private TaskWrapper doTask(TaskWrapper tempTaskWrapper) {
+    private void doTask(TaskWrapper tempTaskWrapper) {
         delayTime=tempTaskWrapper.getDelayTime();
         sleep(tempTaskWrapper,delayTime);
-        TaskWrapper taskWrapper=tempTaskWrapper.doTask();
+        tempTaskWrapper.doTask();
         if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
             MonitorTask.removeMonitor(tempTaskWrapper.getAbstractTask());
             qwMap.remove(tempTaskWrapper.getAbstractTask().getgTaskId());
             tempTaskWrapper.getAbstractTask().setTaskStatus(AbstractTask.OVER);
         }
-        return taskWrapper;
     }
 
     private void sleep(TaskWrapper tempTaskWrapper, Long delayTime) {
