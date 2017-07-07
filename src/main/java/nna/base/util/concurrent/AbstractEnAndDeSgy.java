@@ -27,8 +27,12 @@ import java.util.concurrent.atomic.AtomicInteger;
         }
     }
 
-    void initStrategy(Long gTaskId,String gTaskIdStr,Integer loadCount) {
-        QueueWrapper.addQueue(gTaskIdStr,gTaskId,loadCount);
+    void initStrategy(Long gTaskId,String gTaskIdStr,boolean isSeq) {
+        if(isSeq){
+            QueueWrapper.addQueue(gTaskIdStr,gTaskId,1);
+        }else{
+            QueueWrapper.addQueue(gTaskIdStr,gTaskId,1);
+        }
     }
 
     void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {

@@ -46,11 +46,7 @@ public abstract class AbstractTask {
         this.isSeq=isSeq;
         currentWorkIndex=0;
         workIndexGen=new AtomicInteger();
-        if(isSeq){
-            AbstractEnAndDeSgy.abstractEnAndDeSgy.initStrategy(gTaskId,taskName,1);
-        }else{
-            AbstractEnAndDeSgy.abstractEnAndDeSgy.initStrategy(gTaskId,taskName,1);
-        }
+        AbstractEnAndDeSgy.abstractEnAndDeSgy.initStrategy(gTaskId,taskName,isSeq);
         MonitorTask.addMonitor(this);
     }
 
