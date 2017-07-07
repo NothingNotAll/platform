@@ -13,7 +13,20 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
  class QueueWrapper {
-    static final ConcurrentHashMap<String,QueueWrapper[]> noSeqQwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
+    public static ConcurrentHashMap<Long, String> getgTaskIdToTaskNmMap() {
+        return gTaskIdToTaskNmMap;
+    }
+
+    public static void setgTaskIdToTaskNmMap(ConcurrentHashMap<Long, String> gTaskIdToTaskNmMap) {
+        QueueWrapper.gTaskIdToTaskNmMap = gTaskIdToTaskNmMap;
+    }
+
+    public static ConcurrentHashMap<String, QueueWrapper[]> getQwMap() {
+        return qwMap;
+    }
+
+    private static  ConcurrentHashMap<Long,String> gTaskIdToTaskNmMap=new ConcurrentHashMap<Long, String>();
+    private static final ConcurrentHashMap<String,QueueWrapper[]> qwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
 
     private BlockingQueue<TaskWrapper> queue;
     private ReentrantLock qLock;
@@ -24,11 +37,13 @@ import java.util.concurrent.locks.ReentrantLock;
         this.qLock=new ReentrantLock();
     }
 
-    static QueueWrapper enQueue(QueueWrapper[] qws,TaskWrapper taskWrapper){
+    static QueueWrapper enQueue(Long gTaskId,TaskWrapper taskWrapper){
+        String clazzNm=QueueWrapper.gTaskIdToTaskNmMap.get(gTaskId);
+        QueueWrapper[] qws=QueueWrapper.qwMap.get(clazzNm);
         ArrayList<QueueWrapper> minLoadQWs=getMinLoadQueueWrapper(qws);
         QueueWrapper minLoadQW=minLoadQWs.remove(qws.length-1);
         minLoadQW.queue.add(taskWrapper);
-        return null;
+        return minLoadQW;
     }
 
     private static ArrayList<QueueWrapper> getMinLoadQueueWrapper(QueueWrapper[] qws){
@@ -93,11 +108,14 @@ import java.util.concurrent.locks.ReentrantLock;
         }
     }
 
-    static QueueWrapper[] addQueue(int addQWCount){
-        QueueWrapper[] newQws=new QueueWrapper[addQWCount];
-        for(int index=0;index < addQWCount;index++){
+    static QueueWrapper[] addQueue(String clazzNm,Long gTaskId){
+        QueueWrapper[] newQws=new QueueWrapper[1];
+        for(int index=0;index < 1;index++){
             newQws[index]=new QueueWrapper(new LinkedBlockingDeque<TaskWrapper>());
         }
+        String gTaskIdStr=clazzNm+"_NO."+gTaskId;
+        QueueWrapper.gTaskIdToTaskNmMap.put(gTaskId,gTaskIdStr);
+        QueueWrapper.qwMap.putIfAbsent(gTaskIdStr,newQws);
         return newQws;
     }
 

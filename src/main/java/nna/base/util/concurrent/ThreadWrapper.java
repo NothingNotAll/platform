@@ -14,7 +14,15 @@ import java.util.concurrent.locks.LockSupport;
  **/
 
  class ThreadWrapper implements Runnable{
-     static ConcurrentHashMap<Long,ThreadWrapper> twMap=new ConcurrentHashMap<Long, ThreadWrapper>();
+    public static ConcurrentHashMap<Long, ThreadWrapper> getTwMap() {
+        return twMap;
+    }
+
+    public static void setTwMap(ConcurrentHashMap<Long, ThreadWrapper> twMap) {
+        ThreadWrapper.twMap = twMap;
+    }
+
+    private static ConcurrentHashMap<Long,ThreadWrapper> twMap=new ConcurrentHashMap<Long, ThreadWrapper>();
      private static AtomicLong twSeqGen=new AtomicLong();
 
      private Thread thread;
@@ -47,8 +55,7 @@ import java.util.concurrent.locks.LockSupport;
                 Integer effectiveCount=0;
                 for(index=0;index < taskCount;index++){
                     tempTaskWrapper=temp.poll();
-                    Object object=doTask(tempTaskWrapper);
-                    if(object==null){
+                    if(doTask(tempTaskWrapper)==null){
                         effectiveCount++;
                     }
                     unParkTimes.getAndIncrement();
@@ -74,7 +81,18 @@ import java.util.concurrent.locks.LockSupport;
         LockSupport.unpark(tw.thread);
     }
 
-    static void unPark(Map<Long,ThreadWrapper> map){
+    static ThreadWrapper[] addThreads(Integer addThreadCount){
+        if(addThreadCount==null){
+            return null;
+        }
+        ThreadWrapper[] newTws=new ThreadWrapper[addThreadCount];
+        for(int index=0;index < addThreadCount;index++){
+            newTws[index]=new ThreadWrapper(QueueWrapper.getQwMap(),false);
+        }
+        return newTws;
+    }
+
+    static ThreadWrapper unPark(Map<Long,ThreadWrapper> map){
         Iterator<Map.Entry<Long,ThreadWrapper>> iterator=map.entrySet().iterator();
         Map.Entry<Long,ThreadWrapper> entry;
         ThreadWrapper minLoadTw = null;
@@ -94,6 +112,7 @@ import java.util.concurrent.locks.LockSupport;
             }
         }
         minLoadTw.unPark();
+        return minLoadTw;
     }
 
     private TaskWrapper doTask(TaskWrapper tempTaskWrapper) {

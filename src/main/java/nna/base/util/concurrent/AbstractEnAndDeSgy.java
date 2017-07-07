@@ -13,50 +13,38 @@ import java.util.concurrent.*;
 
  class AbstractEnAndDeSgy{
     static final ExecutorService cached= Executors.newCachedThreadPool();
-    private static volatile AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
+    private static final Long GSQID=AbstractTask.getGTaskIdGen().getAndIncrement();
     static{
-        AbstractEnAndDeSgy.initStrategy(AbstractTask.getGTaskIdGen().getAndIncrement(),"GLOBAL_SEQ_QUEUE");
+        AbstractEnAndDeSgy.initStrategy(GSQID,"GLOBAL_SEQ_QUEUE");
     }
 
     static void addNewTask(TaskWrapper taskWrapper){
-        while(QueueWrapper.noSeqQwMap.get("GLOBAL_SEQ_QUEUE")==null){
+        while(QueueWrapper.getQwMap().get("GLOBAL_SEQ_QUEUE")==null){
             continue;
         }
-        QueueWrapper.enQueue(QueueWrapper.noSeqQwMap.get("GLOBAL_SEQ_QUEUE"),taskWrapper);
-        ThreadWrapper.unPark(ThreadWrapper.twMap);
-    }
-
-    private  ConcurrentHashMap<Long,String> gTaskIdToClazzNmMap=new ConcurrentHashMap<Long, String>();
-
-    private static QueueWrapper enQueue(QueueWrapper[] qws,TaskWrapper taskWrapper) {
-        QueueWrapper minLoad=QueueWrapper.enQueue(qws,taskWrapper);
-        return minLoad;
+        QueueWrapper.enQueue(GSQID,taskWrapper);
+        ThreadWrapper.unPark(ThreadWrapper.getTwMap());
     }
 
     private AbstractEnAndDeSgy(){
         for(int index=0;index <15;index++){
-            ThreadWrapper tw=new ThreadWrapper(QueueWrapper.noSeqQwMap,false);
+            ThreadWrapper tw=new ThreadWrapper(QueueWrapper.getQwMap(),false);
             cached.submit(tw);
         }
     }
 
     static void initStrategy(Long gTaskId,String className) {
-        abstractEnAndDeSgy.gTaskIdToClazzNmMap.putIfAbsent(gTaskId,className);
-        QueueWrapper[] qws=QueueWrapper.addQueue(15);
-        QueueWrapper.noSeqQwMap.putIfAbsent(className,qws);
+        QueueWrapper.addQueue(className,gTaskId);
     }
 
     static void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
-        String clazzNm=abstractEnAndDeSgy.gTaskIdToClazzNmMap.get(gTaskId);
-        QueueWrapper[] qws=QueueWrapper.noSeqQwMap.get(clazzNm);
-        enQueue(qws,taskWrapper);
-        ThreadWrapper.unPark(ThreadWrapper.twMap);
+        QueueWrapper.enQueue(gTaskId,taskWrapper);
+        ThreadWrapper.unPark(ThreadWrapper.getTwMap());
     }
 
-    static void addThread(Integer threadCount){
-        ThreadWrapper tw;
-        for(int index=0;index < threadCount;index++){
-            tw=new ThreadWrapper(QueueWrapper.noSeqQwMap,false);
+    static void addThreads(Integer threadCount){
+        ThreadWrapper[] tws=ThreadWrapper.addThreads(threadCount);
+        for(ThreadWrapper tw:tws){
             cached.submit(tw);
         }
     }
