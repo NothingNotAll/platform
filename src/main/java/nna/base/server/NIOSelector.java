@@ -24,6 +24,7 @@ public class NIOSelector extends AbstractTask{
     static private AtomicBoolean init=new AtomicBoolean(false);
     static private Object lock=new Object();
 
+    private Long ioEventCountTotal=0L;
     public NIOSelector() throws IOException {
         super(false);
         selector=SelectorProvider.provider().openSelector();
@@ -57,6 +58,7 @@ public class NIOSelector extends AbstractTask{
                 while(iterator.hasNext()){
                     selectionKey=iterator.next();
                     NIOEventProcessor.doIOEvent(selectionKey);
+                    ioEventCountTotal++;
                     iterator.remove();
                 }
                 destroy();
@@ -79,5 +81,13 @@ public class NIOSelector extends AbstractTask{
                 select();
         }
         return null;
+    }
+
+    public Long getIoEventCountTotal() {
+        return ioEventCountTotal;
+    }
+
+    public void setIoEventCountTotal(Long ioEventCountTotal) {
+        this.ioEventCountTotal = ioEventCountTotal;
     }
 }
