@@ -22,16 +22,7 @@ import java.util.concurrent.locks.LockSupport;
      private Boolean isSeq=false;
      private AtomicLong unParkTimes=new AtomicLong();
      private AtomicLong parkTimes=new AtomicLong();
-
-    public Long getTwSeqId() {
-        return twSeqId;
-    }
-
-    public void setTwSeqId(Long twSeqId) {
-        this.twSeqId = twSeqId;
-    }
-
-    private Long twSeqId;
+     private Long twSeqId;
      private Long noMeanfulTimes=0L;
      private Long meanfulTimes=0L;
      private Long totalTimes=0L;
@@ -70,10 +61,10 @@ import java.util.concurrent.locks.LockSupport;
                 }
                 if(taskCount==0){
                     noMeanfulTimes++;
-                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:0%");
+//                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:0%");
                 }else{
                     meanfulTimes++;
-                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:"+effectiveCount/taskCount*100+"."+effectiveCount%taskCount+"%");
+//                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:"+effectiveCount/taskCount*100+"."+effectiveCount%taskCount+"%");
                 }
                 totalTimes++;
                 if(temp.size()==0){
@@ -155,7 +146,6 @@ import java.util.concurrent.locks.LockSupport;
         sleep(tempTaskWrapper,delayTime);
         TaskWrapper taskWrapper=tempTaskWrapper.doTask();
         if(tempTaskWrapper.getTaskType()==AbstractTask.OVER_TASK_TYPE){
-            MonitorTask.removeMonitor(tempTaskWrapper.getAbstractTask());
             qwMap.remove(tempTaskWrapper.getAbstractTask().getgTaskId());
             tempTaskWrapper.getAbstractTask().setTaskStatus(AbstractTask.OVER);
         }
@@ -171,6 +161,18 @@ import java.util.concurrent.locks.LockSupport;
                 e.printStackTrace();
             }
         }
+    }
+
+    static String monitor(ThreadWrapper t){
+        String int1=String.valueOf((t.getMeanfulTimes()/t.getTotalTimes())*100);
+        String int2=String.valueOf((t.getNoMeanfulTimes()/t.getTotalTimes())*100);
+        String yu1=String.valueOf(t.getMeanfulTimes()%t.getTotalTimes());
+        String yu2=String.valueOf(t.getNoMeanfulTimes()%t.getTotalTimes());
+        String percent1=int1+"."+yu1+"%";
+        String percent2=int2+"."+yu2+"%";
+        Long index=t.twSeqId;
+        String str="No."+index+".thread.STATE:"+t.getThread().getState()+"-meanfulPercent:"+percent1+"-"+"noMeanfulPercent:"+percent2;
+        return str;
     }
 
     public Thread getThread() {
@@ -223,5 +225,13 @@ import java.util.concurrent.locks.LockSupport;
 
     public void setTotalTimes(Long totalTimes) {
         this.totalTimes = totalTimes;
+    }
+
+    public Long getTwSeqId() {
+        return twSeqId;
+    }
+
+    public void setTwSeqId(Long twSeqId) {
+        this.twSeqId = twSeqId;
     }
 }

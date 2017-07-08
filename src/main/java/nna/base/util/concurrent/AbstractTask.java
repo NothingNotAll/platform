@@ -53,7 +53,6 @@ public abstract class AbstractTask {
             this.twId=abstractEnAndDeSgy.getThreadWrapper().getTwSeqId();
         }
         abstractEnAndDeSgy.initStrategy(gTaskId,taskName,isSeq);
-        MonitorTask.addMonitor(this);
     }
 
     protected abstract Object doTask(Object att,int taskType) throws Exception;
@@ -150,5 +149,9 @@ public abstract class AbstractTask {
 
     public void setInitThreadNm(String initThreadNm) {
         this.initThreadNm = initThreadNm;
+    }
+
+    public static Long getAliveThreadCount(){
+        return AbstractEnAndDeSgy.incThreadCount.get()+AbstractEnAndDeSgy.decThreadCount.get();
     }
 }

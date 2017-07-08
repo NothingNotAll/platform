@@ -42,6 +42,7 @@ import nna.base.util.SystemUtil;
     }
 
     public void run() {
+        AbstractEnAndDeSgy.incThreadCount.getAndIncrement();
         try {
             if(delayTime!=null){
                 Thread.sleep(delayTime);
@@ -52,6 +53,7 @@ import nna.base.util.SystemUtil;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        AbstractEnAndDeSgy.decThreadCount.getAndDecrement();
     }
 
     TaskWrapper doTask()  {

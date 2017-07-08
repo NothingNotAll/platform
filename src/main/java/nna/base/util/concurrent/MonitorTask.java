@@ -14,22 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 
  class MonitorTask extends AbstractTask {
-    public static final ConcurrentHashMap<Long,AbstractTask> abstractTaskMonitorMap=new ConcurrentHashMap<Long, AbstractTask>();
-     private Log log;
+    private Log log;
 
-     static void addMonitor(AbstractTask abstractTask){
-         abstractTaskMonitorMap.putIfAbsent(abstractTask.getgTaskId(),abstractTask);
-     }
-
-     static void removeMonitor(AbstractTask abstractTask){
-         abstractTaskMonitorMap.remove(abstractTask.getgTaskId());
-     }
-
-     static {
-         new MonitorTask();
-     }
-
-     MonitorTask()  {
+    MonitorTask()  {
         super(false);
          String logPath="LOG";
          String logName="MONITOR";
@@ -51,12 +38,27 @@ import java.util.concurrent.ConcurrentHashMap;
     private QueueWrapper[] qws;
     private String clazzNm;
     private Iterator<Map.Entry<String,QueueWrapper[]>> iterator;
-    private ConcurrentHashMap<String,QueueWrapper[]> map=new ConcurrentHashMap<String, QueueWrapper[]>();
+    private ConcurrentHashMap<String,QueueWrapper[]> map;
+    private ConcurrentHashMap<Long,ThreadWrapper> twMap;
+    private Iterator<Map.Entry<Long, ThreadWrapper>> ts;
+    private String monitrStr;
     public Object doTask(Object att, int taskType) {
+        map=QueueWrapper.getQwMap();
             try{
-                twMap=ThreadWrapper.getTwMap();
-                map.putAll(QueueWrapper.getQwMap());
                 while(true){
+                    twMap=ThreadWrapper.getTwMap();
+                    ts = twMap.entrySet().iterator();
+                    try{
+                        while(ts.hasNext()){
+                            Map.Entry<Long,ThreadWrapper> entry=ts.next();
+                            ThreadWrapper t=entry.getValue();
+                            monitrStr=ThreadWrapper.monitor(t);
+                            log.log(monitrStr,Log.INFO);
+                            System.out.println(monitrStr);
+                        }
+                    }catch (Exception e){
+                        e.fillInStackTrace();
+                    }
                     try{
                         iterator=map.entrySet().iterator();
                         while(iterator.hasNext()){
@@ -80,47 +82,17 @@ import java.util.concurrent.ConcurrentHashMap;
             return null;
     }
 
-    ConcurrentHashMap<Long,ThreadWrapper> twMap;
-    Iterator<Map.Entry<Long, ThreadWrapper>> ts;
-    int count;
-    BlockingQueue temp;
+    private BlockingQueue temp;
+    private int count;
     private void monitor(String clazzNm,QueueWrapper[] qws) {
-         ts = twMap.entrySet().iterator();
-        Long index;
-        try{
-            while(ts.hasNext()){
-                Map.Entry<Long,ThreadWrapper> entry=ts.next();
-                ThreadWrapper t=entry.getValue();
-                String int1=String.valueOf((t.getMeanfulTimes()/t.getTotalTimes())*100);
-                String int2=String.valueOf((t.getNoMeanfulTimes()/t.getTotalTimes())*100);
-                String yu1=String.valueOf(t.getMeanfulTimes()%t.getTotalTimes());
-                String yu2=String.valueOf(t.getNoMeanfulTimes()%t.getTotalTimes());
-                String percent1=int1+"."+yu1+"%";
-                String percent2=int2+"."+yu2+"%";
-                index=entry.getKey();
-                System.out.println("No."+index+".thread.STATE:"+t.getThread().getState()+"-meanfulPercent:"+percent1+"-"+"noMeanfulPercent:"+percent2);
-                log.log("No."+index+".thread.STATE:"+t.getThread().getState()+"meanfulPercent:"+percent1+"-"+"noMeanfulPercent:"+percent2, Log.INFO);
-                log.log("meanfulPercent:"+percent1, Log.INFO);
-                log.log("noMeanfulPercent:"+percent2, Log.INFO);
-            }
-        }catch (Exception e){
-            e.fillInStackTrace();
-        }
         String str1="GLOBAL TASK ID:"+clazzNm;
         log.log(str1, Log.INFO);
         System.out.println(str1);
-        AbstractTask abstractTask=abstractTaskMonitorMap.get(clazzNm);
-        if(abstractTask!=null){
-            String str2="GLOBAL TASK NAME:"+abstractTask.getTaskName();
-            System.out.println(str2);
-            log.log(str2, Log.INFO);
-        }
-        int index2=0;
         count=qws.length;
-        for(;index2 < count;index2++){
+        for(int index2=0;index2 < count;index2++){
             temp= qws[index2].getQueue();
-            log.log("consumered:"+qws[index2].getDeCount()+":"+temp.size(), Log.INFO);
-            System.out.println("consumered:"+temp.size());
+            log.log(clazzNm+" has been consumered:"+qws[index2].getDeCount(), Log.INFO);
+            System.out.println(clazzNm+" has been consumered:"+qws[index2].getDeCount()+" left count of task:"+temp.size());
             log.log("No."+index2+":"+temp.size(), Log.INFO);
         }
     }

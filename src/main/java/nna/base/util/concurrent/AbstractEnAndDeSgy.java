@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author NNA-SHUAI
@@ -12,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  **/
 
  class AbstractEnAndDeSgy{
+    static AtomicLong incThreadCount=new AtomicLong();
+    static AtomicLong decThreadCount=new AtomicLong();
     static final ExecutorService cached= Executors.newCachedThreadPool();
     private static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> seqWorkers=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
     private static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> noSeqWorkers=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
@@ -27,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
             AbstractEnAndDeSgy noSeq=new AbstractEnAndDeSgy();
             noSeqWorkers.put(noSeq.workerId,noSeq);
         }
+        new MonitorTask();
     }
 
     static void addWorker(boolean isSeq){
@@ -90,7 +94,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         if(isSeq){
             QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),1,isSeq);
         }else{
-            QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),1,isSeq);
+            QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),15,isSeq);
         }
     }
 
