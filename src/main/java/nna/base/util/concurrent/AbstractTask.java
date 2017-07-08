@@ -154,4 +154,12 @@ public abstract class AbstractTask {
     public static Long getAliveThreadCount(){
         return AbstractEnAndDeSgy.incThreadCount.get()+AbstractEnAndDeSgy.decThreadCount.get();
     }
+
+    public static Long getTotalAliveThreadCount(){
+        return AbstractEnAndDeSgy.incThreadCount.get();
+    }
+
+    public static Long getTotalDeadThreadCount(){
+        return AbstractEnAndDeSgy.decThreadCount.get();
+    }
 }
