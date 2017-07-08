@@ -114,7 +114,6 @@ public class Protocol {
                 }
                 if(readCount>0){
                     totalCount+=readCount;
-                    System.out.println(totalCount);
                     byteBuffer.flip();
                     temp=new byte[readCount];
                     byteBuffer.get(temp);
@@ -138,7 +137,7 @@ public class Protocol {
             }
         }
         try {
-            System.out.println(new String(byteList,0,byteList.length,"UTF-8"));
+            System.out.println("read from client:"+new String(byteList,0,byteList.length,"UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

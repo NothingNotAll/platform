@@ -8,6 +8,7 @@ import nna.base.dispatch.AppUtil;
 import nna.base.server.NIOEntry;
 import nna.base.util.BuildSQL;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -109,7 +110,7 @@ import java.sql.SQLException;
         return sqlStr;
     }
 
-    public static void loadNIOSelector() {
+    public static void loadNIOSelector() throws IOException {
         NIOEntry.initSelector();
     }
 

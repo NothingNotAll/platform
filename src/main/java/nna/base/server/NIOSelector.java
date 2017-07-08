@@ -24,30 +24,15 @@ public class NIOSelector extends AbstractTask{
     static private AtomicBoolean init=new AtomicBoolean(false);
     static private Object lock=new Object();
 
-    public NIOSelector()  {
+    public NIOSelector() throws IOException {
         super(false);
+        selector=SelectorProvider.provider().openSelector();
+        isInit=true;
         addNewTask(this,null,INIT_TASK_TYPE,true,null);
     }
 
     static Selector registerChannel(SelectableChannel selectableChannel,int ops, Object att) throws IOException {
         System.out.println("registerChannel start");
-        if(init.compareAndSet(false,true)){
-            selector=SelectorProvider.provider().openSelector();
-            isInit=true;
-            synchronized (lock){
-                lock.notifyAll();
-            }
-        }else{
-            synchronized (lock){
-                if(!isInit){
-                    try {
-                        lock.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
         selectableChannel.register(selector,ops,att);
         System.out.println("registerChannel Success");
         return selector;
@@ -58,16 +43,13 @@ public class NIOSelector extends AbstractTask{
     private Iterator<SelectionKey> iterator;
     private SelectionKey selectionKey;
     public void select() {
+        try {
+            //in case that register and select can lead to dead lock;
+            Thread.sleep(10000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         while(true){
-            synchronized (lock){
-                if(!isInit){
-                    try {
-                        lock.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
             try{
                 ioEventCount=selector.select();
                 Set<SelectionKey> set= selector.selectedKeys();

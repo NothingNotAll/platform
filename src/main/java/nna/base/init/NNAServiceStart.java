@@ -21,7 +21,7 @@ public class NNAServiceStart {
 
     static{
         try {
-            Test.testCon();
+//            Test.testCon();
         } catch (Exception e) {
             e.printStackTrace();
         }
