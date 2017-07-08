@@ -1,4 +1,4 @@
-package nna.base.util.concurrent;
+package nna.base.util;
 
 import java.util.HashMap;
 import java.util.LinkedList;
