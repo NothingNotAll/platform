@@ -59,7 +59,7 @@ import java.util.concurrent.locks.ReentrantLock;
     }
 
      void addNewNIOTask(Object attach,int taskType){
-        addNewTask(this,attach,taskType,false,null);
+        addNewTask(this,attach,taskType,true,null);
     }
 
     public InetSocketAddress getSocketAddress() {

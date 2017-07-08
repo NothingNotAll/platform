@@ -2,7 +2,11 @@ package nna.transaction;
 
 import nna.MetaBean;
 import nna.base.bean.dbbean.PlatformEntryTransaction;
+import nna.base.db.DBCon;
+import nna.enums.DBTranLvlType;
+import nna.enums.DBTranPpgType;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -15,19 +19,8 @@ public class AutoTransExe implements TransExecutor {
         Integer servTranCount=servTrans.length;
         for(int index=0;index < servTranCount;index++){
             serviceTran=servTrans[index];
-            try{
-                executeServiceTran(metaBean,serviceTran,index);
-            }catch (Exception e){
-                e.fillInStackTrace();
-                return null;
-            }finally {
 
-            }
         }
         return null;
-    }
-
-    private void executeServiceTran(MetaBean metaBean, PlatformEntryTransaction serviceTran, int index) {
-        
     }
 }

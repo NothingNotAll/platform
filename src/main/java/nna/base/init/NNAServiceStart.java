@@ -20,11 +20,11 @@ public class NNAServiceStart {
     }
 
     static{
-        try {
+//        try {
 //            Test.testCon();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         try {
             Util.loadNIOSelector();
             NNAServiceInit0 nna0=new NNAServiceInit0();

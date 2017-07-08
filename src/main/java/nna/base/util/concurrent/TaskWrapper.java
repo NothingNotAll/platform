@@ -1,6 +1,8 @@
 package nna.base.util.concurrent;
 
 
+import nna.base.util.SystemUtil;
+
 /**
  * @author NNA-SHUAI
  * @create 2017-06-22 21:52
@@ -53,7 +55,7 @@ package nna.base.util.concurrent;
     }
 
     TaskWrapper doTask()  {
-        if(isNewThreadToExe){
+        if(isNewThreadToExe&& SystemUtil.isSystemLoadPermit()){
             this.taskStatus=AbstractTask.WORK_STATUS;
             AbstractEnAndDeSgy.cached.submit(this);
             return null;

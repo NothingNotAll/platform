@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 /**
@@ -49,10 +50,13 @@ public class TradeTest {
                 }
             }
             client.write(byteBuffer);
+            Long end=System.currentTimeMillis();
+            System.out.println("write end time:"+simpleDateFormat.format(end));
             client.shutdownOutput();
             client.shutdownInput();
             client.close();
             HashMap<String,String[]> rspMap=new HashMap<String, String[]>();
         }
     }
+    static SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 }

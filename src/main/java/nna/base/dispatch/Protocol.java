@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -96,6 +97,12 @@ public class Protocol {
         byte[] bytes=read(socketChannel);
         socketChannel.write(ByteBuffer.wrap(bytes));
         socketChannel.close();
+        Long end=System.currentTimeMillis();
+        try {
+            System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -136,14 +143,9 @@ public class Protocol {
                 byteList[index3++]=temp[index2];
             }
         }
-        try {
-            System.out.println("read from client:"+new String(byteList,0,byteList.length,"UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         return byteList;
     }
-
+    static SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
     public static String processXml(SocketChannel channel) throws IOException {
         byte[] bytes=read(channel);
         try {
@@ -157,6 +159,12 @@ public class Protocol {
             e.printStackTrace();
         }
         channel.close();
+        Long end=System.currentTimeMillis();
+        try {
+            System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

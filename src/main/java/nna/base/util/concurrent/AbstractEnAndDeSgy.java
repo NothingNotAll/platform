@@ -13,7 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
  class AbstractEnAndDeSgy{
     static final ExecutorService cached= Executors.newCachedThreadPool();
-    private static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> workers=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
+    private static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> seqWorkers=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
+    private static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> noSeqWorkers=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
     private static AtomicInteger workerSeqId=new AtomicInteger();
 
     private ThreadWrapper threadWrapper;
@@ -21,25 +22,44 @@ import java.util.concurrent.atomic.AtomicInteger;
 
     static{
         for(int index=0;index < 1;index++){
-            AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy(workerSeqId.getAndIncrement());
-            workers.put(abstractEnAndDeSgy.workerId,abstractEnAndDeSgy);
+            AbstractEnAndDeSgy seq=new AbstractEnAndDeSgy();
+            seqWorkers.put(seq.workerId,seq);
+            AbstractEnAndDeSgy noSeq=new AbstractEnAndDeSgy();
+            noSeqWorkers.put(noSeq.workerId,noSeq);
         }
     }
 
-    static void addWorker(){
-        AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy(workerSeqId.getAndIncrement());
-        workers.put(abstractEnAndDeSgy.workerId,abstractEnAndDeSgy);
+    static void addWorker(boolean isSeq){
+        AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
+        if(isSeq){
+            seqWorkers.put(abstractEnAndDeSgy.workerId,abstractEnAndDeSgy);
+        }else{
+            noSeqWorkers.put(abstractEnAndDeSgy.workerId,abstractEnAndDeSgy);
+        }
     }
 
-    static AbstractEnAndDeSgy getMinLoad(Integer workerId){
+    static AbstractEnAndDeSgy getMinLoad(boolean isSeq,Integer workerId){
         if(workerId!=null){
-            return workers.get(workerId);
+            if(isSeq){
+                return seqWorkers.get(workerId);
+            }else{
+                return noSeqWorkers.get(workerId);
+            }
         }
+        if(isSeq){
+            return getMinLoad(seqWorkers);
+        }else{
+            return getMinLoad(noSeqWorkers);
+        }
+    }
+
+    private static AbstractEnAndDeSgy getMinLoad(ConcurrentHashMap<Integer,AbstractEnAndDeSgy> map){
+
         AbstractEnAndDeSgy abstractEnAndDeSgy=null;
         int loadCount=0;
         int tempCount;
         AbstractEnAndDeSgy tempAED;
-        Iterator<Map.Entry<Integer,AbstractEnAndDeSgy>> iterator=workers.entrySet().iterator();
+        Iterator<Map.Entry<Integer,AbstractEnAndDeSgy>> iterator=map.entrySet().iterator();
         Map.Entry<Integer,AbstractEnAndDeSgy> entry;
         while(iterator.hasNext()){
             entry=iterator.next();
@@ -58,12 +78,12 @@ import java.util.concurrent.atomic.AtomicInteger;
         return abstractEnAndDeSgy;
     }
 
-    private AbstractEnAndDeSgy(Integer workerId){
+    private AbstractEnAndDeSgy(){
         for(int index=0;index <1;index++){
             threadWrapper=new ThreadWrapper(QueueWrapper.getQwMap(),false);
             cached.submit(threadWrapper);
         }
-        this.workerId=workerId;
+        this.workerId=workerSeqId.getAndIncrement();
     }
 
     void initStrategy(Long gTaskId,String gTaskIdStr,boolean isSeq) {

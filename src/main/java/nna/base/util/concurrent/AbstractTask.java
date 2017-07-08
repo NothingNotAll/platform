@@ -47,7 +47,7 @@ public abstract class AbstractTask {
         initThreadNm=thread.getName();
         currentWorkIndex=0;
         workIndexGen=new AtomicInteger();
-        AbstractEnAndDeSgy abstractEnAndDeSgy=AbstractEnAndDeSgy.getMinLoad(null);
+        AbstractEnAndDeSgy abstractEnAndDeSgy=AbstractEnAndDeSgy.getMinLoad(isSeq,null);
         if(isSeq){
             abstractEnAndDeSgyId=abstractEnAndDeSgy.getWorkerId();
             this.twId=abstractEnAndDeSgy.getThreadWrapper().getTwSeqId();
@@ -66,9 +66,9 @@ public abstract class AbstractTask {
             Long delayTime){
         TaskWrapper taskWrapper=new TaskWrapper(abstractTask,att,taskType,isNewTToExe,delayTime);
         if(isSeq){
-            AbstractEnAndDeSgy.getMinLoad(abstractEnAndDeSgyId).addNewTask(gTaskId,taskWrapper);
+            AbstractEnAndDeSgy.getMinLoad(isSeq,abstractEnAndDeSgyId).addNewTask(gTaskId,taskWrapper);
         }else{
-            AbstractEnAndDeSgy.getMinLoad(null).addNewTask(gTaskId,taskWrapper);
+            AbstractEnAndDeSgy.getMinLoad(isSeq,null).addNewTask(gTaskId,taskWrapper);
         }
     }
 
