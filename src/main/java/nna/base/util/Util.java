@@ -1,4 +1,4 @@
-package nna.base.dispatch;
+package nna.base.util;
 
 
 import java.io.IOException;
@@ -32,22 +32,5 @@ public class Util {
         byte[] bytes=new byte[readCount];
         byteBuffer.get(bytes,0,readLength);
         return byteBuffer.array();
-    }
-
-    public static byte[] readBytes(ReadableByteChannel channel) throws IOException {
-        ZeroCopy zeroCopy=new ZeroCopy(1024,100,100);
-        ByteBuffer byteBuffer=ByteBuffer.allocate(10);
-        int readSize;
-        while(true){
-            readSize=channel.read(byteBuffer);
-            if(readSize==-1||readSize==0){
-                return zeroCopy.toBytes();
-            }else{
-                byte[] bytes=new byte[3];
-                byteBuffer.get(bytes,0,readSize);
-                zeroCopy.add(bytes);
-                byteBuffer.clear();
-            }
-        }
     }
 }

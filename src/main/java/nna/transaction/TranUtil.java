@@ -1,7 +1,6 @@
 package nna.transaction;
 
 import nna.Marco;
-import nna.base.dispatch.AppUtil;
 
 import java.sql.*;
 
@@ -26,7 +25,7 @@ public class TranUtil {
                 totalPage+=1;
             }
         }
-        AppUtil.putTemp(Marco.TOTALPAGE, new String[]{totalPage.toString()});
+//        AppUtil.putTemp(Marco.TOTALPAGE, new String[]{totalPage.toString()});
         Integer begin=(currentPage-1)*pageSize;
         Integer end=(currentPage)*pageSize;
         return new Integer[]{begin,end,pageFlag};

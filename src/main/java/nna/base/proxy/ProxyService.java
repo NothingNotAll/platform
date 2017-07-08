@@ -3,7 +3,6 @@ package nna.base.proxy;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import nna.base.log.Log;
-import nna.base.dispatch.AppUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -90,7 +89,6 @@ public final class ProxyService implements InvocationHandler,MethodInterceptor {
 	}
 
 	private void logError(Exception e) {
-		Log erroLog= AppUtil.getLog();
 		StackTraceElement[] stes= e.getStackTrace();
 		logError(e.getStackTrace());
 	}
@@ -118,7 +116,7 @@ public final class ProxyService implements InvocationHandler,MethodInterceptor {
 	}
 
 	private void logError(StackTraceElement[] stackTrace) {
-		Log erroLog= AppUtil.getLog();
+		Log erroLog= null;
 		for(StackTraceElement st:stackTrace){
 			erroLog.log(st.getClassName()+"-"+st.getMethodName()+"-"+st.getLineNumber(),Log.ERROR);
 		}

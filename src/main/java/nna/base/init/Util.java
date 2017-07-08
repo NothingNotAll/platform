@@ -3,8 +3,8 @@ package nna.base.init;
 import nna.Marco;
 import nna.base.bean.dbbean.PlatformSql;
 import nna.base.dispatch.Protocol;
+import nna.StoreData;
 import nna.base.log.Log;
-import nna.base.dispatch.AppUtil;
 import nna.base.server.NIOEntry;
 import nna.base.util.BuildSQL;
 
@@ -22,7 +22,7 @@ import java.sql.SQLException;
         return Protocol.getProcessConfig(protocolType);
      }
      static String buildSQL(PlatformSql platformSql) throws SQLException {
-         Log log= AppUtil.getLog();
+        Log log= null;
         String sqlStr=null;
         String tableName=platformSql.getTableName();
 
@@ -106,7 +106,7 @@ import java.sql.SQLException;
             platformSql.setAppCondition(platformSql.getAppCondition()+","+ Marco.PAGE_BEGIN+","+Marco.PAGE_END);
         }
 
-        log.log("initial "+platformSql.getSqlId()+" SQL:"+sqlStr,Log.INFO);
+        StoreData.getConfig().getLog().log("initial "+platformSql.getSqlId()+" SQL:"+sqlStr,Log.INFO);
         return sqlStr;
     }
 

@@ -1,19 +1,17 @@
-package nna.base.dispatch;
+package nna;
 
-
-import nna.MetaBean;
 
 /*
  * app 数据存储中心 线程安全
  * */
- class StoreData {
+ public class StoreData {
 
     static private ThreadLocal<MetaBean> configThreadLocal=new ThreadLocal<MetaBean>();
 
-    static void setConfig(MetaBean MetaBean){
+    public static void setConfig(MetaBean MetaBean){
         configThreadLocal.set(MetaBean);
     }
-    static MetaBean getConfig(){
+    public static MetaBean getConfig(){
         return configThreadLocal.get();
     }
 

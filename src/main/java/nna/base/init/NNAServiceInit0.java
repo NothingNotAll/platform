@@ -8,9 +8,9 @@ package nna.base.init;
 
 import nna.Marco;
 import nna.MetaBean;
+import nna.StoreData;
 import nna.base.bean.dbbean.*;
 import nna.base.log.Log;
-import nna.base.dispatch.ConfMetaSetFactory;
 import nna.base.util.BuildSQL;
 import nna.base.util.List;
 import nna.base.util.LogUtil;
@@ -69,7 +69,7 @@ public class NNAServiceInit0 {
              Log log=getPlatformLog(platformLog);
              MetaBean confMeta=new MetaBean();
              confMeta.setLog(log);
-             ConfMetaSetFactory.setConfMeta(confMeta);
+             StoreData.setConfig(confMeta);
              inits=initPstsCache(psts,log);
          } catch (SQLException e) {
              e.printStackTrace();

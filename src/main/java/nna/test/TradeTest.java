@@ -31,7 +31,7 @@ public class TradeTest {
             try{
                 HashMap<String,String[]> reqMap= TradeReqMap.map;
                 String xmlStr=XmlUtil.buildXML(XML_ROOT_NM,reqMap);
-                System.out.println(xmlStr);
+//                System.out.println(xmlStr);
                 SocketChannel client=SocketChannel.open();
                 client.configureBlocking(false);
                 client.connect(new InetSocketAddress(IP,PORT));

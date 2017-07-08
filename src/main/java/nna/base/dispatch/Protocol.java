@@ -19,6 +19,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static nna.base.dispatch.NNAService.service;
+
 /**
  * @author NNA-SHUAI
  * @create 2017-06-17 7:42
@@ -26,15 +28,9 @@ import java.util.Map;
 
 public class Protocol {
 
+    static SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
     private final static Protocol protocol=new Protocol();
     private Protocol(){}
-
-    public static void process(SocketChannel socketChannel, ByteBuffer byteBuffer,int protocolType,int ioType){
-
-    }
-    public static void process(SocketChannel socketChannel,int protocolType,int ioType){
-
-    }
 
     public static String protocolAdapter(MetaBean metaBean, int protocolType) throws InvocationTargetException, IllegalAccessException {
         switch (protocolType){
@@ -45,7 +41,6 @@ public class Protocol {
         }
         return "";
     }
-
 
     private static String XML(MetaBean metaBean) {
         return "";
@@ -93,19 +88,6 @@ public class Protocol {
         }
     }
 
-    public static String processHttp(SocketChannel socketChannel) throws IOException {
-        byte[] bytes=read(socketChannel);
-        socketChannel.write(ByteBuffer.wrap(bytes));
-        socketChannel.close();
-        Long end=System.currentTimeMillis();
-        try {
-            System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private static byte[] read(SocketChannel channel) {
         LinkedList<byte[]> bytes=new LinkedList<byte[]>();
         byte[] temp;
@@ -150,20 +132,37 @@ public class Protocol {
         }
         return byteList;
     }
-    static SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-    public static String processXml(SocketChannel channel) throws IOException {
+
+    public static String processHttp(SocketChannel socketChannel) throws IOException {
+        byte[] bytes=read(socketChannel);
+        HashMap<String,String[]> map=new HashMap<String, String[]>();
+        socketChannel.write(ByteBuffer.wrap(bytes));
+        socketChannel.close();
+        Long end=System.currentTimeMillis();
+        try {
+            System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String processXml(SocketChannel channel) {
         byte[] bytes=read(channel);
         try {
-            XmlUtil.parseXmlStr(new String(bytes),new HashMap<String, String[]>());
-        } catch (DocumentException e) {
+            HashMap<String,String[]> map=new HashMap<String, String[]>();
+            XmlUtil.parseXmlStr(new String(bytes),map);
+            String responseStr=service(map);
+            channel.write(ByteBuffer.wrap(responseStr.getBytes("UTF-8")));
+        } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            try {
+                channel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            channel.write(ByteBuffer.wrap(bytes));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        channel.close();
         Long end=System.currentTimeMillis();
         try {
             System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
