@@ -10,14 +10,14 @@ import java.util.ArrayList;
  * @create 2017-05-23 13:14
  **/
 
-public class TemplateFactory {
+ class TemplateFactory {
 
     private static final int[] nextHeader= CharUtil.nexts("<!--");
     private static final int[] nextTail= CharUtil.nexts("-->");
 
     private TemplateFactory(){}
 
-    public static Template getTemplate(String templatePath,String encode) throws IOException {
+     static Template getTemplate(String templatePath,String encode) throws IOException {
         assert templatePath!=null;
         assert !templatePath.trim().equals("");
         File file=new File(templatePath);
@@ -27,7 +27,7 @@ public class TemplateFactory {
         return buildTemplate(reader);
     }
 
-    public static Template buildTemplate(BufferedReader reader) throws IOException {
+     static Template buildTemplate(BufferedReader reader) throws IOException {
         Template template=new Template();
         ArrayList<String> strs=new ArrayList<String>();
         ArrayList<View> views=new ArrayList<View>();
@@ -57,7 +57,7 @@ public class TemplateFactory {
         return template;
     }
 
-    public static String getEnd(BufferedReader reader) throws IOException {
+     static String getEnd(BufferedReader reader) throws IOException {
         StringBuilder temp=new StringBuilder("");
         int index=0;
         String begin="-->";
@@ -91,7 +91,7 @@ public class TemplateFactory {
         return temp.toString();
     }
 
-    public static String getBegin(BufferedReader reader) throws IOException {
+     static String getBegin(BufferedReader reader) throws IOException {
         StringBuilder temp=new StringBuilder("");
         int index=0;
         String begin="<!--";

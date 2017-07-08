@@ -2,6 +2,8 @@ package nna.base.util.view;
 
 import nna.base.bean.Clone;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -14,6 +16,22 @@ public class Template extends Clone{
     private String[] strs;
     private View[] views;
 
+    public String render(Map<String,String[]> map){
+        StringBuilder stringBuilder=new StringBuilder("");
+        int count=strs.length;
+        String str;
+        View view;
+        for(int index=0,index2=0;index < count;index++){
+            str=strs[index];
+            if(str==null){
+                view=views[index2++];
+                str=view.toString(map);
+            }
+            stringBuilder.append(str);
+        }
+        return stringBuilder.toString();
+    }
+
     public Template Clone(){
         Template template=(Template) super.clone();
         template.setStrs(strs.clone());
@@ -21,50 +39,8 @@ public class Template extends Clone{
         return template;
     }
 
-    public String render(Map<String,String[]> map){
-        StringBuilder renderStr=new StringBuilder("");
-        int count=views.length;
-        String temp;
-        int viewIndex=0;
-        View view;
-        String tempStr;
-        for(int index=0;index <count;index++){
-            temp=strs[index];
-            if(temp!=null){
-                renderStr.append(temp);
-            }else {
-                view=views[viewIndex];
-                tempStr=renderView(view,map);
-                renderStr.append(tempStr);
-            }
-        }
-        return renderStr.toString();
-    }
-
-    private String renderView(View view, Map<String, String[]> map) {
-        StringBuilder render=new StringBuilder("");
-        String[] views=view.getViews();
-        String[] keys=view.getRenderNms();
-        int count=views.length;
-        int renderCount=map.get(keys[0]).length;
-        String temp;
-        for(int index=0;index < renderCount;index++){
-            int nullIndex=0;
-            for(int i=0;i < count;i++){
-                temp=views[i];
-                if(temp!=null&&!temp.trim().equals("")){
-                    render.append(temp);
-                }else{
-                    String[] temps=map.get(keys[nullIndex]);
-                    assert temps!=null;
-                    assert temps.length >= (index+1);
-                    if(temps==null){continue;}
-                    render.append(temps[index]);
-                    nullIndex++;
-                }
-            }
-        }
-        return render.toString();
+    public static Template getTemplate(String templatePath,String encode) throws IOException {
+        return TemplateFactory.getTemplate(templatePath,encode);
     }
 
     public void setStrs(String[] strs) {
