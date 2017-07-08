@@ -1,6 +1,5 @@
 package nna.base.util.view;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
