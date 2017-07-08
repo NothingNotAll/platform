@@ -128,6 +128,11 @@ public class Protocol {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                try {
+                    channel.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         }
         int index2;

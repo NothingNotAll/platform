@@ -11,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 /**
@@ -28,35 +27,42 @@ public class TradeTest {
     private static final String XML_ROOT_NM = "root";
 
     public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, IllegalAccessException {
-        for(int index=0;index < 100;index ++){
-            HashMap<String,String[]> reqMap= TradeReqMap.map;
-            String xmlStr=XmlUtil.buildXML(XML_ROOT_NM,reqMap);
-            System.out.println(xmlStr);
-            SocketChannel client=SocketChannel.open();
-            client.configureBlocking(false);
-            client.connect(new InetSocketAddress(IP,PORT));
-            byte[] bytes=xmlStr.getBytes(XML_ENCODE);
-            ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
-            if(!client.isConnected()){
-                while(true){
-                   try{
-                       if(client.finishConnect()){
-                           break;
-                       };
-                   }catch (Exception e){
-                       e.printStackTrace();
-                       break;
-                   }
+        while(true){
+            try{
+                HashMap<String,String[]> reqMap= TradeReqMap.map;
+                String xmlStr=XmlUtil.buildXML(XML_ROOT_NM,reqMap);
+                System.out.println(xmlStr);
+                SocketChannel client=SocketChannel.open();
+                client.configureBlocking(false);
+                client.connect(new InetSocketAddress(IP,PORT));
+                byte[] bytes=xmlStr.getBytes(XML_ENCODE);
+                ByteBuffer byteBuffer=ByteBuffer.wrap(bytes);
+                if(!client.isConnected()){
+                    while(true){
+                        try{
+                            if(client.finishConnect()){
+                                break;
+                            };
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            break;
+                        }
+                    }
                 }
+                client.write(byteBuffer);
+                client.shutdownOutput();
+                client.shutdownInput();
+                client.close();
+                HashMap<String,String[]> rspMap=new HashMap<String, String[]>();
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+//                try {
+//                    Thread.sleep(10L);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
             }
-            client.write(byteBuffer);
-            Long end=System.currentTimeMillis();
-            System.out.println("write end time:"+simpleDateFormat.format(end));
-            client.shutdownOutput();
-            client.shutdownInput();
-            client.close();
-            HashMap<String,String[]> rspMap=new HashMap<String, String[]>();
         }
     }
-    static SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 }
