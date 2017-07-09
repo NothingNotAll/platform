@@ -63,6 +63,8 @@ import java.util.concurrent.ConcurrentHashMap;
                             monitrStr=ThreadWrapper.monitor(t);
                             log.log(monitrStr,Log.INFO);
                             System.out.println(monitrStr);
+                            log.log(ThreadWrapper.monitorEffective(t),Log.INFO);
+                            System.out.println(ThreadWrapper.monitorEffective(t));
                         }
                     }catch (Exception e){
                         e.fillInStackTrace();
