@@ -5,12 +5,14 @@ import nna.MetaBean;
 import nna.base.util.CharUtil;
 import nna.base.util.XmlUtil;
 import nna.base.util.orm.ObjectUtil;
-import org.dom4j.DocumentException;
 
+import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.text.SimpleDateFormat;
@@ -20,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import static nna.base.dispatch.NNAService.service;
+
 
 /**
  * @author NNA-SHUAI
@@ -88,14 +91,13 @@ public class Protocol {
         }
     }
 
-    private static byte[] read(SocketChannel channel) {
+    private static byte[] read(SocketChannel channel) throws IOException {
         LinkedList<byte[]> bytes=new LinkedList<byte[]>();
         byte[] temp;
         ByteBuffer byteBuffer=ByteBuffer.allocate(1024);
         int totalCount=0;
         int readCount;
         while(true){
-            try {
                 byteBuffer.clear();
                 readCount=channel.read(byteBuffer);
                 if(readCount==-1){
@@ -108,14 +110,6 @@ public class Protocol {
                     byteBuffer.get(temp);
                     bytes.add(temp);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                try {
-                    channel.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-            }
         }
         int index2;
         int index3=0;
@@ -135,21 +129,111 @@ public class Protocol {
 
     public static String processHttp(SocketChannel socketChannel) throws IOException {
         byte[] bytes=read(socketChannel);
-        HashMap<String,String[]> map=new HashMap<String, String[]>();
-        socketChannel.write(ByteBuffer.wrap(bytes));
-        socketChannel.close();
         Long end=System.currentTimeMillis();
         try {
             System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        HashMap<String,String[]> map=new HashMap<String, String[]>();
+        toMap(bytes,map);
+        socketChannel.write(ByteBuffer.wrap(getHttpResponseHeader().getBytes("UTF-8")));
+        socketChannel.close();
         return null;
     }
 
+    private static void toMap(byte[] bytes,HashMap<String,String[]> map) throws IOException {
+        BufferedReader lineReader=new BufferedReader(new CharArrayReader(new String(bytes,"UTF-8").toCharArray()));
+        String line;
+        String[] strs;
+        String method;
+        String link;
+        String[] kvs;
+        while(true){
+            line=lineReader.readLine();
+            if(line!=null){
+                strs=line.split("[\\s]");
+                method=strs[0];
+                link=strs[1];
+                map.put("HTTP_METHOD",new String[]{method});
+                map.put("HTTP_VERSION",new String[]{strs[2]});
+                if(method.equals("GET")){
+                    strs=strs[1].split("[?]");
+                    link=strs[0];
+                    if(strs.length>1){
+                        strs=strs[1].split("[&]");
+                        for(String kv:strs){
+                            kvs=kv.split("[=]");
+                            map.put(kvs[0].trim(),new String[]{URLDecoder.decode(kvs[1].trim())});
+                            System.out.println(kvs[0]+":"+URLDecoder.decode(kvs[1]));
+                        }
+                    }
+                }
+                map.put("HTTP_METHOD",new String[]{link});
+                break;
+            }else{
+                continue;
+            }
+        }
+        while(true){
+            line=lineReader.readLine();
+            if(line!=null){
+                if(line.trim().equals("")){
+                    break;
+                }
+                kvs=line.split("[:]");
+                map.put(kvs[0].trim(),new String[]{kvs[1].trim()});
+                System.out.println(kvs[0]+":"+URLDecoder.decode(kvs[1]));
+                continue;
+            }else{
+                break;
+            }
+        }
+
+        if(method.equals("GET")){
+            return ;
+        }
+
+        if(map.get("Content-Type")[0].toLowerCase().startsWith("multipart")){
+            return ;
+        }
+
+        while(true){
+            line=lineReader.readLine();
+            if(line!=null){
+                strs=line.split("[&]");
+                for(String kv:strs){
+                    kvs=kv.split("[=]");
+                    map.put(kvs[0].trim(),new String[]{URLDecoder.decode(kvs[1].trim())});
+                    System.out.println(kvs[0]+":"+URLDecoder.decode(kvs[1]));
+                }
+            }else{
+                return;
+            }
+        }
+
+    }
+
+    private static String getHttpResponseHeader(){
+        return new String("HTTP/1.1 200 OK\r\n" +
+                "Date: Sat, 31 Dec 2005 23:59:59 GMT\r\n" +
+                "Content-Type: text/html;charset=UTF-8\r\n" +
+                "Content-Length: 122\r\n" +
+                "\r\n" +
+                "＜html＞\n" +
+                "＜head＞\n" +
+                "＜title＞Wrox Homepage＜/title＞\n" +
+                "＜/head＞\n" +
+                "＜body＞\n" +
+                "＜!-- body goes here --＞\n" +
+                "＜/body＞\n" +
+                "＜/html＞");
+    }
+
     public static String processXml(SocketChannel channel) {
-        byte[] bytes=read(channel);
+        byte[] bytes;
         try {
+            bytes=read(channel);
             HashMap<String,String[]> map=new HashMap<String, String[]>();
             XmlUtil.parseXmlStr(new String(bytes),map);
             String responseStr=service(map);
@@ -164,11 +248,11 @@ public class Protocol {
             }
         }
         Long end=System.currentTimeMillis();
-        try {
-            System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
