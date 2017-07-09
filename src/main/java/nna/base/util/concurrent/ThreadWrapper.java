@@ -23,9 +23,9 @@ import java.util.concurrent.locks.LockSupport;
      private AtomicLong unParkTimes=new AtomicLong();
      private AtomicLong parkTimes=new AtomicLong();
      private Long twSeqId;
-     private Long noMeanfulTimes=0L;
-     private Long meanfulTimes=0L;
-     private Long totalTimes=0L;
+     private volatile Long noMeanfulTimes=0L;
+     private volatile Long meanfulTimes=0L;
+     private volatile Long totalTimes=0L;
 
      ThreadWrapper(ConcurrentHashMap<String,QueueWrapper[]> qwMap,Boolean isSeq){
         this.qwMap=qwMap;
@@ -59,14 +59,14 @@ import java.util.concurrent.locks.LockSupport;
                         effectiveCount++;
                     }
                 }
+                totalTimes++;
                 if(taskCount==0){
                     noMeanfulTimes++;
-//                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:0%");
+                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:0%");
                 }else{
                     meanfulTimes++;
-//                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:"+effectiveCount/taskCount*100+"."+effectiveCount%taskCount+"%");
+                    System.out.println("NO."+twSeqId+"-workedCount:"+effectiveCount+"-totalCount:"+taskCount+"-percent:"+effectiveCount*100/taskCount+"."+effectiveCount%taskCount+"%");
                 }
-                totalTimes++;
                 if(temp.size()==0){
                     LockSupport.park();
                 }
@@ -164,14 +164,14 @@ import java.util.concurrent.locks.LockSupport;
     }
 
     static String monitor(ThreadWrapper t){
-        String int1=String.valueOf((t.getMeanfulTimes()/t.getTotalTimes())*100);
-        String int2=String.valueOf((t.getNoMeanfulTimes()/t.getTotalTimes())*100);
-        String yu1=String.valueOf(t.getMeanfulTimes()%t.getTotalTimes());
-        String yu2=String.valueOf(t.getNoMeanfulTimes()%t.getTotalTimes());
+        String int1=String.valueOf(t.meanfulTimes*100L/t.totalTimes);
+        String int2=String.valueOf(t.noMeanfulTimes*100L/t.totalTimes);
+        String yu1=String.valueOf(t.meanfulTimes%t.totalTimes);
+        String yu2=String.valueOf(t.noMeanfulTimes%t.totalTimes);
         String percent1=int1+"."+yu1+"%";
         String percent2=int2+"."+yu2+"%";
         Long index=t.twSeqId;
-        String str="No."+index+".thread.STATE:"+t.getThread().getState()+"-meanfulPercent:"+percent1+"-"+"noMeanfulPercent:"+percent2;
+        String str="No."+index+".thread.STATE:"+t.thread.getState()+"-meanfulPercent:"+percent1+"-"+"noMeanfulPercent:"+percent2;
         return str;
     }
 

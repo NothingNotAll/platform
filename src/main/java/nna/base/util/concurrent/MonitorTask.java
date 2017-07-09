@@ -46,9 +46,14 @@ import java.util.concurrent.ConcurrentHashMap;
         map=QueueWrapper.getQwMap();
             try{
                 while(true){
+                    System.out.println("Alive thread Count:"+Thread.getAllStackTraces().size());
+                    log.log("Alive thread Count:"+Thread.getAllStackTraces().size(),Log.INFO);
                     System.out.println("total count of alive thread:"+AbstractTask.getTotalAliveThreadCount());
+                    log.log("total count of alive thread:"+AbstractTask.getTotalAliveThreadCount(),Log.INFO);
                     System.out.println("total count of dead thread:"+AbstractTask.getTotalDeadThreadCount());
+                    log.log("total count of dead thread:"+AbstractTask.getTotalDeadThreadCount(),Log.INFO);
                     System.out.println("total count of in real alive thread:"+AbstractTask.getAliveThreadCount());
+                    log.log("total count of in real alive thread:"+AbstractTask.getAliveThreadCount(),Log.INFO);
                     twMap=ThreadWrapper.getTwMap();
                     ts = twMap.entrySet().iterator();
                     try{
