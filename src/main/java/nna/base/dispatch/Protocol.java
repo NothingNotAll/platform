@@ -120,12 +120,6 @@ public class Protocol {
                 e.printStackTrace();
             }
         }
-        Long end=System.currentTimeMillis();
-//        try {
-//            System.out.println("read time end:"+simpleDateFormat.format(end)+" from client:"+new String(bytes,0,bytes.length,"UTF-8"));
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
         return null;
     }
 
