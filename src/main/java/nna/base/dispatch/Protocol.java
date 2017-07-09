@@ -35,7 +35,7 @@ public class Protocol {
     private final static Protocol protocol=new Protocol();
     private Protocol(){}
 
-    public static String protocolAdapter(MetaBean metaBean, int protocolType) throws InvocationTargetException, IllegalAccessException {
+    static String protocolAdapter(MetaBean metaBean, int protocolType) throws InvocationTargetException, IllegalAccessException {
         switch (protocolType){
             case Marco.XML_PROTOCOL:
                 return HTTP(metaBean);
@@ -46,7 +46,7 @@ public class Protocol {
     }
 
     private static String XML(MetaBean metaBean) {
-        return "";
+        return XmlUtil.buildXML("root",metaBean.getOutColumns());
     }
 
     private static String HTTP(MetaBean metaBean) throws InvocationTargetException, IllegalAccessException {
