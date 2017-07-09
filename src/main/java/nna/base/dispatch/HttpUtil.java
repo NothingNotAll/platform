@@ -1,21 +1,90 @@
 package nna.base.dispatch;
 
-import java.io.BufferedReader;
-import java.io.CharArrayReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLDecoder;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Created by NNA-SHUAI on 2017/7/9.
  */
 public class HttpUtil {
-
+    private static final Charset charset=Charset.forName("UTF-8");
+    private static final int HTTP_VERSION=0;
+    private static final int HTTP_GET_HEADER=1;
+    private static final int HTTP_POST_HEADER=-1;
+    private static final int HTTP_BODY=2;
+    public static void main(String[] args){
+        System.out.println("http1.1 GET ajfaljfalj\r\n".getBytes().length);
+//        BufferedReader lineReader=new BufferedReader(new CharArrayReader(new String("aflajfla\r\nasf").toCharArray()));
+//        while(true){
+//            try {
+//                String line=lineReader.readLine();
+//                System.out.println(line);
+//                if(line==null){
+//                    System.out.println(line);
+//                    break;
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+    }
     private HttpUtil(){}
 
-    private static void parseLineBytes(SocketChannel channel){
-
+    static void parseLine(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel channel) throws IOException {
+        ByteBuffer byteBuffer=ByteBuffer.allocate(2);
+        StringBuilder line=new StringBuilder("");
+        CharBuffer charBuffer;
+        String lines;
+        int readCount=0;
+        int parseType=0;
+        boolean isGETMethod=false;
+        while(true){
+            byteBuffer.clear();
+            readCount=channel.read(byteBuffer);
+            if(readCount>0){
+                byteBuffer.flip();
+                charBuffer=charset.decode(byteBuffer);
+                lines=charBuffer.toString();
+                line.append(lines);
+                if(lines.endsWith("\r\n")){
+                    switch (parseType){
+                        case HTTP_VERSION:
+                            isGETMethod=parseFirstLine(headers,kvMap,line.toString());
+                            parseType=isGETMethod?HTTP_GET_HEADER:HTTP_POST_HEADER;
+                            break;
+                        case HTTP_GET_HEADER://Headers_GET
+                            if(line.toString().trim().equals("")){
+                                return ;
+                            }
+                            parseHeaders(headers,line.toString());
+                            break;
+                        case HTTP_POST_HEADER://Headers_POST
+                            if(line.toString().trim().equals("")){
+                                parseType=HTTP_BODY;
+                                break;
+                            }
+                            parseHeaders(headers,line.toString());
+                            break;
+                        case HTTP_BODY:
+                            String[] contentType=headers.get("Content-type");
+                            String[] boundary=headers.get("boundary");
+                            if(contentType!=null&&contentType[0].toLowerCase().equals("multipart")&&boundary[0].equals(line.toString().trim())){
+                                return ;
+                            }else{
+                                parseKeyValues(kvMap,line.toString());
+                                return ;
+                            }
+                    }
+                    line.delete(0,line.length()-1);
+                }
+            }
+        }
     }
 
     static void parseHttpRequest(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,String request) throws IOException {

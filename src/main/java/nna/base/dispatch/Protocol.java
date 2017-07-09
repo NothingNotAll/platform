@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static nna.base.dispatch.BytesUtil.readBytes;
 import static nna.base.dispatch.NNAService.service;
 
 
@@ -88,7 +89,7 @@ public class Protocol {
 
     public static String processHttp(SocketChannel socketChannel) {
         try {
-            byte[] bytes=BytesUtil.readBytes(socketChannel);
+            byte[] bytes=readBytes(socketChannel);
             HashMap<String,String[]> headers=new HashMap<String, String[]>();
             HashMap<String,String[]> kvs=new HashMap<String, String[]>();
             HttpUtil.parseHttpRequest(headers,kvs,new String(bytes,"UTF-8"));
@@ -110,7 +111,7 @@ public class Protocol {
     public static String processXml(SocketChannel channel) {
         byte[] bytes;
         try {
-            bytes=BytesUtil.readBytes(channel);
+            bytes= readBytes(channel);
             HashMap<String,String[]> map=new HashMap<String, String[]>();
             XmlUtil.parseXmlStr(new String(bytes),map);
             String responseStr=service(map);
