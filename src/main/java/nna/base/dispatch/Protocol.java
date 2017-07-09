@@ -92,6 +92,8 @@ public class Protocol {
             HashMap<String,String[]> headers=new HashMap<String, String[]>();
             HashMap<String,String[]> kvs=new HashMap<String, String[]>();
             HttpUtil.parseHttpRequest(headers,kvs,new String(bytes,"UTF-8"));
+            String responseStr=service(kvs);
+            socketChannel.write(ByteBuffer.wrap(responseStr.getBytes("UTF-8")));
         } catch (IOException e) {
             e.printStackTrace();
             try {
@@ -99,6 +101,8 @@ public class Protocol {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
