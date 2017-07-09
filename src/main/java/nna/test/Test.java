@@ -4,6 +4,8 @@ import nna.Marco;
 import nna.base.log.Log;
 import nna.base.util.LogUtil;
 
+import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -22,6 +24,30 @@ import java.util.concurrent.locks.LockSupport;
 
 public class Test {
     public static void main(String[] args){
+        String str="sfj asdfa";
+        System.out.println(str.split("[\\s]").length);
+
+        //        park();
+//        AtomicInteger atomicInteger=new AtomicInteger();
+//        atomicInteger.getAndIncrement();
+//        System.out.println(atomicInteger.get());
+//        atomicInteger.set(-1);
+//        atomicInteger.getAndIncrement();
+//        System.out.println(atomicInteger.get());
+//        try {
+//            NetworkInterface networkInterface=NetworkInterface.getByName("eth0");
+//            Enumeration<NetworkInterface> enumeration=networkInterface.getSubInterfaces();
+//            while(enumeration.hasMoreElements()){
+//                networkInterface=enumeration.nextElement();
+//                System.out.println(networkInterface);
+//            }
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    public static void testConHttp(){
+
         new Thread(new Runnable() {
             public void run() {
                 while (true){
@@ -44,23 +70,6 @@ public class Test {
                 }
             }
         }).start();
-        //        park();
-//        AtomicInteger atomicInteger=new AtomicInteger();
-//        atomicInteger.getAndIncrement();
-//        System.out.println(atomicInteger.get());
-//        atomicInteger.set(-1);
-//        atomicInteger.getAndIncrement();
-//        System.out.println(atomicInteger.get());
-//        try {
-//            NetworkInterface networkInterface=NetworkInterface.getByName("eth0");
-//            Enumeration<NetworkInterface> enumeration=networkInterface.getSubInterfaces();
-//            while(enumeration.hasMoreElements()){
-//                networkInterface=enumeration.nextElement();
-//                System.out.println(networkInterface);
-//            }
-//        } catch (SocketException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public static void park(){

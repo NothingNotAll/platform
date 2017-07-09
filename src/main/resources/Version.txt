@@ -36,3 +36,8 @@ trans_name to avoid config repeatedly more once;
     noSeq Work is worked by multi BlocikingQUeue and can consumed by multi threads.
     but we must think of the dynamic strategy to adapter the load of system.as that we can dynamic add seq Work Threads.
     to solve the large of requests
+
+
+//排队算法：
+可根据en_queue_time 得到其进队时间，以此来进行优先级别的排序。
+1000MillSeconds*60Seconds*60Minutes*24Hours=86400000
