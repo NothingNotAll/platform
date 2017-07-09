@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 
 /**
@@ -12,16 +13,25 @@ import java.util.HashMap;
 public class HttpUtil {
 
     private HttpUtil(){}
+
+    static void parseLineBytes(SocketChannel channel){
+
+    }
+
     static void parseHttpRequest(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,String request) throws IOException {
             BufferedReader lineReader=new BufferedReader(new CharArrayReader(request.toCharArray()));
             String line;
+            //process first line
+            boolean isGETMethod;
             while(true){
                 line=lineReader.readLine();
                 if(line!=null){
                     break;
                 }
             }
-            boolean isGETMethod=parseFirstLine(headers,kvMap,line);
+            isGETMethod=parseFirstLine(headers,kvMap,line);
+
+            //process header part
             while(true){
                 line=lineReader.readLine();
                 if(line.trim().equals("")){
@@ -32,12 +42,16 @@ public class HttpUtil {
             if(isGETMethod){
                 return ;
             }
+
+            //process multi part
             String boundary=null;
             String contentType=headers.get("Content-Type")[0];
             if(contentType!=null&&contentType.toLowerCase().startsWith("multipart")){
                 String multi=headers.get("Content-Type")[0];
                 boundary=multi.split("[;]")[1].split("[=]")[1].trim();
             }
+
+            //process body part
             while(true){
                 line=lineReader.readLine();
                 if(line!=null){
