@@ -14,7 +14,7 @@ public class HttpUtil {
 
     private HttpUtil(){}
 
-    static void parseLineBytes(SocketChannel channel){
+    private static void parseLineBytes(SocketChannel channel){
 
     }
 
