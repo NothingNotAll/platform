@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
         for(int index=0;index < 1;index++){
             addWorker(true);
         }
-//        new MonitorTask();
+        new MonitorTask();
     }
 
     static void addWorker(boolean isSeq){

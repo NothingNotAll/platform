@@ -87,9 +87,9 @@ import java.util.concurrent.locks.LockSupport;
             return "NO."+tw.twSeqId+" NotWorkedCount:0 totalCount:0 noEffectivePercent:0%\r\nWorkedCount:0 totalCount:0 noEffectivePercent:0%";
         }
         String noEffective="NO."+tw.twSeqId+" NotWorkedCount:"+tw.noEffectiveCount+" totalCount:"+tw.totalTaskCount+" noEffectivePercent:"+tw.noEffectiveCount*100/tw.totalTaskCount+"."+tw.noEffectiveCount%tw.totalTaskCount+"%";
-        String effective="NO."+tw.twSeqId+" WorkedCount:"+tw.effectiveCount+" totalCount:"+tw.totalTaskCount+" noEffectivePercent:"+tw.effectiveCount*100/tw.totalTaskCount+"."+tw.effectiveCount%tw.totalTaskCount+"%";
+        String effective="NO."+tw.twSeqId+" WorkedCount:"+tw.effectiveCount+" totalCount:"+tw.totalTaskCount+" effectivePercent:"+tw.effectiveCount*100/tw.totalTaskCount+"."+tw.effectiveCount%tw.totalTaskCount+"%";
         String thisNoEffective="NO."+tw.twSeqId+" NotWorkedCount:"+tw.thisNoEffectiveCount+" totalCount:"+tw.taskCount+" noEffectivePercent:"+tw.thisNoEffectiveCount*100/tw.taskCount+"."+tw.thisNoEffectiveCount%tw.taskCount+"%";
-        String thisEffective="NO."+tw.twSeqId+" WorkedCount:"+tw.thisEffectiveCount+" totalCount:"+tw.taskCount+" noEffectivePercent:"+tw.thisEffectiveCount*100/tw.taskCount+"."+tw.thisEffectiveCount%tw.taskCount+"%";
+        String thisEffective="NO."+tw.twSeqId+" WorkedCount:"+tw.thisEffectiveCount+" totalCount:"+tw.taskCount+" effectivePercent:"+tw.thisEffectiveCount*100/tw.taskCount+"."+tw.thisEffectiveCount%tw.taskCount+"%";
         return "HISTORY_TOTAL:\r\n"+noEffective+"\r\n"+effective+"\r\nTHIS_TIME:\r\n"+thisNoEffective+"\r\n"+thisEffective;
     }
 
