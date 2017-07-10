@@ -93,17 +93,6 @@ import java.util.concurrent.locks.LockSupport;
         return "HISTORY_TOTAL:\r\n"+noEffective+"\r\n"+effective+"\r\nTHIS_TIME:\r\n"+thisNoEffective+"\r\n"+thisEffective;
     }
 
-    static ThreadWrapper[] addThreads(Integer addThreadCount){
-        if(addThreadCount==null){
-            return null;
-        }
-        ThreadWrapper[] newTws=new ThreadWrapper[addThreadCount];
-        for(int index=0;index < addThreadCount;index++){
-            newTws[index]=new ThreadWrapper(QueueWrapper.getQwMap(),false);
-        }
-        return newTws;
-    }
-
     void unParkThread(Long twId){
         if(twId!=null){
             ThreadWrapper tw=twMap.get(twId);
