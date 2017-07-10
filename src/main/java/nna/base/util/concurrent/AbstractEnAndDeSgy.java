@@ -27,6 +27,8 @@ import java.util.concurrent.atomic.AtomicLong;
     static{
         for(int index=0;index < 1;index++){
             addWorker(false);
+        }
+        for(int index=0;index < 1;index++){
             addWorker(true);
         }
 //        new MonitorTask();
