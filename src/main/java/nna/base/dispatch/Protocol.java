@@ -88,11 +88,11 @@ public class Protocol {
         }
     }
 
-    public static String processHttp(SocketChannel socketChannel) {
+    public static String processHttp(SocketChannel socketChannel,Integer timedOut) {
         try {
             HashMap<String,String[]> headers=new HashMap<String, String[]>();
             HashMap<String,String[]> kvs=new HashMap<String, String[]>();
-            HttpUtil.parseHttp(headers,kvs,socketChannel);
+            HttpUtil.parseHttp(headers,kvs,socketChannel,timedOut);
 //            String responseStr=service(kvs);
             System.out.println("http response");
             socketChannel.write(ByteBuffer.wrap(getHttpResponseHeader().getBytes("UTF-8")));
@@ -115,16 +115,17 @@ public class Protocol {
         return null;
     }
 
-    public static String processXml(SocketChannel channel) {
+    public static String processXml(SocketChannel channel,Integer timedOut) {
         byte[] bytes;
         try {
             bytes= readBytes(channel);
+            System.out.println(new String(bytes,"UTF-8"));
             HashMap<String,String[]> map=new HashMap<String, String[]>();
             XmlUtil.parseXmlStr(new String(bytes),map);
             String responseStr=service(map);
             channel.write(ByteBuffer.wrap(responseStr.getBytes("UTF-8")));
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }finally {
             try {
                 channel.close();

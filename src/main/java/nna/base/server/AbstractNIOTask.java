@@ -53,7 +53,8 @@ import java.util.concurrent.locks.ReentrantLock;
             try{
                 networkChannel.setOption(socketOption,object);
             }catch (Exception e){
-                System.out.println(" "+socketOption.name()+" channel not supported");
+//                e.printStackTrace();
+                System.out.println(socketOption.name()+" channel not supported");
             }
         }
     }

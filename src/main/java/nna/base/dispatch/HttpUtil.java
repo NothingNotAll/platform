@@ -9,6 +9,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by NNA-SHUAI on 2017/7/9.
@@ -19,14 +20,16 @@ public class HttpUtil {
     private static final int HTTP_GET_HEADER=1;
     private static final int HTTP_POST_HEADER=-1;
     private static final int HTTP_BODY=2;
+    private static AtomicLong seqId=new AtomicLong();
     private HttpUtil(){}
 
-    static void parseHttp(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel socketChannel) throws IOException {
-        socketChannel.socket().setSoTimeout(500);
+    static void parseHttp(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel socketChannel,Integer timedOut) throws IOException {
+        seqId.getAndIncrement();
+        socketChannel.socket().setSoTimeout(timedOut);
         InputStream inStream = socketChannel.socket().getInputStream();
         ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
         ByteBuffer byteBuffer=ByteBuffer.allocate(2);
-        StringBuilder line=new StringBuilder("");
+        StringBuilder line=new StringBuilder("");StringBuilder copy=new StringBuilder("");
         CharBuffer charBuffer;
         String lines;
         int readCount;
@@ -41,20 +44,27 @@ public class HttpUtil {
                 charBuffer=charset.decode(byteBuffer);
                 lines=charBuffer.toString();
                 line.append(lines);
+                copy.append(lines);
+                System.out.println(copy.toString());
+                System.out.println(copy.toString().equals("\r\n\r\n"));
                 if(lines.endsWith("\r\n")){
-                    System.out.println("-------------"+index+"----------------");
-                    System.out.println(lines);
-                    System.out.println("-------------"+index+++"--------------");
+//                    System.out.println("-------------"+index+"----------------");
+//                    System.out.println(line);
+//                    System.out.println("+-------------"+index+++"--------------");
                     switch (parseType){
                         case HTTP_VERSION:
                             isGETMethod=parseFirstLine(headers,kvMap,line.toString());
                             parseType=isGETMethod?HTTP_GET_HEADER:HTTP_POST_HEADER;
                             break;
                         case HTTP_GET_HEADER://Headers_GET
+                            if(line.toString().equals("\r\n\r\n")){
+                            System.out.println("end");
+                                return ;
+                            }
                             parseHeaders(headers,line.toString());
                             break;
                         case HTTP_POST_HEADER://Headers_POST
-                            if(line.toString().trim().equals("")){
+                            if(line.toString().equals("\r\n")){
                                 parseType=HTTP_BODY;
                                 break;
                             }
@@ -84,13 +94,12 @@ public class HttpUtil {
         String[] methodAndURIAndKVAndHttpVersion=firstLine.split("[\\s]");
         String method=methodAndURIAndKVAndHttpVersion[0].trim();
         headers.put("HTTP_METHOD",new String[]{method});
-        System.out.println("HTTP_METHOD"+":"+method);
+//        System.out.println(seqId.get()+"HTTP_METHOD"+":"+method+seqId.get());
         String URI;
         if(method.equals("GET")){
             isMethodGET=true;
             String[] uriAndKVS=methodAndURIAndKVAndHttpVersion[1].split("[?]");
             URI=uriAndKVS[0].trim();
-            System.out.println("HTTP_URI"+":"+URI);
             if(uriAndKVS.length>1){
                 String kvs=uriAndKVS[1];
                 parseKeyValues(kvMap,kvs);
@@ -99,8 +108,9 @@ public class HttpUtil {
             URI=methodAndURIAndKVAndHttpVersion[1];
         }
         headers.put("HTTP_URI",new String[]{URI});
+        //            System.out.println(seqId.get()+seqId.get()+"HTTP_URI"+":"+URI+seqId.get());
         headers.put("HTTP_VERSION",new String[]{methodAndURIAndKVAndHttpVersion[2].trim()});
-        System.out.println("HTTP_VERSION"+":"+methodAndURIAndKVAndHttpVersion[2].trim());
+//        System.out.println(seqId.get()+"HTTP_VERSION"+":"+methodAndURIAndKVAndHttpVersion[2]+seqId.get());
         return isMethodGET;
     }
 
@@ -108,7 +118,7 @@ public class HttpUtil {
         if(headerLine!=null&&!headerLine.trim().equals("")){
             String[] headerKV=headerLine.split("[:]");
             headers.put(headerKV[0].trim(),new String[]{headerKV[1].trim()});
-            System.out.println(headerKV[0]+":"+headerKV[1]);
+//            System.out.println(seqId.get()+headerKV[0]+":"+headerKV[1]+seqId.get());
         }
     }
 
@@ -119,7 +129,7 @@ public class HttpUtil {
             for(String kvStr:kvs){
                 kv=kvStr.split("[=]");
                 kvMap.put(kv[0].trim(), new String[]{URLDecoder.decode(kv[1])});
-                System.out.println(kv[0]+":"+kv[1]);
+//                System.out.println(seqId.get()+kv[0]+":"+kv[1]+seqId.get());
             }
         }
     }

@@ -24,9 +24,10 @@ import java.util.concurrent.locks.LockSupport;
 
 public class Test {
     public static void main(String[] args){
-        String str="sfj asdfa";
-        System.out.println(str.split("[\\s]").length);
-
+//        String str="sfj asdfa";
+//        System.out.println(str.split("[\\s]").length);
+        String testStr="afaf\r\n";
+        System.out.println(testStr.endsWith("\r\n"));
         //        park();
 //        AtomicInteger atomicInteger=new AtomicInteger();
 //        atomicInteger.getAndIncrement();

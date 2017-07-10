@@ -18,6 +18,16 @@ public abstract class EndConfig {
     protected SocketOption[] socketOptions;
     protected Object[] options;
 
+    public Integer getTimedOut() {
+        return timedOut;
+    }
+
+    public void setTimedOut(Integer timedOut) {
+        this.timedOut = timedOut;
+    }
+
+    protected Integer timedOut;
+
     static {
         setJVMCfg();
     }

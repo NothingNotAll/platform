@@ -243,6 +243,7 @@ public class NNAServiceInit2 {
             }
             endConfig.setIp(platformProtocol.getProtocolIp());
             endConfig.setPort(platformProtocol.getProtocolPort());
+            endConfig.setTimedOut(platformProtocol.getTimedOut()*1000);
             setOpVals(endConfig,platformProtocol);
             Object[] os=new Object[2];
             switch (platformProtocol.getProtocolType()){

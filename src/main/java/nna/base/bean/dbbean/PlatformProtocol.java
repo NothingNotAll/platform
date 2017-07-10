@@ -27,6 +27,7 @@ public class PlatformProtocol extends Clone{
     private Boolean soReuseadr;
     private Integer soSndbuf;
     private Boolean tcpNodelay;
+    private Integer timedOut;
 
     public ProtocolType getProtocolType() {
         return protocolType;
@@ -162,5 +163,13 @@ public class PlatformProtocol extends Clone{
 
     public void setBacklog(Integer backlog) {
         this.backlog = backlog;
+    }
+
+    public Integer getTimedOut() {
+        return timedOut;
+    }
+
+    public void setTimedOut(Integer timedOut) {
+        this.timedOut = timedOut;
     }
 }

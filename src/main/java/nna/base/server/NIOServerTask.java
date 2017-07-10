@@ -36,7 +36,8 @@ import java.nio.channels.*;
         if(!socketChannel.isConnected()){
             socketChannel.finishConnect();
         }
-        return method.invoke(object,socketChannel);
+        Integer timedOut=endConfig.getTimedOut();
+        return method.invoke(object,socketChannel,timedOut);
     }
 
     public Object doTask(Object att,int taskType) throws Exception {
