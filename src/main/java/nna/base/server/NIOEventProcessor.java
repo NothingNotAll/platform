@@ -15,7 +15,7 @@ public class NIOEventProcessor {
                                     int ioEventType) throws IOException {
         ServerSocketChannel serverSocketChannel= (ServerSocketChannel) selectableChannel;
         SocketChannel socketChannel=serverSocketChannel.accept();
-        socketChannel.configureBlocking(false);
+//        socketChannel.configureBlocking(false);
         nioTask.addNewNIOTask(socketChannel,ioEventType);
     }
 

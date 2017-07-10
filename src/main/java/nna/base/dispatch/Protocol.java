@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static nna.base.dispatch.BytesUtil.readBytes;
+import static nna.base.dispatch.HttpUtil.getHttpResponseHeader;
 import static nna.base.dispatch.NNAService.service;
 
 
@@ -89,21 +90,27 @@ public class Protocol {
 
     public static String processHttp(SocketChannel socketChannel) {
         try {
-            byte[] bytes=readBytes(socketChannel);
             HashMap<String,String[]> headers=new HashMap<String, String[]>();
             HashMap<String,String[]> kvs=new HashMap<String, String[]>();
-            HttpUtil.parseHttpRequest(headers,kvs,new String(bytes,"UTF-8"));
-            String responseStr=service(kvs);
-            socketChannel.write(ByteBuffer.wrap(responseStr.getBytes("UTF-8")));
+            HttpUtil.parseHttp(headers,kvs,socketChannel);
+//            String responseStr=service(kvs);
+            System.out.println("http response");
+            socketChannel.write(ByteBuffer.wrap(getHttpResponseHeader().getBytes("UTF-8")));
         } catch (IOException e) {
             e.printStackTrace();
             try {
-                socketChannel.close();
+                socketChannel.write(ByteBuffer.wrap(getHttpResponseHeader().getBytes("UTF-8")));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            try {
+                socketChannel.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
         return null;
     }

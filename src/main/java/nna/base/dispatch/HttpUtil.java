@@ -4,10 +4,11 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * Created by NNA-SHUAI on 2017/7/9.
@@ -18,35 +19,22 @@ public class HttpUtil {
     private static final int HTTP_GET_HEADER=1;
     private static final int HTTP_POST_HEADER=-1;
     private static final int HTTP_BODY=2;
-    public static void main(String[] args){
-        System.out.println("http1.1 GET ajfaljfalj\r\n".getBytes().length);
-//        BufferedReader lineReader=new BufferedReader(new CharArrayReader(new String("aflajfla\r\nasf").toCharArray()));
-//        while(true){
-//            try {
-//                String line=lineReader.readLine();
-//                System.out.println(line);
-//                if(line==null){
-//                    System.out.println(line);
-//                    break;
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-    }
     private HttpUtil(){}
 
-    static void parseLine(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel channel) throws IOException {
+    static void parseHttp(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel socketChannel) throws IOException {
+        socketChannel.socket().setSoTimeout(500);
+        InputStream inStream = socketChannel.socket().getInputStream();
+        ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
         ByteBuffer byteBuffer=ByteBuffer.allocate(2);
         StringBuilder line=new StringBuilder("");
         CharBuffer charBuffer;
         String lines;
-        int readCount=0;
+        int readCount;
         int parseType=0;
-        boolean isGETMethod=false;
+        boolean isGETMethod;
         while(true){
             byteBuffer.clear();
-            readCount=channel.read(byteBuffer);
+            readCount=wrappedChannel.read(byteBuffer);
             if(readCount>0){
                 byteBuffer.flip();
                 charBuffer=charset.decode(byteBuffer);
@@ -60,6 +48,7 @@ public class HttpUtil {
                             break;
                         case HTTP_GET_HEADER://Headers_GET
                             if(line.toString().trim().equals("")){
+                            System.out.println("return GET METHOD");
                                 return ;
                             }
                             parseHeaders(headers,line.toString());
@@ -83,73 +72,35 @@ public class HttpUtil {
                     }
                     line.delete(0,line.length()-1);
                 }
+            }else{
+                System.out.println("return");
+                return ;
             }
         }
     }
 
-    static void parseHttpRequest(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,String request) throws IOException {
-            BufferedReader lineReader=new BufferedReader(new CharArrayReader(request.toCharArray()));
-            String line;
-            //process first line
-            boolean isGETMethod;
-            while(true){
-                line=lineReader.readLine();
-                if(line!=null){
-                    break;
-                }
-            }
-            isGETMethod=parseFirstLine(headers,kvMap,line);
-
-            //process header part
-            while(true){
-                line=lineReader.readLine();
-                if(line.trim().equals("")){
-                    break;
-                }
-                parseHeaders(headers,line);
-            }
-            if(isGETMethod){
-                return ;
-            }
-
-            //process multi part
-            String boundary=null;
-            String contentType=headers.get("Content-Type")[0];
-            if(contentType!=null&&contentType.toLowerCase().startsWith("multipart")){
-                String multi=headers.get("Content-Type")[0];
-                boundary=multi.split("[;]")[1].split("[=]")[1].trim();
-            }
-
-            //process body part
-            while(true){
-                line=lineReader.readLine();
-                if(line!=null){
-                    break;
-                }
-            }
-            if(boundary!=null){
-                if(line.trim().equals(boundary)){
-                    return;
-                }
-            }
-            parseKeyValues(kvMap,line);
-    }
     static boolean parseFirstLine(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,String firstLine){
         boolean isMethodGET=false;
         String[] methodAndURIAndKVAndHttpVersion=firstLine.split("[\\s]");
         String method=methodAndURIAndKVAndHttpVersion[0].trim();
         headers.put("HTTP_METHOD",new String[]{method});
-        String URI=methodAndURIAndKVAndHttpVersion[1];
+        System.out.println("HTTP_METHOD"+":"+method);
+        String URI;
         if(method.equals("GET")){
             isMethodGET=true;
             String[] uriAndKVS=methodAndURIAndKVAndHttpVersion[1].split("[?]");
             URI=uriAndKVS[0].trim();
+            System.out.println("HTTP_URI"+":"+URI);
             if(uriAndKVS.length>1){
                 String kvs=uriAndKVS[1];
                 parseKeyValues(kvMap,kvs);
             }
+        }else{
+            URI=methodAndURIAndKVAndHttpVersion[1];
         }
+        headers.put("HTTP_URI",new String[]{URI});
         headers.put("HTTP_VERSION",new String[]{methodAndURIAndKVAndHttpVersion[2].trim()});
+        System.out.println("HTTP_VERSION"+":"+methodAndURIAndKVAndHttpVersion[2].trim());
         return isMethodGET;
     }
 
@@ -188,4 +139,53 @@ public class HttpUtil {
                 "＜/body＞\n" +
                 "＜/html＞");
     }
+
+
+//    static void parseHttpRequest(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,String request) throws IOException {
+//        BufferedReader lineReader=new BufferedReader(new CharArrayReader(request.toCharArray()));
+//        String line;
+//        //process first line
+//        boolean isGETMethod;
+//        while(true){
+//            line=lineReader.readLine();
+//            if(line!=null){
+//                break;
+//            }
+//        }
+//        isGETMethod=parseFirstLine(headers,kvMap,line);
+//
+//        //process header part
+//        while(true){
+//            line=lineReader.readLine();
+//            if(line.trim().equals("")){
+//                break;
+//            }
+//            parseHeaders(headers,line);
+//        }
+//        if(isGETMethod){
+//            return ;
+//        }
+//
+//        //process multi part
+//        String boundary=null;
+//        String contentType=headers.get("Content-Type")[0];
+//        if(contentType!=null&&contentType.toLowerCase().startsWith("multipart")){
+//            String multi=headers.get("Content-Type")[0];
+//            boundary=multi.split("[;]")[1].split("[=]")[1].trim();
+//        }
+//
+//        //process body part
+//        while(true){
+//            line=lineReader.readLine();
+//            if(line!=null){
+//                break;
+//            }
+//        }
+//        if(boundary!=null){
+//            if(line.trim().equals(boundary)){
+//                return;
+//            }
+//        }
+//        parseKeyValues(kvMap,line);
+//    }
 }

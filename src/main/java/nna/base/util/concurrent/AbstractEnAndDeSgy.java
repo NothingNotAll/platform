@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
             AbstractEnAndDeSgy noSeq=new AbstractEnAndDeSgy();
             noSeqWorkers.put(noSeq.workerId,noSeq);
         }
-        new MonitorTask();
+//        new MonitorTask();
     }
 
     static void addWorker(boolean isSeq){
