@@ -91,11 +91,11 @@ import java.util.concurrent.atomic.AtomicLong;
     }
 
     void initStrategy(Long gTaskId,String gTaskIdStr,boolean isSeq) {
+        Integer queueCount=15;
         if(isSeq){
-            QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),1,isSeq);
-        }else{
-            QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),15,isSeq);
+            queueCount=1;
         }
+        QueueWrapper.initQws(gTaskIdStr,gTaskId,threadWrapper.getTwSeqId(),queueCount,isSeq);
     }
 
     void addNewTask(Long gTaskId, TaskWrapper taskWrapper) {
