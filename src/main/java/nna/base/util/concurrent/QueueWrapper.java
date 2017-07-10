@@ -30,14 +30,12 @@ import java.util.concurrent.locks.ReentrantLock;
     static QueueWrapper enQueue(Long gTaskId,TaskWrapper taskWrapper){
         String gTaskNm=QueueWrapper.gTaskIdToTaskNmMap.get(gTaskId);
         QueueWrapper[] qws=QueueWrapper.qwMap.get(gTaskNm);
-        ArrayList<QueueWrapper> minLoadQWs=getMinLoadQueueWrapper(qws);
-        QueueWrapper minLoadQW=minLoadQWs.remove(qws.length-1);
+        QueueWrapper minLoadQW=getMinLoadQueueWrapper(qws);
         minLoadQW.queue.add(taskWrapper);
         return minLoadQW;
     }
 
-    private static ArrayList<QueueWrapper> getMinLoadQueueWrapper(QueueWrapper[] qws){
-        ArrayList<QueueWrapper> tempList=new ArrayList<QueueWrapper>(qws.length);
+    private static QueueWrapper getMinLoadQueueWrapper(QueueWrapper[] qws){
         QueueWrapper minLoadQW=null;
         Integer minCount = 0;
         Integer tempCount;
@@ -48,16 +46,12 @@ import java.util.concurrent.locks.ReentrantLock;
             }else{
                 tempCount=temp.queue.size();
                 if(tempCount<minCount){
-                    tempList.add(minLoadQW);
                     minLoadQW=temp;
                     minCount=temp.queue.size();
-                }else{
-                    tempList.add(temp);
                 }
             }
         }
-        tempList.add(minLoadQW);
-        return tempList;
+        return minLoadQW;
     }
 
     static void deQueues(LinkedList<TaskWrapper> temp,ConcurrentHashMap<String,QueueWrapper[]> qwMap,Long twId){
