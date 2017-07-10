@@ -32,6 +32,7 @@ public class HttpUtil {
         int readCount;
         int parseType=0;
         boolean isGETMethod;
+        int index=0;
         while(true){
             byteBuffer.clear();
             readCount=wrappedChannel.read(byteBuffer);
@@ -41,16 +42,15 @@ public class HttpUtil {
                 lines=charBuffer.toString();
                 line.append(lines);
                 if(lines.endsWith("\r\n")){
+                    System.out.println("-------------"+index+"----------------");
+                    System.out.println(lines);
+                    System.out.println("-------------"+index+++"--------------");
                     switch (parseType){
                         case HTTP_VERSION:
                             isGETMethod=parseFirstLine(headers,kvMap,line.toString());
                             parseType=isGETMethod?HTTP_GET_HEADER:HTTP_POST_HEADER;
                             break;
                         case HTTP_GET_HEADER://Headers_GET
-                            if(line.toString().trim().equals("")){
-                            System.out.println("return GET METHOD");
-                                return ;
-                            }
                             parseHeaders(headers,line.toString());
                             break;
                         case HTTP_POST_HEADER://Headers_POST
