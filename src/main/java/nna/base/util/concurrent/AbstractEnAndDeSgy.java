@@ -20,26 +20,20 @@ import java.util.concurrent.atomic.AtomicLong;
     private static ConcurrentHashMap<Integer,AbstractEnAndDeSgy> noSeqWorkers=new ConcurrentHashMap<Integer, AbstractEnAndDeSgy>();
     private static AtomicInteger workerSeqId=new AtomicInteger();
 
+    private Boolean isSeq;//null true false
     private ThreadWrapper threadWrapper;
     private Integer workerId;
 
     static{
         for(int index=0;index < 1;index++){
-            AbstractEnAndDeSgy seq=new AbstractEnAndDeSgy();
-            seqWorkers.put(seq.workerId,seq);
-            AbstractEnAndDeSgy noSeq=new AbstractEnAndDeSgy();
-            noSeqWorkers.put(noSeq.workerId,noSeq);
+            addWorker(false);
+            addWorker(true);
         }
 //        new MonitorTask();
     }
 
     static void addWorker(boolean isSeq){
-        AbstractEnAndDeSgy abstractEnAndDeSgy=new AbstractEnAndDeSgy();
-        if(isSeq){
-            seqWorkers.put(abstractEnAndDeSgy.workerId,abstractEnAndDeSgy);
-        }else{
-            noSeqWorkers.put(abstractEnAndDeSgy.workerId,abstractEnAndDeSgy);
-        }
+        new AbstractEnAndDeSgy(isSeq);
     }
 
     static AbstractEnAndDeSgy getMinLoad(boolean isSeq,Integer workerId){
@@ -49,16 +43,16 @@ import java.util.concurrent.atomic.AtomicLong;
             }else{
                 return noSeqWorkers.get(workerId);
             }
-        }
-        if(isSeq){
-            return getMinLoad(seqWorkers);
         }else{
-            return getMinLoad(noSeqWorkers);
+            if(isSeq){
+                return getMinLoad(seqWorkers);
+            }else{
+                return getMinLoad(noSeqWorkers);
+            }
         }
     }
 
     private static AbstractEnAndDeSgy getMinLoad(ConcurrentHashMap<Integer,AbstractEnAndDeSgy> map){
-
         AbstractEnAndDeSgy abstractEnAndDeSgy=null;
         int loadCount=0;
         int tempCount;
@@ -82,12 +76,18 @@ import java.util.concurrent.atomic.AtomicLong;
         return abstractEnAndDeSgy;
     }
 
-    private AbstractEnAndDeSgy(){
+    private AbstractEnAndDeSgy(Boolean isSeq){
+        this.workerId=workerSeqId.getAndIncrement();
+        this.isSeq=isSeq==null?false:isSeq;
+        if(!isSeq){
+            noSeqWorkers.put(workerId,this);
+        }else{
+            seqWorkers.put(workerId,this);
+        }
         for(int index=0;index <1;index++){
-            threadWrapper=new ThreadWrapper(QueueWrapper.getQwMap(),false);
+            threadWrapper=new ThreadWrapper(QueueWrapper.getQwMap(),isSeq);
             cached.submit(threadWrapper);
         }
-        this.workerId=workerSeqId.getAndIncrement();
     }
 
     void initStrategy(Long gTaskId,String gTaskIdStr,boolean isSeq) {
@@ -117,5 +117,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
     void setThreadWrapper(ThreadWrapper threadWrapper) {
         this.threadWrapper = threadWrapper;
+    }
+
+    public Boolean getSeq() {
+        return isSeq;
+    }
+
+    public void setSeq(Boolean seq) {
+        isSeq = seq;
     }
 }
