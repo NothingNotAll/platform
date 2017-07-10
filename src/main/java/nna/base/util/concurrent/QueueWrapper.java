@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
  **/
 
  class QueueWrapper {
-    private static  ConcurrentHashMap<Long,String> gTaskIdToTaskNmMap=new ConcurrentHashMap<Long, String>();
+    private static final ConcurrentHashMap<Long,String> gTaskIdToTaskNmMap=new ConcurrentHashMap<Long, String>();
     private static final ConcurrentHashMap<String,QueueWrapper[]> qwMap=new ConcurrentHashMap<String, QueueWrapper[]>();
 
     private BlockingQueue<TaskWrapper> queue;
