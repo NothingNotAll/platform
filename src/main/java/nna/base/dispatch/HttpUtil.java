@@ -20,11 +20,9 @@ public class HttpUtil {
     private static final int HTTP_GET_HEADER=1;
     private static final int HTTP_POST_HEADER=-1;
     private static final int HTTP_BODY=2;
-    private static AtomicLong seqId=new AtomicLong();
     private HttpUtil(){}
 
     static void parseHttp(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel socketChannel,Integer timedOut) throws IOException {
-        seqId.getAndIncrement();
         socketChannel.socket().setSoTimeout(timedOut);
         InputStream inStream = socketChannel.socket().getInputStream();
         ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
@@ -45,8 +43,6 @@ public class HttpUtil {
                 lines=charBuffer.toString();
                 line.append(lines);
                 copy.append(lines);
-                System.out.println(copy.toString());
-                System.out.println(copy.toString().equals("\r\n\r\n"));
                 if(lines.endsWith("\r\n")){
 //                    System.out.println("-------------"+index+"----------------");
 //                    System.out.println(line);
@@ -80,10 +76,13 @@ public class HttpUtil {
                                 return ;
                             }
                     }
+                    if(copy.toString().endsWith("\r\n\r\n")){
+                        System.out.println(copy.toString());
+                        return ;
+                    }
                     line.delete(0,line.length()-1);
                 }
             }else{
-                System.out.println("return");
                 return ;
             }
         }
@@ -94,7 +93,7 @@ public class HttpUtil {
         String[] methodAndURIAndKVAndHttpVersion=firstLine.split("[\\s]");
         String method=methodAndURIAndKVAndHttpVersion[0].trim();
         headers.put("HTTP_METHOD",new String[]{method});
-//        System.out.println(seqId.get()+"HTTP_METHOD"+":"+method+seqId.get());
+        System.out.println("HTTP_METHOD"+":"+method);
         String URI;
         if(method.equals("GET")){
             isMethodGET=true;
@@ -108,9 +107,9 @@ public class HttpUtil {
             URI=methodAndURIAndKVAndHttpVersion[1];
         }
         headers.put("HTTP_URI",new String[]{URI});
-        //            System.out.println(seqId.get()+seqId.get()+"HTTP_URI"+":"+URI+seqId.get());
+        System.out.println("HTTP_URI"+":"+URI);
         headers.put("HTTP_VERSION",new String[]{methodAndURIAndKVAndHttpVersion[2].trim()});
-//        System.out.println(seqId.get()+"HTTP_VERSION"+":"+methodAndURIAndKVAndHttpVersion[2]+seqId.get());
+        System.out.println("HTTP_VERSION"+":"+methodAndURIAndKVAndHttpVersion[2]);
         return isMethodGET;
     }
 
@@ -118,7 +117,7 @@ public class HttpUtil {
         if(headerLine!=null&&!headerLine.trim().equals("")){
             String[] headerKV=headerLine.split("[:]");
             headers.put(headerKV[0].trim(),new String[]{headerKV[1].trim()});
-//            System.out.println(seqId.get()+headerKV[0]+":"+headerKV[1]+seqId.get());
+            System.out.println(headerKV[0]+":"+headerKV[1]);
         }
     }
 
@@ -127,9 +126,11 @@ public class HttpUtil {
         if(kvs!=null&&kvs.length>=1){
             String[] kv;
             for(String kvStr:kvs){
-                kv=kvStr.split("[=]");
-                kvMap.put(kv[0].trim(), new String[]{URLDecoder.decode(kv[1])});
-//                System.out.println(seqId.get()+kv[0]+":"+kv[1]+seqId.get());
+                if(kvStr!=null&&!kvStr.trim().equals("")){
+                    kv=kvStr.split("[=]");
+                    kvMap.put(kv[0].trim(), new String[]{URLDecoder.decode(kv[1])});
+                    System.out.println(kv[0]+":"+kv[1]);
+                }
             }
         }
     }

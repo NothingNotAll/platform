@@ -94,7 +94,6 @@ public class Protocol {
             HashMap<String,String[]> kvs=new HashMap<String, String[]>();
             HttpUtil.parseHttp(headers,kvs,socketChannel,timedOut);
 //            String responseStr=service(kvs);
-            System.out.println("http response");
             socketChannel.write(ByteBuffer.wrap(getHttpResponseHeader().getBytes("UTF-8")));
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,7 +118,7 @@ public class Protocol {
         byte[] bytes;
         try {
             bytes= readBytes(channel);
-            System.out.println(new String(bytes,"UTF-8"));
+//            System.out.println(new String(bytes,"UTF-8"));
             HashMap<String,String[]> map=new HashMap<String, String[]>();
             XmlUtil.parseXmlStr(new String(bytes),map);
             String responseStr=service(map);
