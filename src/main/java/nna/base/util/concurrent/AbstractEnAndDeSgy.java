@@ -93,7 +93,7 @@ import java.util.concurrent.atomic.AtomicLong;
     }
 
     void initStrategy(Long gTaskId,String gTaskIdStr,boolean isSeq) {
-        Integer queueCount=15;
+        Integer queueCount=16;
         if(isSeq){
             queueCount=1;
         }
