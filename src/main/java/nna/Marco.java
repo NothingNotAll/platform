@@ -2,7 +2,6 @@ package nna;
 
 
 import nna.enums.DBType;
-import nna.enums.TaskType;
 
 public interface Marco {
     DBType dbType=DBType.mysql;
