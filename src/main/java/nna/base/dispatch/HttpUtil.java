@@ -9,7 +9,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by NNA-SHUAI on 2017/7/9.
@@ -23,9 +22,11 @@ public class HttpUtil {
     private HttpUtil(){}
 
     static void parseHttp(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel socketChannel,Integer timedOut) throws IOException {
+        //why ? this below can keep timeOut function
         socketChannel.socket().setSoTimeout(timedOut);
         InputStream inStream = socketChannel.socket().getInputStream();
         ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
+        //why ?
         ByteBuffer byteBuffer=ByteBuffer.allocate(2);
         StringBuilder line=new StringBuilder("");StringBuilder copy=new StringBuilder("");
         CharBuffer charBuffer;
