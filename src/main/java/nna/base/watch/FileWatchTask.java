@@ -4,7 +4,7 @@ package nna.base.watch;
 import nna.base.util.concurrent.AbstractTask;
 
 import java.io.IOException;
-import java.nio.file.spi.FileSystemProvider;
+import java.nio.file.*;
 
 /**
  * @author NNA-SHUAI
@@ -14,9 +14,10 @@ import java.nio.file.spi.FileSystemProvider;
 public class FileWatchTask extends AbstractTask{
 
     private static void test(){
-        java.util.List<FileSystemProvider> list=FileSystemProvider.installedProviders();
-        FileSystemProvider fileSystemProvider=list.get(0);
-
+        FileSystem fileSystem=FileSystems.getDefault();
+        WatchService watchService=fileSystem.newWatchService();
+        Paths.get("").register(watchService,new WatchEvent.Kind[StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.OVERFLOW]);
+        while(true){}
     }
 
     public FileWatchTask() {
