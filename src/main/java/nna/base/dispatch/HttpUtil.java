@@ -15,10 +15,6 @@ import java.util.HashMap;
  */
 public class HttpUtil {
     private static final Charset charset=Charset.forName("UTF-8");
-    private static final int HTTP_VERSION=0;
-    private static final int HTTP_GET_HEADER=1;
-    private static final int HTTP_POST_HEADER=-1;
-    private static final int HTTP_BODY=2;
     private HttpUtil(){}
 
     static void parseHttp(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel socketChannel,Integer timedOut) throws IOException {
@@ -27,46 +23,49 @@ public class HttpUtil {
         InputStream inStream = socketChannel.socket().getInputStream();
         ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
         //why ?
+        String firstLine=readLine(socketChannel);
+        boolean isGetMethod=parseFirstLine(headers,kvMap,firstLine);
+        parseLines(headers,socketChannel);
+        if(isGetMethod){
+            return ;
+        }else{
+            if(headers.get("Content-Type")[0].trim().startsWith("multipart")){
+                parseLines(headers,socketChannel);
+                return ;
+            }else{
+                String httpBody=readLine(socketChannel);
+                parseKeyValues(kvMap,httpBody);
+                return ;
+            }
+        }
+    }
+
+    static void parseLines(HashMap<String,String[]> headers,SocketChannel socketChannel) throws IOException {
+        String line;
+        while(true){
+            line=readLine(socketChannel);
+            if(line.trim().equals("")){
+                break;
+            }
+            parseHeaders(headers,line);
+        }
+    }
+
+    static String readLine(SocketChannel socketChannel) throws IOException {
         ByteBuffer byteBuffer=ByteBuffer.allocate(1);
         StringBuilder line=new StringBuilder("");
         CharBuffer charBuffer;
-        String lines;
-        String lineBuffer;
         int readCount;
-        int previousRNIndex=0;
-        boolean isFirstLine=true;
-        boolean isGetMethod=false;
         while(true){
             byteBuffer.clear();
-            readCount=wrappedChannel.read(byteBuffer);
+            readCount=socketChannel.read(byteBuffer);
             if(readCount>0){
                 byteBuffer.flip();
                 charBuffer=charset.decode(byteBuffer);
-                lines=charBuffer.toString();
-                line.append(lines);
+                line.append(charBuffer.toString());
                 if(line.toString().endsWith("\r\n")){
-                    lineBuffer=line.subSequence(previousRNIndex,line.length()-1).toString();
-                    if(isFirstLine){
-                        isGetMethod=parseFirstLine(headers,kvMap,lineBuffer);
-                        isFirstLine=false;
-                    }else{
-                        parseHeaders(headers,lineBuffer);
-                    }
-                    if(line.subSequence(previousRNIndex,line.length()-1).toString().trim().equals("")){
-                        if(!isGetMethod){//为 post 请求
-                            if(headers.get("Content-Type")[0].startsWith("multipart")){
-                                //是否上载文件请求
-
-                            }else{
-
-                            }
-                        }
-                        break;
-                    }
-                    previousRNIndex=line.length()-1;
+                    return line.toString();
                 }
-            }else{
-                return ;
             }
         }
     }
