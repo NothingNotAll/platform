@@ -23,7 +23,7 @@ public class HttpUtil {
         InputStream inStream = socketChannel.socket().getInputStream();
         ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
         //why ?
-        String firstLine=readLine(socketChannel);
+        String firstLine=readLine(wrappedChannel);
         boolean isGetMethod=parseFirstLine(headers,kvMap,firstLine);
         parseLines(headers,socketChannel);
         if(isGetMethod){
@@ -51,7 +51,7 @@ public class HttpUtil {
         }
     }
 
-    static String readLine(SocketChannel socketChannel) throws IOException {
+    static String readLine(ReadableByteChannel socketChannel) throws IOException {
         ByteBuffer byteBuffer=ByteBuffer.allocate(1);
         StringBuilder line=new StringBuilder("");
         CharBuffer charBuffer;
