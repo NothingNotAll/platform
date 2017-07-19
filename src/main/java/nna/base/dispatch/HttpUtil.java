@@ -27,14 +27,15 @@ public class HttpUtil {
         InputStream inStream = socketChannel.socket().getInputStream();
         ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
         //why ?
-        ByteBuffer byteBuffer=ByteBuffer.allocate(2);
-        StringBuilder line=new StringBuilder("");StringBuilder copy=new StringBuilder("");
+        ByteBuffer byteBuffer=ByteBuffer.allocate(1);
+        StringBuilder line=new StringBuilder("");
         CharBuffer charBuffer;
         String lines;
+        String lineBuffer;
         int readCount;
-        int parseType=0;
-        boolean isGETMethod;
-        int index=0;
+        int previousRNIndex=0;
+        boolean isFirstLine=true;
+        boolean isGetMethod=false;
         while(true){
             byteBuffer.clear();
             readCount=wrappedChannel.read(byteBuffer);
@@ -43,45 +44,26 @@ public class HttpUtil {
                 charBuffer=charset.decode(byteBuffer);
                 lines=charBuffer.toString();
                 line.append(lines);
-                copy.append(lines);
-                if(lines.endsWith("\r\n")){
-//                    System.out.println("-------------"+index+"----------------");
-//                    System.out.println(line);
-//                    System.out.println("+-------------"+index+++"--------------");
-                    switch (parseType){
-                        case HTTP_VERSION:
-                            isGETMethod=parseFirstLine(headers,kvMap,line.toString());
-                            parseType=isGETMethod?HTTP_GET_HEADER:HTTP_POST_HEADER;
-                            break;
-                        case HTTP_GET_HEADER://Headers_GET
-                            if(line.toString().equals("\r\n\r\n")){
-                            System.out.println("end");
-                                return ;
-                            }
-                            parseHeaders(headers,line.toString());
-                            break;
-                        case HTTP_POST_HEADER://Headers_POST
-                            if(line.toString().equals("\r\n")){
-                                parseType=HTTP_BODY;
-                                break;
-                            }
-                            parseHeaders(headers,line.toString());
-                            break;
-                        case HTTP_BODY:
-                            String[] contentType=headers.get("Content-type");
-                            String[] boundary=headers.get("boundary");
-                            if(contentType!=null&&contentType[0].toLowerCase().equals("multipart")&&boundary[0].equals(line.toString().trim())){
-                                return ;
+                if(line.toString().endsWith("\r\n")){
+                    lineBuffer=line.subSequence(previousRNIndex,line.length()-1).toString();
+                    if(isFirstLine){
+                        isGetMethod=parseFirstLine(headers,kvMap,lineBuffer);
+                        isFirstLine=false;
+                    }else{
+                        parseHeaders(headers,lineBuffer);
+                    }
+                    if(line.subSequence(previousRNIndex,line.length()-1).toString().trim().equals("")){
+                        if(!isGetMethod){//为 post 请求
+                            if(headers.get("Content-Type")[0].startsWith("multipart")){
+                                //是否上载文件请求
+
                             }else{
-                                parseKeyValues(kvMap,line.toString());
-                                return ;
+
                             }
+                        }
+                        break;
                     }
-                    if(copy.toString().endsWith("\r\n\r\n")){
-                        System.out.println(copy.toString());
-                        return ;
-                    }
-                    line.delete(0,line.length()-1);
+                    previousRNIndex=line.length()-1;
                 }
             }else{
                 return ;
@@ -94,7 +76,6 @@ public class HttpUtil {
         String[] methodAndURIAndKVAndHttpVersion=firstLine.split("[\\s]");
         String method=methodAndURIAndKVAndHttpVersion[0].trim();
         headers.put("HTTP_METHOD",new String[]{method});
-        System.out.println("HTTP_METHOD"+":"+method);
         String URI;
         if(method.equals("GET")){
             isMethodGET=true;
@@ -108,9 +89,7 @@ public class HttpUtil {
             URI=methodAndURIAndKVAndHttpVersion[1];
         }
         headers.put("HTTP_URI",new String[]{URI});
-        System.out.println("HTTP_URI"+":"+URI);
         headers.put("HTTP_VERSION",new String[]{methodAndURIAndKVAndHttpVersion[2].trim()});
-        System.out.println("HTTP_VERSION"+":"+methodAndURIAndKVAndHttpVersion[2]);
         return isMethodGET;
     }
 
@@ -118,7 +97,6 @@ public class HttpUtil {
         if(headerLine!=null&&!headerLine.trim().equals("")){
             String[] headerKV=headerLine.split("[:]");
             headers.put(headerKV[0].trim(),new String[]{headerKV[1].trim()});
-            System.out.println(headerKV[0]+":"+headerKV[1]);
         }
     }
 
@@ -130,7 +108,6 @@ public class HttpUtil {
                 if(kvStr!=null&&!kvStr.trim().equals("")){
                     kv=kvStr.split("[=]");
                     kvMap.put(kv[0].trim(), new String[]{URLDecoder.decode(kv[1])});
-                    System.out.println(kv[0]+":"+kv[1]);
                 }
             }
         }

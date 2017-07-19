@@ -118,7 +118,7 @@ public class Protocol {
         byte[] bytes;
         try {
             bytes= readBytes(channel);
-//            System.out.println(new String(bytes,"UTF-8"));
+            System.out.println(new String(bytes,"UTF-8"));
             HashMap<String,String[]> map=new HashMap<String, String[]>();
             XmlUtil.parseXmlStr(new String(bytes),map);
             String responseStr=service(map);

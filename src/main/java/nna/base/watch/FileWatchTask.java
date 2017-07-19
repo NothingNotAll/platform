@@ -14,10 +14,13 @@ import java.nio.file.*;
 public class FileWatchTask extends AbstractTask{
 
     private static void test(){
-        FileSystem fileSystem=FileSystems.getDefault();
-        WatchService watchService=fileSystem.newWatchService();
-        Paths.get("").register(watchService,new WatchEvent.Kind[StandardWatchEventKinds.ENTRY_CREATE,StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.OVERFLOW]);
-        while(true){}
+        try {
+            FileSystem fileSystem=FileSystems.getDefault();
+            WatchService watchService=fileSystem.newWatchService();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        Paths.get("").register(watchService,new WatchEvent.Kind[StandardWatchEventKinds.ENTRY_CREATE],StandardWatchEventKinds.ENTRY_DELETE,StandardWatchEventKinds.ENTRY_MODIFY,StandardWatchEventKinds.OVERFLOW]);
     }
 
     public FileWatchTask() {
