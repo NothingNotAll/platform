@@ -1,6 +1,7 @@
 package nna.base.init;
 
 import nna.StoreData;
+import nna.test.Test;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
