@@ -9,6 +9,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Created by NNA-SHUAI on 2017/7/9.
@@ -18,29 +21,42 @@ public class HttpUtil {
     private HttpUtil(){}
 
     static void parseHttp(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,SocketChannel socketChannel,Integer timedOut) throws IOException {
+        HashMap<String,LinkedList<String>> zcHeader=new HashMap<String, LinkedList<String>>();
+        HashMap<String,LinkedList<String>> zcKvMap=new HashMap<String, LinkedList<String>>();
         //why ? this below can keep timeOut function
         socketChannel.socket().setSoTimeout(timedOut);
         InputStream inStream = socketChannel.socket().getInputStream();
         ReadableByteChannel wrappedChannel = Channels.newChannel(inStream);
         //why ?
         String firstLine=readLine(wrappedChannel);
-        boolean isGetMethod=parseFirstLine(headers,kvMap,firstLine);
-        parseLines(headers,socketChannel);
-        if(isGetMethod){
-            return ;
-        }else{
+        boolean isGetMethod=parseFirstLine(zcHeader,zcKvMap,firstLine);
+        parseLines(zcHeader,socketChannel);
+        if(!isGetMethod){
             if(headers.get("Content-Type")[0].trim().startsWith("multipart")){
-                parseLines(headers,socketChannel);
-                return ;
+                parseLines(zcHeader,socketChannel);
             }else{
                 String httpBody=readLine(socketChannel);
-                parseKeyValues(kvMap,httpBody);
-                return ;
+                parseKeyValues(zcKvMap,httpBody);
             }
+        }
+        linked2Array(zcHeader,headers);
+        linked2Array(zcKvMap,kvMap);
+    }
+
+    static private void linked2Array(HashMap<String,LinkedList<String>> linked,HashMap<String,String[]> array){
+        Iterator<Map.Entry<String,LinkedList<String>>> linkedIterator=linked.entrySet().iterator();
+        Map.Entry<String,LinkedList<String>> entry;
+        String key;
+        LinkedList<String> values;
+        while(linkedIterator.hasNext()){
+            entry=linkedIterator.next();
+            key=entry.getKey();
+            values=entry.getValue();
+            array.put(key,values.toArray(new String[0]));
         }
     }
 
-    static void parseLines(HashMap<String,String[]> headers,SocketChannel socketChannel) throws IOException {
+    static void parseLines(HashMap<String,LinkedList<String>> headers,SocketChannel socketChannel) throws IOException {
         String line;
         while(true){
             line=readLine(socketChannel);
@@ -70,11 +86,11 @@ public class HttpUtil {
         }
     }
 
-    static boolean parseFirstLine(HashMap<String,String[]> headers,HashMap<String,String[]> kvMap,String firstLine){
+    static boolean parseFirstLine(HashMap<String,LinkedList<String>> headers,HashMap<String,LinkedList<String>> kvMap,String firstLine){
         boolean isMethodGET=false;
         String[] methodAndURIAndKVAndHttpVersion=firstLine.split("[\\s]");
         String method=methodAndURIAndKVAndHttpVersion[0].trim();
-        headers.put("HTTP_METHOD",new String[]{method});
+        putKV(headers,"HTTP_METHOD",method);
         String URI;
         if(method.equals("GET")){
             isMethodGET=true;
@@ -87,28 +103,38 @@ public class HttpUtil {
         }else{
             URI=methodAndURIAndKVAndHttpVersion[1];
         }
-        headers.put("HTTP_URI",new String[]{URI});
-        headers.put("HTTP_VERSION",new String[]{methodAndURIAndKVAndHttpVersion[2].trim()});
+        putKV(headers,"HTTP_URI",URI);
+        putKV(headers,"HTTP_VERSION",methodAndURIAndKVAndHttpVersion[2].trim());
         return isMethodGET;
     }
 
-    static void parseHeaders(HashMap<String,String[]> headers,String headerLine){
+    static void parseHeaders(HashMap<String,LinkedList<String>> headers,String headerLine){
         if(headerLine!=null&&!headerLine.trim().equals("")){
             String[] headerKV=headerLine.split("[:]");
-            headers.put(headerKV[0].trim(),new String[]{headerKV[1].trim()});
+            putKV(headers,headerKV[0].trim(),headerKV[1].trim());
         }
     }
 
-    static void parseKeyValues(HashMap<String,String[]> kvMap,String kvLine){
+    static void parseKeyValues(HashMap<String,LinkedList<String>> kvMap,String kvLine){
         String[] kvs=kvLine.split("[&]");
         if(kvs!=null&&kvs.length>=1){
             String[] kv;
             for(String kvStr:kvs){
                 if(kvStr!=null&&!kvStr.trim().equals("")){
                     kv=kvStr.split("[=]");
-                    kvMap.put(kv[0].trim(), new String[]{URLDecoder.decode(kv[1])});
+                    putKV(kvMap,kv[0].trim(),URLDecoder.decode(kv[1]));
                 }
             }
+        }
+    }
+    static private void putKV(HashMap<String,LinkedList<String>> lKVMap,String key,String value){
+        LinkedList<String> values=lKVMap.get(key);
+        if(values!=null){
+            values.add(value);
+        }else{
+            values=new LinkedList<String>();
+            values.add(value);
+            lKVMap.put(key,values);
         }
     }
 
