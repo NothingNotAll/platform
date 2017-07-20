@@ -53,6 +53,11 @@ public class HttpUtil {
             key=entry.getKey();
             values=entry.getValue();
             array.put(key,values.toArray(new String[0]));
+            System.out.print("[key] "+key+" [value] ");
+            for(String value:values){
+                System.out.print(" "+value+" ");
+            }
+            System.out.println();
         }
     }
 
