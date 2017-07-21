@@ -203,15 +203,15 @@ import java.util.Map;
             arrayPathNm=outsideName.substring(0,index);
         }
         String[] values=outsideMap.get(outsideName);
-        String defalutValue=temp.getColumnDefaultvalue();
+        String defaultValue=temp.getColumnDefaultvalue();
         boolean isMust=temp.isColumnIsmust();
-        if(values==null&&isMust&&defalutValue==null){
+        if(values==null&&isMust&&defaultValue==null){
             log.log(outsideName+"request column not null",Log.ERROR);
             throw new Exception("request column not null");
         }
-        if(defalutValue!=null&&values==null){
-            if(defalutValue!=null&&values==null){
-                values=new String[]{defalutValue};
+        if(defaultValue!=null&&values==null){
+            if(defaultValue!=null&&values==null){
+                values=new String[]{defaultValue};
                 innerReqMap.put(innerName,values);
             }
         }

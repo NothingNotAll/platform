@@ -55,37 +55,7 @@ public class Protocol {
             return object==null?"":object.toString();
         }
         int size=rsp.size();
-        if(size > 0){
-            StringBuilder rspBuilder=new StringBuilder("");
-            rspBuilder.append("{");
-            Iterator<Map.Entry<String,String[]>> iterator=rsp.entrySet().iterator();
-            Map.Entry<String,String[]> entry;
-            String keyNm;
-            String[] keyVs;
-            int length;
-            int index=0;
-            String valueTemp;
-            while(iterator.hasNext()){
-                entry=iterator.next();
-                keyNm=entry.getKey();
-                keyVs=entry.getValue();
-                rspBuilder.append("\'"+keyNm+"\':");
-                rspBuilder.append("[");
-                length=keyVs.length;
-                for(;index<length;index++){
-                    valueTemp=keyVs[index];
-                    valueTemp= CharUtil.stringToJson(valueTemp,true);
-                    rspBuilder.append("\'"+valueTemp+"\',");
-                }
-                rspBuilder.delete(rspBuilder.length()-1,rspBuilder.length());
-                index=0;
-                rspBuilder.append("]");
-            }
-            rspBuilder.append("}");
-            return rspBuilder.toString();
-        }else{
-            return "";
-        }
+        return "";
     }
 
     public static String processHttp(SocketChannel socketChannel,Integer timedOut) {
@@ -93,7 +63,6 @@ public class Protocol {
             HashMap<String,String[]> headers=new HashMap<String, String[]>();
             HashMap<String,String[]> kvs=new HashMap<String, String[]>();
             HttpUtil.parseHttp(headers,kvs,socketChannel,timedOut);
-//            String responseStr=service(kvs);
             socketChannel.write(ByteBuffer.wrap(getHttpResponseHeader().getBytes("UTF-8")));
         } catch (IOException e) {
             e.printStackTrace();
@@ -124,7 +93,7 @@ public class Protocol {
             String responseStr=service(map);
             channel.write(ByteBuffer.wrap(responseStr.getBytes("UTF-8")));
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         }finally {
             try {
                 channel.close();
