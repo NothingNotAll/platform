@@ -47,6 +47,7 @@ import java.util.concurrent.locks.LockSupport;
     private Long delayTime;
     private Integer effectiveCount=0;
     private Integer noEffectiveCount=0;
+    private String monitorStr;
     public void run() {
         thread=Thread.currentThread();
         while(true){
@@ -73,6 +74,7 @@ import java.util.concurrent.locks.LockSupport;
                 }else{
                     meanfulTimes++;
                 }
+                setMonitorStr(this);
                 if(temp.size()==0){
                     LockSupport.park();
                 }
@@ -83,14 +85,19 @@ import java.util.concurrent.locks.LockSupport;
     }
 
     static String monitorEffective(ThreadWrapper tw){
+        return tw.monitorStr;
+    }
+
+    private static void setMonitorStr(ThreadWrapper tw){
         if(tw.taskCount==0){
-            return "NO."+tw.twSeqId+" NotWorkedCount:0 totalCount:0 noEffectivePercent:0%\r\nWorkedCount:0 totalCount:0 noEffectivePercent:0%";
+            tw.monitorStr="NO."+tw.twSeqId+" NotWorkedCount:0 totalCount:0 noEffectivePercent:0%\r\nWorkedCount:0 totalCount:0 noEffectivePercent:0%";
+        }else{
+            String noEffective="NO."+tw.twSeqId+" NotWorkedCount:"+tw.noEffectiveCount+" totalCount:"+tw.totalTaskCount+" noEffectivePercent:"+tw.noEffectiveCount*100/tw.totalTaskCount+"."+tw.noEffectiveCount%tw.totalTaskCount+"%";
+            String effective="NO."+tw.twSeqId+" WorkedCount:"+tw.effectiveCount+" totalCount:"+tw.totalTaskCount+" effectivePercent:"+tw.effectiveCount*100/tw.totalTaskCount+"."+tw.effectiveCount%tw.totalTaskCount+"%";
+            String thisNoEffective="NO."+tw.twSeqId+" NotWorkedCount:"+tw.thisNoEffectiveCount+" totalCount:"+tw.taskCount+" noEffectivePercent:"+tw.thisNoEffectiveCount*100/tw.taskCount+"."+tw.thisNoEffectiveCount%tw.taskCount+"%";
+            String thisEffective="NO."+tw.twSeqId+" WorkedCount:"+tw.thisEffectiveCount+" totalCount:"+tw.taskCount+" effectivePercent:"+tw.thisEffectiveCount*100/tw.taskCount+"."+tw.thisEffectiveCount%tw.taskCount+"%";
+            tw.monitorStr="HISTORY_TOTAL:\r\n"+noEffective+"\r\n"+effective+"\r\nTHIS_TIME:\r\n"+thisNoEffective+"\r\n"+thisEffective;
         }
-        String noEffective="NO."+tw.twSeqId+" NotWorkedCount:"+tw.noEffectiveCount+" totalCount:"+tw.totalTaskCount+" noEffectivePercent:"+tw.noEffectiveCount*100/tw.totalTaskCount+"."+tw.noEffectiveCount%tw.totalTaskCount+"%";
-        String effective="NO."+tw.twSeqId+" WorkedCount:"+tw.effectiveCount+" totalCount:"+tw.totalTaskCount+" effectivePercent:"+tw.effectiveCount*100/tw.totalTaskCount+"."+tw.effectiveCount%tw.totalTaskCount+"%";
-        String thisNoEffective="NO."+tw.twSeqId+" NotWorkedCount:"+tw.thisNoEffectiveCount+" totalCount:"+tw.taskCount+" noEffectivePercent:"+tw.thisNoEffectiveCount*100/tw.taskCount+"."+tw.thisNoEffectiveCount%tw.taskCount+"%";
-        String thisEffective="NO."+tw.twSeqId+" WorkedCount:"+tw.thisEffectiveCount+" totalCount:"+tw.taskCount+" effectivePercent:"+tw.thisEffectiveCount*100/tw.taskCount+"."+tw.thisEffectiveCount%tw.taskCount+"%";
-        return "HISTORY_TOTAL:\r\n"+noEffective+"\r\n"+effective+"\r\nTHIS_TIME:\r\n"+thisNoEffective+"\r\n"+thisEffective;
     }
 
     void unParkThread(Long twId){
