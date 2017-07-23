@@ -13,10 +13,7 @@ import java.lang.reflect.Method;
 import java.nio.channels.ByteChannel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,6 +24,16 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 
 public class MetaBean extends Clone{
+    public static final ConcurrentHashMap<String,PlatformEntry> platformEntryMap=new ConcurrentHashMap<String, PlatformEntry>();
+    public static final ConcurrentHashMap<String,PlatformController> platformControllerMap=new ConcurrentHashMap<String, PlatformController>();
+    public static final ConcurrentHashMap<String,PlatformApp> platformAppMap=new ConcurrentHashMap<String, PlatformApp>();
+    public static final ConcurrentHashMap<String,PlatformDB> platformDBMap=new ConcurrentHashMap<String, PlatformDB>();
+    public static final ConcurrentHashMap<String,PlatformLog> platformLogMap=new ConcurrentHashMap<String, PlatformLog>();
+    public static final ConcurrentHashMap<String,PlatformService> platformServiceMap=new ConcurrentHashMap<String, PlatformService>();
+    public static final ConcurrentHashMap<String,PlatformSession> platformSessionMap=new ConcurrentHashMap<String, PlatformSession>();
+    public static final ConcurrentHashMap<String,LinkedList<PlatformColumn>> platformColumnMap=new ConcurrentHashMap<String, LinkedList<PlatformColumn>>();
+
+
     //Global App Config Cache;
     private static Log pLog;
     private static HashSet<PlatformResource> freeResource=new HashSet<PlatformResource>();

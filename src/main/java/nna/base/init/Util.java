@@ -113,8 +113,4 @@ import java.sql.SQLException;
     public static void loadNIOSelector() throws IOException {
         NIOEntry.initSelector();
     }
-
-    public static void initTaskManager() {
-
-    }
 }

@@ -4,3 +4,5 @@
 4:add distribute module , this is very easy ,just like the GFS
 5:add effective serializable module
 6:the init of NNA service is too complex;
+7:build the meta bean too complex
+8:automatic transaction executing

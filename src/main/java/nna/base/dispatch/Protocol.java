@@ -90,8 +90,8 @@ public class Protocol {
             System.out.println(new String(bytes,"UTF-8"));
             HashMap<String,String[]> map=new HashMap<String, String[]>();
             XmlUtil.parseXmlStr(new String(bytes),map);
-            String responseStr=service(map);
-            channel.write(ByteBuffer.wrap(responseStr.getBytes("UTF-8")));
+//            String responseStr=service(map);
+//            channel.write(ByteBuffer.wrap(responseStr.getBytes("UTF-8")));
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
