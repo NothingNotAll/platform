@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -59,93 +60,4 @@ public class NNAServiceStart {
         }
     }
 
-    private static void buildMetaBeanClassField(){
-
-    }
-
-    private static void buildMetaBeanField(ResultSet metaBeanRs) throws ClassNotFoundException, SQLException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        PlatformEntry platformEntry=(PlatformEntry) ObjectFactory.getBean(metaBeanRs,Marco.PLATFORM_ENTRY);
-        MetaBean metaBean=new MetaBean();
-        Integer controllerId=platformEntry.getEntryControllerId();
-        buildController(metaBean,controllerId);
-        String serviceId=platformEntry.getEntryServiceId();
-        buildService(metaBean,serviceId);
-        Integer dbId=platformEntry.getEntryDBId();
-        buildDB(metaBean,dbId);
-        Integer logId=platformEntry.getEntryLogId();
-        buldLog(metaBean,logId);
-        String reqId=platformEntry.getEntryReqId();
-        buildColumns(metaBean,reqId);
-        String rspId=platformEntry.getEntryRspId();
-        buildColumns(metaBean,rspId);
-        String tranId=platformEntry.getEntryTranId();
-        buildTran(metaBean,tranId);
-    }
-
-    private static void buildTran(MetaBean metaBean, String tranId) {
-        if(tranId==null){
-            return ;
-        }
-
-    }
-
-    private static void buildColumns(MetaBean metaBean, String rspId) {
-        if(rspId==null){
-            return ;
-        }
-        LinkedList<PlatformColumn> columns=MetaBean.platformColumnMap.get(rspId);
-        if(columns!=null){
-            metaBean.setReqColConfig(columns.toArray(new PlatformColumn[0]));
-        }else{
-
-        }
-    }
-
-    private static void buldLog(MetaBean metaBean, Integer logId) {
-        if(logId==null){
-            return ;
-        }
-        PlatformLog platformLog=MetaBean.platformLogMap.get(logId);
-        if(platformLog!=null){
-            metaBean.setPlatformLog(platformLog);
-        }else{
-
-        }
-    }
-
-    private static void buildDB(MetaBean metaBean, Integer dbId) {
-        if(dbId==null){
-            return ;
-        }
-        PlatformDB platformDB=MetaBean.platformDBMap.get(dbId);
-        if(platformDB!=null){
-            metaBean.setPlatformDB(platformDB);
-        }else{
-
-        }
-    }
-
-    private static void buildService(MetaBean metaBean, String serviceId) {
-        if(serviceId==null){
-            return ;
-        }
-        PlatformService platformService=MetaBean.platformServiceMap.get(serviceId);
-        if(platformService!=null){
-            metaBean.setPlatformService(platformService);
-        }else{
-
-        }
-    }
-
-    private static void buildController(MetaBean metaBean, Integer controllerId) {
-        if(controllerId==null){
-            return ;
-        }
-        PlatformController platformController=MetaBean.platformControllerMap.get(controllerId);
-        if(platformController!=null){
-            metaBean.setPlatformController(platformController);
-        }else{
-
-        }
-    }
 }
