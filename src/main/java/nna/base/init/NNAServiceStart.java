@@ -1,19 +1,11 @@
 package nna.base.init;
 
-import nna.Marco;
-import nna.MetaBean;
 import nna.StoreData;
-import nna.base.bean.dbbean.*;
-import nna.base.util.orm.ObjectFactory;
-import nna.test.Test;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  * @author NNA-SHUAI
