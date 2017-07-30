@@ -71,8 +71,8 @@ public class DefaultTransExecutor<V> implements TransExecutor<V> {
         ArrayList<PlatformTransaction[]> trans=metaBean.getTrans();
         ArrayList<ArrayList<DBSQLConValType[]>> valTypeArray=metaBean.getDbsqlConValTypes();
         ArrayList<PlatformSql[]> platformSqls=metaBean.getTranPlatformSql();
-        ArrayList<ArrayList<String[]>> conArray=metaBean.getCons();
-        ArrayList<ArrayList<String[]>> colArray=metaBean.getCols();
+        ArrayList<ArrayList<String[]>> conArray=metaBean.getAppCons();
+        ArrayList<ArrayList<String[]>> colArray=metaBean.getAppCols();
         return executeSQLS(
                 metaBean,
                 SQLArray,
