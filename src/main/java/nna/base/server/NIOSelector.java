@@ -21,8 +21,6 @@ public class NIOSelector extends AbstractTask{
     private static Selector selector;
     private static NIOEventProcessor NIOEventProcessor =new NIOEventProcessor();
     private static volatile boolean isInit=false;
-    static private AtomicBoolean init=new AtomicBoolean(false);
-    static private Object lock=new Object();
 
     private Long ioEventCountTotal=0L;
     public NIOSelector() throws IOException {
