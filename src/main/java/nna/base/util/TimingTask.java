@@ -2,6 +2,7 @@ package nna.base.util;
 
 import java.util.LinkedList;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -67,9 +68,12 @@ public class TimingTask implements Runnable{
     public void run() {
         TimingTask.startTime=System.currentTimeMillis();
         while(true){
+            if(taskList.size()==0){
+                LockSupport.park();
+            }
             try{
                 tasks=taskList.toArray();
-                
+
             }catch (Exception e){
                 e.printStackTrace();
             }finally {
