@@ -3,6 +3,10 @@ package nna.base.util;
 import java.util.concurrent.*;
 
 /**
+ * for db record timing task
+ * support db config timing task
+ * single thread manage all the timing tasks
+ * using the executor pool api to achieve the executing of thread
  * Created by NNA-SHUAI on 2017/8/13.
  */
 public class TimingTask implements Runnable{
