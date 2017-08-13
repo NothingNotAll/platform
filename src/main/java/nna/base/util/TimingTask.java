@@ -30,6 +30,8 @@ public class TimingTask implements Runnable{
     private static Long startTime;
     private static ReentrantLock lock=new ReentrantLock();
 
+    private Object[] tasks;
+
     static {
         new Thread(timingTask).start();
     }
@@ -58,12 +60,16 @@ public class TimingTask implements Runnable{
         }
     }
 
+    private static void computeNextDayTimingTaskList(){
+
+    }
+
     public void run() {
         TimingTask.startTime=System.currentTimeMillis();
         while(true){
             try{
-                Object[] futureTask=taskList.toArray();
-                Future future=executorService.submit(this);
+                tasks=taskList.toArray();
+                
             }catch (Exception e){
                 e.printStackTrace();
             }finally {
