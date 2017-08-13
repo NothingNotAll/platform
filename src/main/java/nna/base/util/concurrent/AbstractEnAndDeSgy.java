@@ -105,6 +105,11 @@ import java.util.concurrent.atomic.AtomicLong;
         threadWrapper.unParkThread(taskWrapper.getAbstractTask().getTwId());
     }
 
+    void addNewTask(Long gTaskId,Integer queueIndex,TaskWrapper taskWrapper) {
+        QueueWrapper.enQueue(gTaskId,queueIndex,taskWrapper);
+        threadWrapper.unParkThread(taskWrapper.getAbstractTask().getTwId());
+    }
+
     Integer getWorkerId() {
         return workerId;
     }

@@ -35,6 +35,14 @@ import java.util.concurrent.locks.ReentrantLock;
         return minLoadQW;
     }
 
+    static QueueWrapper enQueue(Long gTaskId,Integer queueIndex,TaskWrapper taskWrapper){
+        String gTaskNm=QueueWrapper.gTaskIdToTaskNmMap.get(gTaskId);
+        QueueWrapper[] qws=QueueWrapper.qwMap.get(gTaskNm);
+        QueueWrapper minLoadQW=qws[queueIndex];
+        minLoadQW.queue.add(taskWrapper);
+        return minLoadQW;
+    }
+
     private static QueueWrapper getMinLoadQueueWrapper(QueueWrapper[] qws){
         QueueWrapper minLoadQW=null;
         Integer minCount = 0;
