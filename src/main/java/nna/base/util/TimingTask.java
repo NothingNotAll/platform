@@ -68,16 +68,9 @@ public class TimingTask implements Runnable{
     public void run() {
         TimingTask.startTime=System.currentTimeMillis();
         while(true){
-            if(taskList.size()==0){
+            tasks=taskList.toArray();
+            if(tasks.length==0){
                 LockSupport.park();
-            }
-            try{
-                tasks=taskList.toArray();
-
-            }catch (Exception e){
-                e.printStackTrace();
-            }finally {
-                continue;
             }
         }
     }
