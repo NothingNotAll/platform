@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TimingTask implements Runnable{
     private static ExecutorService executorService=Executors.newCachedThreadPool();
-    private volatile static LinkedList taskList=new LinkedList();
+    private static CopyOnWriteArrayList<FutureTask> taskList=new CopyOnWriteArrayList<FutureTask>();
     private static final TimingTask timingTask=new TimingTask();
     private static Long startTime;
     private static ReentrantLock lock=new ReentrantLock();
@@ -51,7 +51,6 @@ public class TimingTask implements Runnable{
         try{
             lock.lock();
             isLocked=true;
-            
         }finally {
             if(isLocked){
                 lock.unlock();
@@ -63,6 +62,7 @@ public class TimingTask implements Runnable{
         TimingTask.startTime=System.currentTimeMillis();
         while(true){
             try{
+                Object[] futureTask=taskList.toArray();
                 Future future=executorService.submit(this);
             }catch (Exception e){
                 e.printStackTrace();
@@ -70,5 +70,10 @@ public class TimingTask implements Runnable{
                 continue;
             }
         }
+    }
+    private static class FutureTaskWrapper{
+        private FutureTask futureTask;
+        private int[] timeParams;
+        private int timingType;
     }
 }
